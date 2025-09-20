@@ -236,9 +236,8 @@ if ($OriginalSpeed -gt 0 -and $CacheSpeed -gt 0 -and $CacheMaxSpeed -gt 0) {
     Write-Host "  - Our results should be similar to achieve fair comparison"
 }
 
-# Clean up test file copy
-if (Test-Path $CacheFilePath) {
-    Remove-Item $CacheFilePath -Force
-}
+# Keep cache file for performance analysis
+# (Use CleanupTest.ps1 to clean up manually)
+Write-Host "`nCache file preserved at: $CacheFilePath" -ForegroundColor Cyan
 
 Write-Host "`nTest completed with correct methodology!" -ForegroundColor Green

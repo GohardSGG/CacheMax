@@ -50,6 +50,7 @@ typedef struct
     FSP_FILE_SYSTEM *FileSystem;
     PWSTR Path;
     PWSTR CachePath;  /* New: path to cache directory */
+    PWSTR MountDirName;  /* Name of the mounted directory (e.g., "Test") */
     CACHE_STATS Stats;  /* Cache statistics */
     HANDLE StatsThread; /* Handle to statistics printing thread */
 } PTFS;
@@ -463,7 +464,10 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
     if (Ptfs->CachePath != NULL)
     {
         WCHAR CachePath[MAX_PATH];
-        if (0 == StringCbPrintfW(CachePath, sizeof CachePath, L"%s%s", Ptfs->CachePath, FileCtx->FileName))
+        if (0 == StringCbPrintfW(CachePath, sizeof CachePath, L"%s\\%s%s",
+            Ptfs->CachePath,
+            Ptfs->MountDirName ? Ptfs->MountDirName : L"",
+            FileCtx->FileName))
         {
             // Check if we already have this file mapped
             if (FileCtx->CacheMappedView == NULL)
@@ -532,7 +536,10 @@ static NTSTATUS Read(FSP_FILE_SYSTEM *FileSystem,
         if (STATUS_SUCCESS == Status && Ptfs->CachePath != NULL && *PBytesTransferred > 0)
         {
             WCHAR CachePath[MAX_PATH];
-            if (0 == StringCbPrintfW(CachePath, sizeof CachePath, L"%s%s", Ptfs->CachePath, FileCtx->FileName))
+            if (0 == StringCbPrintfW(CachePath, sizeof CachePath, L"%s\\%s%s",
+                Ptfs->CachePath,
+                Ptfs->MountDirName ? Ptfs->MountDirName : L"",
+                FileCtx->FileName))
             {
                 // Ensure cache directory exists
                 WCHAR CacheDir[MAX_PATH];
@@ -608,7 +615,10 @@ static NTSTATUS Write(FSP_FILE_SYSTEM *FileSystem,
     if (STATUS_SUCCESS == Result && Ptfs->CachePath != NULL && !FileCtx->IsCache)
     {
         WCHAR CacheFilePath[MAX_PATH];
-        if (0 == StringCbPrintfW(CacheFilePath, sizeof CacheFilePath, L"%s%s", Ptfs->CachePath, FileCtx->FileName))
+        if (0 == StringCbPrintfW(CacheFilePath, sizeof CacheFilePath, L"%s\\%s%s",
+            Ptfs->CachePath,
+            Ptfs->MountDirName ? Ptfs->MountDirName : L"",
+            FileCtx->FileName))
         {
             // Delete cache file to force refresh on next read
             DeleteFileW(CacheFilePath);
@@ -963,6 +973,45 @@ static NTSTATUS PtfsCreate(PWSTR Path, PWSTR CachePath, PWSTR VolumePrefix, PWST
             memcpy(Ptfs->CachePath, CachePath, Length);
             if (L'\\' == Ptfs->CachePath[wcslen(Ptfs->CachePath) - 1])
                 Ptfs->CachePath[wcslen(Ptfs->CachePath) - 1] = L'\0';
+        }
+    }
+
+    /* Extract mount directory name from MountPoint for cache path construction */
+    if (MountPoint != NULL)
+    {
+        PWSTR LastSlash = wcsrchr(MountPoint, L'\\');
+        if (LastSlash != NULL && *(LastSlash + 1) != L'\0')
+        {
+            PWSTR DirName = LastSlash + 1;
+            Length = ((ULONG)wcslen(DirName) + 1) * sizeof(WCHAR);
+            Ptfs->MountDirName = malloc(Length);
+            if (0 != Ptfs->MountDirName)
+            {
+                memcpy(Ptfs->MountDirName, DirName, Length);
+            }
+        }
+        else
+        {
+            /* Handle case where MountPoint is like "A:" without backslash */
+            WCHAR DirName[32];
+            if (MountPoint[1] == L':' && wcslen(MountPoint) <= 3)
+            {
+                /* For drive letters like "A:", use "A" as directory name */
+                DirName[0] = MountPoint[0];
+                DirName[1] = L'\0';
+            }
+            else
+            {
+                /* Use full MountPoint as directory name */
+                wcscpy_s(DirName, 32, MountPoint);
+            }
+
+            Length = ((ULONG)wcslen(DirName) + 1) * sizeof(WCHAR);
+            Ptfs->MountDirName = malloc(Length);
+            if (0 != Ptfs->MountDirName)
+            {
+                memcpy(Ptfs->MountDirName, DirName, Length);
+            }
         }
     }
 
