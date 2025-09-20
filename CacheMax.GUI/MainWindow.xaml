@@ -1,0 +1,145 @@
+<Window x:Class="CacheMax.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CacheMax - File System Accelerator"
+        Height="600" Width="900"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="150"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <ToolBar Grid.Row="0" Height="40">
+            <Button Name="AccelerateButton" Click="AccelerateButton_Click" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="➕" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="Accelerate Folder" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Separator/>
+            <Button Name="StopButton" Click="StopButton_Click" Padding="10,5" IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⏹" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="Stop Acceleration" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Separator/>
+            <Button Name="RefreshButton" Click="RefreshButton_Click" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Separator/>
+            <Button Name="TestMountButton" Click="TestMountButton_Click" Padding="10,5">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🧪" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="Test Mount Cache" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Separator/>
+            <Button Name="DeleteButton" Click="DeleteButton_Click" Padding="10,5" IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🗑" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="Delete Entry" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </ToolBar>
+
+        <!-- Main content area -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Input section -->
+            <GroupBox Grid.Row="0" Header="Acceleration Settings" Padding="10" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Source folder -->
+                    <Label Grid.Row="0" Grid.Column="0" Content="Source Folder:" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="SourceFolderTextBox"
+                             VerticalAlignment="Center" Margin="5"/>
+                    <Button Grid.Row="0" Grid.Column="2" Name="BrowseSourceButton"
+                            Content="Browse..." Click="BrowseSourceButton_Click" Margin="5"/>
+
+                    <!-- Cache root -->
+                    <Label Grid.Row="1" Grid.Column="0" Content="Cache Root:" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="CacheRootTextBox"
+                             Text="S:\Cache" VerticalAlignment="Center" Margin="5"/>
+                    <Button Grid.Row="1" Grid.Column="2" Name="BrowseCacheButton"
+                            Content="Browse..." Click="BrowseCacheButton_Click" Margin="5"/>
+                </Grid>
+            </GroupBox>
+
+            <!-- Accelerated folders list -->
+            <GroupBox Grid.Row="1" Header="Accelerated Folders">
+                <DataGrid Name="AcceleratedFoldersGrid"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          SelectionChanged="AcceleratedFoldersGrid_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="60"/>
+                        <DataGridTextColumn Header="Original Path" Binding="{Binding OriginalPath}" Width="*"/>
+                        <DataGridTextColumn Header="Cache Path" Binding="{Binding CachePath}" Width="*"/>
+                        <DataGridTextColumn Header="Mount Point" Binding="{Binding MountPoint}" Width="200"/>
+                        <DataGridTextColumn Header="Cache Size" Binding="{Binding CacheSizeFormatted}" Width="100"/>
+                        <DataGridTextColumn Header="Created" Binding="{Binding CreatedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Status bar -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Name="StatusText" Text="Ready"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Name="RunningCountText" Text="Running: 0"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Name="CacheStatsText" Text="Cache: --" Foreground="Blue"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Name="HitRateText" Text="Hit Rate: --%"  Foreground="Green"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Name="OperationsText" Text="Ops: R:0 W:0"  Foreground="Purple"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Log output -->
+        <GroupBox Grid.Row="3" Header="Output Log" Margin="10,0,10,10">
+            <ScrollViewer Name="LogScrollViewer" VerticalScrollBarVisibility="Auto">
+                <TextBox Name="LogTextBox"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         FontFamily="Consolas"
+                         FontSize="10"
+                         Background="#1E1E1E"
+                         Foreground="#E0E0E0"/>
+            </ScrollViewer>
+        </GroupBox>
+    </Grid>
+</Window>

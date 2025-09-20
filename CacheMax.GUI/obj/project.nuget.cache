@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "T6SKmTkRtQw=",
+  "success": true,
+  "projectFilePath": "C:\\Code\\CacheMax\\CacheMax.GUI\\CacheMax.GUI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\SGGGGG\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\SGGGGG\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.18\\microsoft.netcore.app.ref.8.0.18.nupkg.sha512",
+    "C:\\Users\\SGGGGG\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.18\\microsoft.windowsdesktop.app.ref.8.0.18.nupkg.sha512",
+    "C:\\Users\\SGGGGG\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.18\\microsoft.aspnetcore.app.ref.8.0.18.nupkg.sha512",
+    "C:\\Users\\SGGGGG\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.18\\microsoft.netcore.app.host.win-x64.8.0.18.nupkg.sha512"
+  ],
+  "logs": []
+}

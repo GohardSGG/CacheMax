@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(powershell:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(gcc:*)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe\" /O2 dax_performance_test.c)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\" \"C:\\Code\\CacheMax\\DaxTest.vcxproj\" -p:Configuration=Release -p:Platform=x64)",
+      "Bash(\"C:\\Code\\CacheMax\\x64\\Release\\dax_performance_test.exe\")",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\" \"C:\\Code\\CacheMax\\CacheMax.FileSystem\\CacheMax.FileSystem.vcxproj\" -p:Configuration=Release -p:Platform=x64)",
+      "Bash(copy:*)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe\" /O2 \"C:\\Code\\CacheMax\\cachemax_performance_test.c\")",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe\" /O2 cachemax_performance_test.c)",
+      "Bash(call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\")",
+      "Bash(cl:*)",
+      "Bash(Get-Process -Name \"passthrough-mod\" -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "Read(//a/Test/**)",
+      "Read(//s/Cache/**)",
+      "Bash(dir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,10 @@
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.GUI.csproj.AssemblyReference.cache
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\MainWindow.baml
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\MainWindow.g.cs
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\App.g.cs
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax_MarkupCompile.cache
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.g.resources
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.GUI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.GUI.AssemblyInfoInputs.cache
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.GUI.AssemblyInfo.cs
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net7.0-windows\CacheMax.GUI.csproj.CoreCompileInputs.cache
