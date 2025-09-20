@@ -4,22 +4,16 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CacheMax.GUI", "CacheMax.GUI\CacheMax.GUI.csproj", "{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CacheMax.FileSystem", "CacheMax.FileSystem\CacheMax.FileSystem.vcxproj", "{A9D3BB2D-FD1E-43A1-80B5-52DFC6D45BFB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Debug|x64.Build.0 = Debug|Any CPU
-		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Release|x64.ActiveCfg = Release|Any CPU
-		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Release|x64.Build.0 = Release|Any CPU
-		{A9D3BB2D-FD1E-43A1-80B5-52DFC6D45BFB}.Debug|x64.ActiveCfg = Debug|x64
-		{A9D3BB2D-FD1E-43A1-80B5-52DFC6D45BFB}.Debug|x64.Build.0 = Debug|x64
-		{A9D3BB2D-FD1E-43A1-80B5-52DFC6D45BFB}.Release|x64.ActiveCfg = Release|x64
-		{A9D3BB2D-FD1E-43A1-80B5-52DFC6D45BFB}.Release|x64.Build.0 = Release|x64
+		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D3C4A1-2F5E-4B8A-9C3D-5A8E7F6D9B2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,3 +20,6 @@ C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\refint\CacheMax.dll
 C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\CacheMax.pdb
 C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\CacheMax.GUI.genruntimeconfig.cache
 C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\ref\CacheMax.dll
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\InputDialog.baml
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\InputDialog.g.cs
+C:\Code\CacheMax\CacheMax.GUI\obj\Release\net8.0-windows\CacheMax.GUI.sourcelink.json

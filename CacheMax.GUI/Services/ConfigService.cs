@@ -25,7 +25,7 @@ namespace CacheMax.GUI.Services
     public class ConfigService
     {
         private readonly string _configPath;
-        private AppConfig _config;
+        private AppConfig _config = new();
 
         public AppConfig Config => _config;
 

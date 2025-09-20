@@ -21,7 +21,10 @@
       "Bash(Stop-Process -Force)",
       "Read(//a/Test/**)",
       "Read(//s/Cache/**)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)"
     ],
     "deny": [],
     "ask": []
