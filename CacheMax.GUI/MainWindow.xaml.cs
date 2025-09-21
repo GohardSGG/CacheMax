@@ -615,9 +615,8 @@ namespace CacheMax.GUI
             return tag switch
             {
                 "Immediate" => SyncMode.Immediate,
-                "Batch" => SyncMode.Batch,
                 "Periodic" => SyncMode.Periodic,
-                _ => SyncMode.Batch
+                _ => SyncMode.Immediate
             };
         }
 
@@ -842,12 +841,6 @@ namespace CacheMax.GUI
                         OperationsText.Text = $"读写: R:{snapshot.TotalReadOps}({snapshot.ReadThroughputMBps:F1}MB/s) W:{snapshot.TotalWriteOps}({snapshot.WriteThroughputMBps:F1}MB/s)";
                     }
 
-                    // 显示热点文件信息
-                    if (snapshot.HotFiles.Any())
-                    {
-                        var hotFileNames = snapshot.HotFiles.Take(3).Select(f => Path.GetFileName(f.FilePath));
-                        AddLog($"热点文件: {string.Join(", ", hotFileNames)}");
-                    }
                 }
                 catch (Exception ex)
                 {

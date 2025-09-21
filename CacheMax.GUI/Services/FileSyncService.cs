@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Channels;
+using System.Text.Json;
 using CacheMax.GUI.ViewModels;
 
 namespace CacheMax.GUI.Services
@@ -13,7 +14,6 @@ namespace CacheMax.GUI.Services
     public enum SyncMode
     {
         Immediate,  // 即时同步 (延迟 < 100ms)
-        Batch,      // 批量同步 (延迟 1-5秒)
         Periodic    // 定期同步 (延迟 30-60秒)
     }
 
@@ -26,10 +26,12 @@ namespace CacheMax.GUI.Services
         private readonly Dictionary<string, SyncQueueItemViewModel> _queueItems = new();
         private readonly Dictionary<SyncOperation, (SyncQueueItemViewModel item, string key)> _operationToQueueItem = new();
 
-        // 工业级并行引擎
-        private readonly ParallelSyncEngine _parallelEngine;
-        private readonly BatchIOProcessor _batchProcessor;
-        private readonly LockFreeQueueSystem<IOOperation> _priorityQueue;
+        // 文件处理去重和并发控制
+        private readonly ConcurrentDictionary<string, TaskCompletionSource<bool>> _processingFiles = new();
+        private SemaphoreSlim _fastCopyLimiter; // 可配置的FastCopy并发限制
+
+        // 简化的文件操作服务
+        private readonly FastCopyService _fastCopyService;
 
         // 异步日志系统
         private readonly AsyncLogger _logger;
@@ -38,7 +40,6 @@ namespace CacheMax.GUI.Services
         private readonly Channel<UIUpdateMessage> _uiUpdateChannel;
         private readonly CancellationTokenSource _serviceCancellation;
 
-        private Timer? _batchTimer;
         private Timer? _periodicTimer;
         private Timer? _intelligentTimer;
         private Timer? _statsTimer;
@@ -47,11 +48,14 @@ namespace CacheMax.GUI.Services
 
         public FileSyncService()
         {
-            _parallelEngine = new ParallelSyncEngine();
-            _batchProcessor = new BatchIOProcessor(maxBatchSize: 1000, batchTimeoutMs: 50);
-            _priorityQueue = new LockFreeQueueSystem<IOOperation>(5);
-            _logger = new AsyncLogger();
+            _fastCopyService = new FastCopyService();
+            _logger = AsyncLogger.Instance;
             _serviceCancellation = new CancellationTokenSource();
+
+            // 从配置文件读取FastCopy并发数
+            var maxConcurrency = GetFastCopyMaxConcurrency();
+            _fastCopyLimiter = new SemaphoreSlim(maxConcurrency, maxConcurrency);
+            _logger.LogInfo($"FastCopy最大并发数设置为: {maxConcurrency}", "FileSyncService");
 
             // 创建UI更新Channel
             _uiUpdateChannel = Channel.CreateUnbounded<UIUpdateMessage>(new UnboundedChannelOptions
@@ -67,7 +71,6 @@ namespace CacheMax.GUI.Services
             _ = Task.Run(async () =>
             {
                 await Task.Delay(2000); // 延迟2秒启动
-                _batchTimer = new Timer(ProcessBatchSync, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
                 _periodicTimer = new Timer(ProcessPeriodicSync, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
                 _intelligentTimer = new Timer(ProcessIntelligentSync, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
                 _statsTimer = new Timer(UpdateStats, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
@@ -136,7 +139,7 @@ namespace CacheMax.GUI.Services
         {
             public string CachePath { get; set; } = string.Empty;
             public string OriginalPath { get; set; } = string.Empty;
-            public SyncMode Mode { get; set; } = SyncMode.Batch;
+            public SyncMode Mode { get; set; } = SyncMode.Immediate;
             public int DelaySeconds { get; set; } = 3;
             public bool Enabled { get; set; } = true;
         }
@@ -213,7 +216,6 @@ namespace CacheMax.GUI.Services
                 public DateTime LastAccess { get; set; }
                 public double AverageInterval { get; set; }
                 public bool IsFrequentlyAccessed => AccessCount > 5 && AverageInterval < 60;
-                public SyncPriority Priority { get; set; } = SyncPriority.Normal;
             }
 
             public class FileOperationRecord
@@ -224,13 +226,6 @@ namespace CacheMax.GUI.Services
                 public long FileSize { get; set; }
             }
 
-            public enum SyncPriority
-            {
-                Low,      // 很少访问的文件，延迟同步
-                Normal,   // 正常文件，按配置同步
-                High,     // 频繁访问的文件，优先同步
-                Critical  // 重要文件（如数据库），立即同步
-            }
 
             public void RecordOperation(string filePath, WatcherChangeTypes operationType, long fileSize = 0)
             {
@@ -270,41 +265,8 @@ namespace CacheMax.GUI.Services
                     pattern.LastAccess = DateTime.Now;
                 }
 
-                // 智能确定优先级
-                pattern.Priority = DeterminePriority(filePath, pattern);
             }
 
-            private SyncPriority DeterminePriority(string filePath, FileAccessPattern pattern)
-            {
-                var fileName = Path.GetFileName(filePath).ToLower();
-                var extension = Path.GetExtension(filePath).ToLower();
-
-                // 关键文件类型立即同步
-                if (extension == ".db" || extension == ".sqlite" || extension == ".mdb" ||
-                    fileName.Contains("database") || fileName.Contains("config"))
-                {
-                    return SyncPriority.Critical;
-                }
-
-                // 频繁访问的文件高优先级
-                if (pattern.IsFrequentlyAccessed)
-                {
-                    return SyncPriority.High;
-                }
-
-                // 很少访问的大文件低优先级
-                if (pattern.AccessCount < 3 && pattern.AverageInterval > 300)
-                {
-                    return SyncPriority.Low;
-                }
-
-                return SyncPriority.Normal;
-            }
-
-            public SyncPriority GetFilePriority(string filePath)
-            {
-                return _patterns.TryGetValue(filePath, out var pattern) ? pattern.Priority : SyncPriority.Normal;
-            }
 
             public bool IsFrequentlyAccessed(string filePath)
             {
@@ -322,7 +284,7 @@ namespace CacheMax.GUI.Services
         /// <summary>
         /// 开始监控目录
         /// </summary>
-        public bool StartMonitoring(string cachePath, string originalPath, SyncMode mode = SyncMode.Batch, int delaySeconds = 3, IProgress<string>? progress = null)
+        public bool StartMonitoring(string cachePath, string originalPath, SyncMode mode = SyncMode.Immediate, int delaySeconds = 3, IProgress<string>? progress = null)
         {
             try
             {
@@ -546,9 +508,26 @@ namespace CacheMax.GUI.Services
 
         private void OnFileChanged(string filePath, string cacheRoot, WatcherChangeTypes changeType)
         {
+            // 对于新建或修改的文件，立即进行去重检查
+            if (changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed)
+            {
+                var fileKey = filePath.ToLowerInvariant();
+
+                // 检查是否已有同一文件的处理任务
+                if (_processingFiles.ContainsKey(fileKey))
+                {
+                    _logger.LogInfo($"文件已在处理队列中，跳过重复事件: {Path.GetFileName(filePath)}", "FileSyncService");
+                    return;
+                }
+            }
+
             // 立即异步处理，避免阻塞FileSystemWatcher线程
             _ = Task.Run(async () =>
             {
+                // 声明在外层作用域，以便在catch块中访问
+                string? fileKey = null;
+                TaskCompletionSource<bool>? tcs = null;
+
                 try
                 {
                     if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
@@ -557,6 +536,31 @@ namespace CacheMax.GUI.Services
                     // 过滤临时文件
                     if (IsTemporaryFile(filePath))
                         return;
+
+                    // 对于新建或修改的文件，等待写入完成并加锁
+                    if (changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed)
+                    {
+                        _logger.LogInfo($"检测到文件变化，等待写入完成: {Path.GetFileName(filePath)}", "FileSyncService");
+
+                        // 文件级去重机制 - 在等待写入完成前就加锁
+                        fileKey = filePath.ToLowerInvariant();
+                        tcs = new TaskCompletionSource<bool>();
+
+                        // 添加文件到处理列表（事件检测阶段已经做过去重检查）
+                        _processingFiles.TryAdd(fileKey, tcs);
+
+                        // 等待文件写入完成
+                        var writeComplete = await SafeFileOperations.IsFileWriteComplete(filePath);
+                        if (!writeComplete)
+                        {
+                            _logger.LogWarning($"文件写入未完成，跳过同步: {Path.GetFileName(filePath)}", "FileSyncService");
+                            // 清理文件锁
+                            _processingFiles.TryRemove(fileKey, out _);
+                            return;
+                        }
+
+                        _logger.LogInfo($"文件写入已完成，准备同步: {Path.GetFileName(filePath)}", "FileSyncService");
+                    }
 
                     // 记录操作用于智能分析
                     if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
@@ -616,45 +620,29 @@ namespace CacheMax.GUI.Services
                         QueueItem = queueItem
                     });
 
-                    // 智能同步决策
-                    var priority = analyzer?.GetFilePriority(filePath) ?? FileOperationAnalyzer.SyncPriority.Normal;
-
-                    if (config.Mode == SyncMode.Immediate || priority == FileOperationAnalyzer.SyncPriority.Critical)
+                    // 直接同步所有文件
+                    queueItem.Status = "处理中";
+                    await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
                     {
-                        // 即时同步（包括关键文件）
-                        queueItem.Status = "处理中";
-                        await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
-                        {
-                            Type = UIUpdateType.QueueItemUpdated,
-                            QueueItem = queueItem
-                        });
+                        Type = UIUpdateType.QueueItemUpdated,
+                        QueueItem = queueItem
+                    });
 
-                        _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey));
-                        SafeLog($"立即同步文件：{Path.GetFileName(filePath)} (优先级：{priority})");
-                    }
-                    else
-                    {
-                        // 所有其他文件都加入队列，但保存队列项目的引用以便后续追踪
-                        if (priority == FileOperationAnalyzer.SyncPriority.High)
-                        {
-                            operation.Mode = SyncMode.Batch; // 强制批量模式以便快速处理
-                            SafeLog($"高优先级文件入队：{Path.GetFileName(filePath)}");
-                        }
+                    _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, fileKey, tcs));
+                    SafeLog($"开始同步文件：{Path.GetFileName(filePath)}");
 
-                        // 将队列项目引用保存到操作中，以便批量处理时能找到
-                        lock (_lockObject)
-                        {
-                            if (!_operationToQueueItem.ContainsKey(operation))
-                            {
-                                _operationToQueueItem[operation] = (queueItem, itemKey);
-                            }
-                        }
-
-                        _syncQueue.Enqueue(operation);
-                    }
                 }
                 catch (Exception ex)
                 {
+                    // 清理文件锁（如果存在）
+                    if ((changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed) &&
+                        fileKey != null && tcs != null)
+                    {
+                        if (_processingFiles.TryRemove(fileKey, out var removedTcs))
+                        {
+                            removedTcs.SetResult(false);
+                        }
+                    }
                     SafeLog($"文件变化处理异常: {ex.Message}");
                 }
             });
@@ -666,76 +654,6 @@ namespace CacheMax.GUI.Services
             OnFileChanged(newPath, cacheRoot, WatcherChangeTypes.Created);
         }
 
-        private void ProcessBatchSync(object? state)
-        {
-            if (_syncQueue.IsEmpty)
-                return;
-
-            var operations = new List<SyncOperation>();
-            var cutoffTime = DateTime.Now;
-
-            // 收集需要处理的操作
-            while (_syncQueue.TryDequeue(out var operation))
-            {
-                if (operation.Mode == SyncMode.Batch)
-                {
-                    var config = _syncConfigs.GetValueOrDefault(operation.SourceRoot);
-                    if (config != null && (cutoffTime - operation.Timestamp).TotalSeconds >= config.DelaySeconds)
-                    {
-                        operations.Add(operation);
-                    }
-                    else
-                    {
-                        // 还没到时间，重新入队
-                        _syncQueue.Enqueue(operation);
-                    }
-                }
-                else if (operation.Mode == SyncMode.Periodic)
-                {
-                    // 周期性同步由另一个定时器处理
-                    _syncQueue.Enqueue(operation);
-                }
-            }
-
-            // 批量处理操作
-            if (operations.Count > 0)
-            {
-                // 通过Channel发送日志，不直接调用UI事件
-                _ = _uiUpdateChannel.Writer.TryWrite(new UIUpdateMessage
-                {
-                    Type = UIUpdateType.LogMessage,
-                    Message = $"智能同步处理：{operations.Count} 个操作"
-                });
-
-                Task.Run(() =>
-                {
-                    foreach (var op in operations)
-                    {
-                        // 尝试获取队列项目进行追踪
-                        (SyncQueueItemViewModel item, string key)? queueInfo = null;
-                        lock (_lockObject)
-                        {
-                            if (_operationToQueueItem.TryGetValue(op, out var info))
-                            {
-                                queueInfo = info;
-                                _operationToQueueItem.Remove(op); // 开始处理后移除
-                            }
-                        }
-
-                        if (queueInfo.HasValue)
-                        {
-                            // 使用带追踪的方法
-                            ProcessSyncOperationWithTracking(op, queueInfo.Value.item, queueInfo.Value.key);
-                        }
-                        else
-                        {
-                            // 回退到原有方法
-                            ProcessSyncOperation(op);
-                        }
-                    }
-                });
-            }
-        }
 
         private void ProcessPeriodicSync(object? state)
         {
@@ -792,13 +710,12 @@ namespace CacheMax.GUI.Services
             if (operations.Count == 0)
                 return;
 
-            // 按优先级和时间排序
+            // 按时间排序处理
             var prioritizedOperations = operations
                 .GroupBy(op => op.FilePath)
                 .Select(g => g.OrderByDescending(op => op.Timestamp).First()) // 每个文件最新操作
                 .Where(op => ShouldProcessOperation(op, now))
-                .OrderByDescending(op => GetOperationPriority(op))
-                .ThenBy(op => op.Timestamp)
+                .OrderBy(op => op.Timestamp)
                 .ToList();
 
             // 将未处理的操作重新入队
@@ -827,38 +744,13 @@ namespace CacheMax.GUI.Services
             var config = _syncConfigs.GetValueOrDefault(operation.SourceRoot);
             if (config == null) return false;
 
-            var analyzer = _analyzers.GetValueOrDefault(operation.SourceRoot);
-            var priority = analyzer?.GetFilePriority(operation.FilePath) ?? FileOperationAnalyzer.SyncPriority.Normal;
-
-            // 根据优先级决定处理时机
+            // 简化为固定延迟
             var ageSeconds = (now - operation.Timestamp).TotalSeconds;
-
-            return priority switch
-            {
-                FileOperationAnalyzer.SyncPriority.Critical => true, // 立即处理
-                FileOperationAnalyzer.SyncPriority.High => ageSeconds >= Math.Max(1, config.DelaySeconds / 2), // 减半延迟
-                FileOperationAnalyzer.SyncPriority.Normal => ageSeconds >= config.DelaySeconds, // 正常延迟
-                FileOperationAnalyzer.SyncPriority.Low => ageSeconds >= config.DelaySeconds * 2, // 双倍延迟
-                _ => ageSeconds >= config.DelaySeconds
-            };
+            return ageSeconds >= config.DelaySeconds;
         }
 
-        private int GetOperationPriority(SyncOperation operation)
-        {
-            var analyzer = _analyzers.GetValueOrDefault(operation.SourceRoot);
-            var priority = analyzer?.GetFilePriority(operation.FilePath) ?? FileOperationAnalyzer.SyncPriority.Normal;
 
-            return priority switch
-            {
-                FileOperationAnalyzer.SyncPriority.Critical => 100,
-                FileOperationAnalyzer.SyncPriority.High => 75,
-                FileOperationAnalyzer.SyncPriority.Normal => 50,
-                FileOperationAnalyzer.SyncPriority.Low => 25,
-                _ => 50
-            };
-        }
-
-        private async void ProcessSyncOperationWithTracking(SyncOperation operation, SyncQueueItemViewModel queueItem, string itemKey)
+        private async void ProcessSyncOperationWithTracking(SyncOperation operation, SyncQueueItemViewModel queueItem, string itemKey, string fileKey, TaskCompletionSource<bool> tcs)
         {
             try
             {
@@ -947,6 +839,15 @@ namespace CacheMax.GUI.Services
                     Message = ex.Message,
                     Duration = TimeSpan.Zero
                 }, "SyncFailed");
+            }
+            finally
+            {
+                // 清理文件处理锁
+                if (_processingFiles.TryRemove(fileKey, out var removedTcs))
+                {
+                    removedTcs.SetResult(true);
+                    _logger.LogInfo($"文件处理完成，清理锁: {Path.GetFileName(operation.FilePath)}", "FileSyncService");
+                }
             }
         }
 
@@ -1050,7 +951,18 @@ namespace CacheMax.GUI.Services
                         }
                     });
 
-                    return await SafeFileOperations.SafeCopyFileAsync(sourcePath, targetPath, true, retryConfig, progress);
+                    // 使用SemaphoreSlim限制FastCopy并发数量
+                    await _fastCopyLimiter.WaitAsync();
+                    try
+                    {
+                        _logger.LogInfo($"获取FastCopy并发许可，开始复制: {Path.GetFileName(sourcePath)}", "FileSyncService");
+                        return await SafeFileOperations.SafeCopyFileAsync(sourcePath, targetPath, true, retryConfig, progress);
+                    }
+                    finally
+                    {
+                        _fastCopyLimiter.Release();
+                        _logger.LogInfo($"释放FastCopy并发许可: {Path.GetFileName(sourcePath)}", "FileSyncService");
+                    }
                 }
                 else if (Directory.Exists(sourcePath))
                 {
@@ -1388,11 +1300,13 @@ namespace CacheMax.GUI.Services
         /// <summary>
         /// 使用ParallelSyncEngine处理文件操作
         /// </summary>
-        public async Task<bool> ProcessWithEngineAsync(string sourcePath, string targetPath, FileOperationType operationType)
+        public async Task<bool> ProcessWithEngineAsync(string sourcePath, string targetPath)
         {
             try
             {
-                return await _parallelEngine.SubmitFileOperationAsync(sourcePath, targetPath, operationType, _serviceCancellation.Token);
+                // 直接使用FastCopy进行文件操作
+                var success = await _fastCopyService.CopyWithVerifyAsync(sourcePath, targetPath);
+                return success;
             }
             catch (Exception ex)
             {
@@ -1404,17 +1318,11 @@ namespace CacheMax.GUI.Services
         /// <summary>
         /// 提交IO操作到批处理器
         /// </summary>
-        private async Task SubmitToBatchProcessor(string sourcePath, string targetPath, IOType ioType)
+        private async Task SubmitToBatchProcessor(string sourcePath, string targetPath)
         {
-            var operation = new IOOperation
-            {
-                SourcePath = sourcePath,
-                TargetPath = targetPath,
-                Type = ioType,
-                Priority = CalculateOperationPriority(sourcePath)
-            };
-
-            await _batchProcessor.SubmitOperationAsync(operation);
+            // 简化方法 - 直接执行文件操作，不再使用复杂的批处理器
+            // 这个方法现在主要用于UI更新，实际文件操作已简化
+            await Task.CompletedTask; // 占位符
         }
 
         /// <summary>
@@ -1456,7 +1364,6 @@ namespace CacheMax.GUI.Services
             }
 
             // 停止定时器
-            _batchTimer?.Dispose();
             _periodicTimer?.Dispose();
             _intelligentTimer?.Dispose();
             _statsTimer?.Dispose();
@@ -1464,13 +1371,40 @@ namespace CacheMax.GUI.Services
             // 关闭Channel
             _uiUpdateChannel.Writer.TryComplete();
 
-            // 释放引擎和处理器
-            _parallelEngine?.Dispose();
-            _batchProcessor?.Dispose();
+            // 释放资源
+            _fastCopyLimiter?.Dispose();
             _logger?.Dispose();
             _serviceCancellation?.Dispose();
 
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// 从配置文件读取FastCopy最大并发数
+        /// </summary>
+        private int GetFastCopyMaxConcurrency()
+        {
+            try
+            {
+                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                if (File.Exists(configPath))
+                {
+                    var configContent = File.ReadAllText(configPath);
+                    var config = JsonSerializer.Deserialize<JsonElement>(configContent);
+
+                    if (config.TryGetProperty("FastCopy", out var fastCopyConfig) &&
+                        fastCopyConfig.TryGetProperty("MaxConcurrency", out var maxConcurrencyElement))
+                    {
+                        return maxConcurrencyElement.GetInt32();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"读取FastCopy配置失败，使用默认值: {ex.Message}", "FileSyncService");
+            }
+
+            return 3; // 默认值
         }
     }
 

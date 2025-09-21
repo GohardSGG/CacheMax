@@ -1,0 +1,699 @@
+﻿[2025-09-21 13:20:36.924] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:20:36.927] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:20:36.927] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-21 13:20:36.928] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:21:59.808] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-21 13:21:59.808] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-21 13:21:59.812] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:21:59.813] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-21 13:21:59.813] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:21:59.821] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: C1712.MP4
+[2025-09-21 13:21:59.821] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1712.MP4
+[2025-09-21 13:22:02.216] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C1712.MP4
+[2025-09-21 13:22:02.317] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:02.325] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1713.MP4
+[2025-09-21 13:22:02.325] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1713.MP4
+[2025-09-21 13:22:04.033] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C1713.MP4
+[2025-09-21 13:22:04.034] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:04.043] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1714.MP4
+[2025-09-21 13:22:04.043] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1714.MP4
+[2025-09-21 13:22:04.842] [INFO ] [T020] [FileSyncService] 文件写入已完成，准备同步: C1712.MP4
+[2025-09-21 13:22:04.842] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C1712.MP4
+[2025-09-21 13:22:05.339] [INFO ] [T017] [FileSyncService] 文件写入已完成，准备同步: C1712.MP4
+[2025-09-21 13:22:05.976] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1714.MP4
+[2025-09-21 13:22:05.977] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:05.985] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1715.MP4
+[2025-09-21 13:22:05.985] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: C1715.MP4
+[2025-09-21 13:22:07.043] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1713.MP4
+[2025-09-21 13:22:07.353] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C1713.MP4
+[2025-09-21 13:22:07.353] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1713.MP4
+[2025-09-21 13:22:08.790] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1715.MP4
+[2025-09-21 13:22:08.792] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:08.800] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1716.MP4
+[2025-09-21 13:22:08.800] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1716.MP4
+[2025-09-21 13:22:08.958] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:08.959] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:08.996] [INFO ] [T008] [FileSyncService] 文件写入已完成，准备同步: C1714.MP4
+[2025-09-21 13:22:09.073] [INFO ] [T017] [FileSyncService] 文件写入已完成，准备同步: C1714.MP4
+[2025-09-21 13:22:09.073] [INFO ] [T020] [FileSyncService] 文件写入已完成，准备同步: C1714.MP4
+[2025-09-21 13:22:10.077] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:11.031] [INFO ] [T007] [FileSyncService] 文件写入已完成，准备同步: C1715.MP4
+[2025-09-21 13:22:11.031] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C1715.MP4
+[2025-09-21 13:22:11.816] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C1715.MP4
+[2025-09-21 13:22:12.453] [INFO ] [T023] [FileSyncService] 检测到文件变化，等待写入完成: C1716.MP4
+[2025-09-21 13:22:12.464] [INFO ] [T023] [FileSyncService] 检测到文件变化，等待写入完成: C1717.MP4
+[2025-09-21 13:22:12.464] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1717.MP4
+[2025-09-21 13:22:13.185] [INFO ] [T011] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:14.938] [WARN ] [T007] [FileSyncService] 文件写入未完成，跳过同步: Ibanez A
+[2025-09-21 13:22:14.938] [WARN ] [T020] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:14.938] [WARN ] [T018] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:14.938] [WARN ] [T021] [FileSyncService] 文件写入未完成，跳过同步: Ibanez A
+[2025-09-21 13:22:14.938] [WARN ] [T023] [FileSyncService] 文件写入未完成，跳过同步: Ibanez A
+[2025-09-21 13:22:14.942] [INFO ] [T011] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.942] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.943] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-21 13:22:14.943] [INFO ] [T011] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-21 13:22:14.956] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.956] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:14.964] [INFO ] [T011] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.964] [INFO ] [T011] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-21 13:22:14.974] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.974] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-21 13:22:14.994] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:14.994] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:15.463] [INFO ] [T030] [FileSyncService] 文件写入已完成，准备同步: C1716.MP4
+[2025-09-21 13:22:16.547] [INFO ] [T031] [FileSyncService] 检测到文件变化，等待写入完成: C1717.MP4
+[2025-09-21 13:22:16.549] [INFO ] [T031] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:16.557] [INFO ] [T031] [FileSyncService] 检测到文件变化，等待写入完成: C1718.MP4
+[2025-09-21 13:22:16.558] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C1718.MP4
+[2025-09-21 13:22:16.859] [INFO ] [T032] [FileSyncService] 文件写入已完成，准备同步: C1716.MP4
+[2025-09-21 13:22:16.859] [INFO ] [T017] [FileSyncService] 文件写入已完成，准备同步: C1716.MP4
+[2025-09-21 13:22:17.414] [WARN ] [T017] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:17.608] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:19.126] [WARN ] [T017] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:19.560] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C1717.MP4
+[2025-09-21 13:22:20.536] [INFO ] [T030] [FileSyncService] 文件写入已完成，准备同步: C1717.MP4
+[2025-09-21 13:22:20.536] [INFO ] [T032] [FileSyncService] 文件写入已完成，准备同步: C1717.MP4
+[2025-09-21 13:22:20.580] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1718.MP4
+[2025-09-21 13:22:20.592] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1719.MP4
+[2025-09-21 13:22:20.592] [INFO ] [T034] [FileSyncService] 检测到文件变化，等待写入完成: C1719.MP4
+[2025-09-21 13:22:21.080] [WARN ] [T033] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:22.401] [INFO ] [T024] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-21 13:22:22.436] [INFO ] [T026] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-21 13:22:22.888] [INFO ] [T023] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:22.944] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:22.944] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:22.960] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:22.960] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:22.975] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:22.976] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:23.322] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: C1719.MP4
+[2025-09-21 13:22:23.324] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:23.335] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C1720.MP4
+[2025-09-21 13:22:23.335] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: C1720.MP4
+[2025-09-21 13:22:23.593] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C1718.MP4
+[2025-09-21 13:22:23.684] [INFO ] [T011] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-21 13:22:23.888] [WARN ] [T011] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:24.661] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: C1718.MP4
+[2025-09-21 13:22:24.661] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1718.MP4
+[2025-09-21 13:22:24.806] [INFO ] [T007] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-21 13:22:24.886] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-21 13:22:25.023] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1720.MP4
+[2025-09-21 13:22:25.024] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:25.033] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1721.MP4
+[2025-09-21 13:22:25.033] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: C1721.MP4
+[2025-09-21 13:22:25.090] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:25.173] [WARN ] [T007] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:25.608] [INFO ] [T007] [FileSyncService] 文件写入已完成，准备同步: C1719.MP4
+[2025-09-21 13:22:25.608] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C1719.MP4
+[2025-09-21 13:22:26.349] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1719.MP4
+[2025-09-21 13:22:27.976] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1721.MP4
+[2025-09-21 13:22:28.039] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1720.MP4
+[2025-09-21 13:22:28.137] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1724.MP4
+[2025-09-21 13:22:28.137] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C1724.MP4
+[2025-09-21 13:22:28.349] [INFO ] [T020] [FileSyncService] 文件写入已完成，准备同步: C1720.MP4
+[2025-09-21 13:22:28.349] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1720.MP4
+[2025-09-21 13:22:28.864] [INFO ] [T032] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:28.937] [INFO ] [T026] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.937] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:28.938] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:28.938] [INFO ] [T025] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.939] [INFO ] [T025] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:28.939] [INFO ] [T023] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.939] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.939] [INFO ] [T030] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.939] [INFO ] [T023] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1717.MP4 -> A:\Test.original\Ibanez A\主机位\C1717.MP4
+[2025-09-21 13:22:28.939] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:28.939] [INFO ] [T030] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:28.968] [INFO ] [T032] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-21 13:22:28.979] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.979] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:28.998] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:28.998] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:29.755] [INFO ] [T011] [FileSyncService] 检测到文件变化，等待写入完成: C1724.MP4
+[2025-09-21 13:22:29.758] [INFO ] [T011] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:29.766] [INFO ] [T011] [FileSyncService] 检测到文件变化，等待写入完成: C1725.MP4
+[2025-09-21 13:22:29.766] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: C1725.MP4
+[2025-09-21 13:22:31.114] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1725.MP4
+[2025-09-21 13:22:31.117] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:31.125] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: C1726.MP4
+[2025-09-21 13:22:31.125] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: C1726.MP4
+[2025-09-21 13:22:31.142] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C1721.MP4
+[2025-09-21 13:22:31.639] [WARN ] [T033] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:32.113] [INFO ] [T017] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:32.708] [WARN ] [T017] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:32.770] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C1724.MP4
+[2025-09-21 13:22:32.943] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:32.943] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:32.955] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:32.955] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:32.967] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:32.967] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:33.140] [INFO ] [T038] [FileSyncService] 文件写入已完成，准备同步: C1721.MP4
+[2025-09-21 13:22:33.140] [INFO ] [T030] [FileSyncService] 文件写入已完成，准备同步: C1721.MP4
+[2025-09-21 13:22:33.155] [INFO ] [T030] [FileSyncService] 文件写入已完成，准备同步: C1724.MP4
+[2025-09-21 13:22:33.155] [INFO ] [T017] [FileSyncService] 文件写入已完成，准备同步: C1724.MP4
+[2025-09-21 13:22:34.221] [INFO ] [T041] [FileSyncService] 文件写入已完成，准备同步: C1725.MP4
+[2025-09-21 13:22:34.454] [INFO ] [T030] [FileSyncService] 检测到文件变化，等待写入完成: C1726.MP4
+[2025-09-21 13:22:34.470] [INFO ] [T030] [FileSyncService] 检测到文件变化，等待写入完成: C1727.MP4
+[2025-09-21 13:22:34.470] [INFO ] [T041] [FileSyncService] 检测到文件变化，等待写入完成: C1727.MP4
+[2025-09-21 13:22:34.797] [INFO ] [T040] [FileSyncService] 文件写入已完成，准备同步: C1725.MP4
+[2025-09-21 13:22:34.797] [INFO ] [T030] [FileSyncService] 文件写入已完成，准备同步: C1725.MP4
+[2025-09-21 13:22:35.448] [INFO ] [T039] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:37.103] [INFO ] [T038] [FileSyncService] 检测到文件变化，等待写入完成: C1727.MP4
+[2025-09-21 13:22:37.118] [INFO ] [T038] [FileSyncService] 检测到文件变化，等待写入完成: C1728.MP4
+[2025-09-21 13:22:37.118] [INFO ] [T042] [FileSyncService] 检测到文件变化，等待写入完成: C1728.MP4
+[2025-09-21 13:22:37.476] [INFO ] [T040] [FileSyncService] 文件写入已完成，准备同步: C1726.MP4
+[2025-09-21 13:22:38.419] [WARN ] [T038] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:38.497] [INFO ] [T026] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:38.512] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:38.527] [INFO ] [T023] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-21 13:22:38.949] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.949] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.949] [INFO ] [T023] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.949] [INFO ] [T030] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.950] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:38.950] [INFO ] [T023] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:38.950] [INFO ] [T030] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:38.950] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:38.981] [INFO ] [T017] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.982] [INFO ] [T017] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:38.995] [INFO ] [T023] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:38.996] [INFO ] [T023] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:39.012] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:39.013] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:39.050] [INFO ] [T023] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:39.050] [INFO ] [T023] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:39.069] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:39.069] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:39.302] [INFO ] [T046] [FileSyncService] 文件写入已完成，准备同步: C1726.MP4
+[2025-09-21 13:22:39.304] [INFO ] [T046] [FileSyncService] 文件写入已完成，准备同步: C1726.MP4
+[2025-09-21 13:22:39.304] [INFO ] [T046] [FileSyncService] 文件写入已完成，准备同步: C1727.MP4
+[2025-09-21 13:22:39.704] [INFO ] [T046] [FileSyncService] 文件写入已完成，准备同步: C1727.MP4
+[2025-09-21 13:22:39.704] [INFO ] [T050] [FileSyncService] 文件写入已完成，准备同步: C1727.MP4
+[2025-09-21 13:22:39.825] [INFO ] [T049] [FileSyncService] 检测到文件变化，等待写入完成: C1728.MP4
+[2025-09-21 13:22:39.830] [INFO ] [T046] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:39.844] [INFO ] [T049] [FileSyncService] 检测到文件变化，等待写入完成: C1729.MP4
+[2025-09-21 13:22:39.847] [INFO ] [T050] [FileSyncService] 检测到文件变化，等待写入完成: C1729.MP4
+[2025-09-21 13:22:40.309] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:40.309] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:41.361] [INFO ] [T031] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:41.567] [INFO ] [T035] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:41.891] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-21 13:22:42.147] [INFO ] [T050] [FileSyncService] 文件写入已完成，准备同步: C1728.MP4
+[2025-09-21 13:22:42.147] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: C1728.MP4
+[2025-09-21 13:22:42.156] [INFO ] [T036] [FileSyncService] 检测到文件变化，等待写入完成: C1729.MP4
+[2025-09-21 13:22:42.159] [INFO ] [T036] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:42.167] [INFO ] [T036] [FileSyncService] 检测到文件变化，等待写入完成: C1730.MP4
+[2025-09-21 13:22:42.167] [INFO ] [T011] [FileSyncService] 检测到文件变化，等待写入完成: C1730.MP4
+[2025-09-21 13:22:42.776] [INFO ] [T007] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:42.844] [INFO ] [T036] [FileSyncService] 文件写入已完成，准备同步: C1728.MP4
+[2025-09-21 13:22:43.153] [INFO ] [T008] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:43.393] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-21 13:22:43.625] [INFO ] [T024] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1717.MP4 -> A:\Test.original\Ibanez A\主机位\C1717.MP4
+[2025-09-21 13:22:43.770] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: C1730.MP4
+[2025-09-21 13:22:43.774] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:43.782] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: C1731.MP4
+[2025-09-21 13:22:43.782] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C1731.MP4
+[2025-09-21 13:22:44.397] [INFO ] [T025] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:44.855] [WARN ] [T025] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:44.870] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C1729.MP4
+[2025-09-21 13:22:45.042] [INFO ] [T032] [FileSyncService] 文件写入已完成，准备同步: C1729.MP4
+[2025-09-21 13:22:45.182] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1729.MP4
+[2025-09-21 13:22:46.346] [WARN ] [T024] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:46.780] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1730.MP4
+[2025-09-21 13:22:47.196] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C1730.MP4
+[2025-09-21 13:22:47.196] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1730.MP4
+[2025-09-21 13:22:47.352] [WARN ] [T032] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:47.447] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: C1731.MP4
+[2025-09-21 13:22:47.519] [INFO ] [T025] [FileSyncService] 检测到文件变化，等待写入完成: C1732.MP4
+[2025-09-21 13:22:47.519] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C1732.MP4
+[2025-09-21 13:22:48.460] [INFO ] [T039] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:48.946] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:48.946] [INFO ] [T007] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:48.946] [INFO ] [T046] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:48.947] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:22:48.947] [INFO ] [T046] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:22:48.947] [INFO ] [T007] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:22:48.980] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:48.981] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:22:48.994] [INFO ] [T007] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:48.995] [INFO ] [T007] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:22:49.016] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:49.016] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:22:49.030] [INFO ] [T007] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:49.031] [INFO ] [T007] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:22:49.060] [INFO ] [T007] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:49.061] [INFO ] [T007] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:22:49.077] [INFO ] [T007] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:49.077] [INFO ] [T007] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:22:49.743] [INFO ] [T043] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:49.910] [ERROR] [T021] [FastCopyService] FastCopy复制失败: 退出码 -1
+[2025-09-21 13:22:49.911] [INFO ] [T021] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:49.911] [INFO ] [T021] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:50.231] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: C1732.MP4
+[2025-09-21 13:22:50.308] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:50.316] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C1733.MP4
+[2025-09-21 13:22:50.316] [INFO ] [T007] [FileSyncService] 检测到文件变化，等待写入完成: C1733.MP4
+[2025-09-21 13:22:50.477] [INFO ] [T023] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-21 13:22:50.521] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C1731.MP4
+[2025-09-21 13:22:50.536] [WARN ] [T051] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:50.620] [INFO ] [T045] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:50.815] [INFO ] [T017] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:50.919] [INFO ] [T044] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-21 13:22:50.938] [INFO ] [T034] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:50.939] [INFO ] [T034] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:22:50.948] [INFO ] [T034] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:50.949] [INFO ] [T034] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:22:50.958] [INFO ] [T034] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:50.958] [INFO ] [T034] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:22:51.330] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:51.507] [INFO ] [T042] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:22:51.820] [INFO ] [T027] [FileSyncService] 文件写入已完成，准备同步: C1731.MP4
+[2025-09-21 13:22:51.820] [INFO ] [T042] [FileSyncService] 文件写入已完成，准备同步: C1731.MP4
+[2025-09-21 13:22:51.896] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C1733.MP4
+[2025-09-21 13:22:51.900] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-21 13:22:51.911] [INFO ] [T034] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:22:51.912] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-21 13:22:51.912] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:22:51.929] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: C0009.MP4
+[2025-09-21 13:22:51.929] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C0009.MP4
+[2025-09-21 13:22:52.547] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1732.MP4
+[2025-09-21 13:22:52.547] [INFO ] [T034] [FileSyncService] 文件写入已完成，准备同步: C1732.MP4
+[2025-09-21 13:22:53.319] [INFO ] [T027] [FileSyncService] 文件写入已完成，准备同步: C1732.MP4
+[2025-09-21 13:22:53.410] [INFO ] [T030] [FileSyncService] 检测到文件变化，等待写入完成: C0009.MP4
+[2025-09-21 13:22:53.414] [INFO ] [T030] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:22:53.423] [INFO ] [T030] [FileSyncService] 检测到文件变化，等待写入完成: C0010.MP4
+[2025-09-21 13:22:53.423] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C0010.MP4
+[2025-09-21 13:22:54.576] [INFO ] [T034] [FileSyncService] 检测到文件变化，等待写入完成: C0010.MP4
+[2025-09-21 13:22:54.580] [INFO ] [T034] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:22:54.588] [INFO ] [T034] [FileSyncService] 检测到文件变化，等待写入完成: C0011.MP4
+[2025-09-21 13:22:54.588] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: C0011.MP4
+[2025-09-21 13:22:54.899] [INFO ] [T034] [FileSyncService] 文件写入已完成，准备同步: C1733.MP4
+[2025-09-21 13:22:54.915] [WARN ] [T042] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:55.348] [INFO ] [T034] [FileSyncService] 文件写入已完成，准备同步: C1733.MP4
+[2025-09-21 13:22:55.348] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1733.MP4
+[2025-09-21 13:22:55.812] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C0011.MP4
+[2025-09-21 13:22:55.815] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:22:55.824] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C0013.MP4
+[2025-09-21 13:22:55.824] [INFO ] [T042] [FileSyncService] 检测到文件变化，等待写入完成: C0013.MP4
+[2025-09-21 13:22:56.427] [INFO ] [T042] [FileSyncService] 文件写入已完成，准备同步: C0009.MP4
+[2025-09-21 13:22:56.935] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C0009.MP4
+[2025-09-21 13:22:56.935] [INFO ] [T034] [FileSyncService] 文件写入已完成，准备同步: C0009.MP4
+[2025-09-21 13:22:57.244] [WARN ] [T004] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:57.709] [INFO ] [T004] [FileSyncService] 文件写入已完成，准备同步: C0010.MP4
+[2025-09-21 13:22:58.456] [INFO ] [T004] [FileSyncService] 文件写入已完成，准备同步: C0010.MP4
+[2025-09-21 13:22:58.456] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C0010.MP4
+[2025-09-21 13:22:58.829] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C0011.MP4
+[2025-09-21 13:22:58.860] [WARN ] [T047] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:58.940] [INFO ] [T029] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.940] [INFO ] [T030] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.940] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:22:58.940] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.940] [INFO ] [T030] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:22:58.940] [INFO ] [T051] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.941] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:22:58.941] [INFO ] [T051] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:22:58.964] [INFO ] [T029] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.965] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:22:58.983] [INFO ] [T030] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:58.984] [INFO ] [T030] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:22:59.005] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.006] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:22:59.028] [INFO ] [T051] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.028] [INFO ] [T051] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:22:59.044] [INFO ] [T029] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.044] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:22:59.061] [INFO ] [T030] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.061] [INFO ] [T030] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:22:59.076] [INFO ] [T033] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.076] [INFO ] [T033] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:22:59.095] [INFO ] [T051] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:22:59.096] [INFO ] [T051] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:22:59.476] [WARN ] [T062] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:22:59.601] [INFO ] [T051] [FileSyncService] 文件写入已完成，准备同步: C0011.MP4
+[2025-09-21 13:22:59.601] [INFO ] [T065] [FileSyncService] 文件写入已完成，准备同步: C0011.MP4
+[2025-09-21 13:23:00.351] [INFO ] [T066] [FileSyncService] 检测到文件变化，等待写入完成: C0013.MP4
+[2025-09-21 13:23:00.355] [INFO ] [T066] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:00.363] [INFO ] [T066] [FileSyncService] 检测到文件变化，等待写入完成: C0014.MP4
+[2025-09-21 13:23:00.364] [INFO ] [T067] [FileSyncService] 检测到文件变化，等待写入完成: C0014.MP4
+[2025-09-21 13:23:02.948] [INFO ] [T062] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.949] [INFO ] [T062] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:02.949] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.949] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:02.959] [INFO ] [T062] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.959] [INFO ] [T062] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:02.969] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.969] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:02.979] [INFO ] [T062] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.979] [INFO ] [T062] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:02.988] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.988] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:02.997] [INFO ] [T062] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:02.997] [INFO ] [T062] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:03.007] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:03.007] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:03.025] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:03.025] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:03.147] [INFO ] [T044] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:23:04.315] [INFO ] [T069] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:23:04.327] [INFO ] [T069] [FileSyncService] 文件写入已完成，准备同步: C0013.MP4
+[2025-09-21 13:23:04.327] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: C0014.MP4
+[2025-09-21 13:23:04.327] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: C0015.MP4
+[2025-09-21 13:23:04.327] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: C0015.MP4
+[2025-09-21 13:23:04.328] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:04.328] [INFO ] [T069] [FileSyncService] 文件写入已完成，准备同步: C0013.MP4
+[2025-09-21 13:23:04.328] [INFO ] [T069] [FileSyncService] 文件写入已完成，准备同步: C0013.MP4
+[2025-09-21 13:23:04.723] [INFO ] [T037] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-21 13:23:04.734] [INFO ] [T006] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:23:05.935] [INFO ] [T048] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:23:06.841] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C0014.MP4
+[2025-09-21 13:23:06.841] [INFO ] [T008] [FileSyncService] 文件写入已完成，准备同步: C0014.MP4
+[2025-09-21 13:23:06.842] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C0014.MP4
+[2025-09-21 13:23:06.844] [INFO ] [T008] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-21 13:23:06.860] [WARN ] [T008] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:23:06.953] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: C0015.MP4
+[2025-09-21 13:23:06.957] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:06.965] [INFO ] [T026] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:23:06.966] [INFO ] [T026] [FileSyncService] 检测到文件变化，等待写入完成: C0016.MP4
+[2025-09-21 13:23:06.966] [INFO ] [T032] [FileSyncService] 检测到文件变化，等待写入完成: C0016.MP4
+[2025-09-21 13:23:07.865] [WARN ] [T032] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:07.865] [WARN ] [T018] [FileSyncService] 文件写入未完成，跳过同步: Ibanez A
+[2025-09-21 13:23:07.865] [WARN ] [T018] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:07.865] [WARN ] [T032] [FileSyncService] 文件写入未完成，跳过同步: 主机位
+[2025-09-21 13:23:08.212] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:23:08.627] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:23:08.705] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: C0016.MP4
+[2025-09-21 13:23:08.707] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:08.715] [INFO ] [T025] [FileSyncService] 检测到文件变化，等待写入完成: C0017.MP4
+[2025-09-21 13:23:08.716] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C0017.MP4
+[2025-09-21 13:23:08.848] [INFO ] [T050] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:23:09.036] [INFO ] [T049] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-21 13:23:09.093] [INFO ] [T035] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-21 13:23:09.126] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-21 13:23:09.636] [INFO ] [T035] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:09.880] [WARN ] [T024] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:09.880] [INFO ] [T020] [FileSyncService] 文件写入已完成，准备同步: C0015.MP4
+[2025-09-21 13:23:09.880] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: C0015.MP4
+[2025-09-21 13:23:09.973] [INFO ] [T008] [FileSyncService] 文件写入已完成，准备同步: C0015.MP4
+[2025-09-21 13:23:10.886] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:11.720] [INFO ] [T008] [FileSyncService] 文件写入已完成，准备同步: C0016.MP4
+[2025-09-21 13:23:11.890] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:11.999] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C0016.MP4
+[2025-09-21 13:23:11.999] [INFO ] [T025] [FileSyncService] 文件写入已完成，准备同步: C0016.MP4
+[2025-09-21 13:23:12.356] [ERROR] [T031] [FastCopyService] FastCopy复制失败: 退出码 -1
+[2025-09-21 13:23:12.945] [INFO ] [T068] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:14.252] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C0017.MP4
+[2025-09-21 13:23:14.265] [INFO ] [T031] [FileSyncService] 检测到文件变化，等待写入完成: C0018.MP4
+[2025-09-21 13:23:14.266] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C0018.MP4
+[2025-09-21 13:23:14.362] [INFO ] [T023] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:14.528] [INFO ] [T024] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:14.529] [INFO ] [T024] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:14.542] [INFO ] [T031] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:14.946] [INFO ] [T069] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:14.946] [INFO ] [T069] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:14.977] [INFO ] [T006] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-21 13:23:15.460] [INFO ] [T045] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:16.191] [INFO ] [T017] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:16.767] [INFO ] [T038] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:16.789] [INFO ] [T066] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-21 13:23:16.818] [INFO ] [T044] [FileSyncService] 文件写入已完成，准备同步: C0017.MP4
+[2025-09-21 13:23:16.818] [INFO ] [T062] [FileSyncService] 文件写入已完成，准备同步: C0017.MP4
+[2025-09-21 13:23:16.926] [WARN ] [T062] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:16.943] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:16.943] [INFO ] [T048] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:16.943] [INFO ] [T048] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:16.943] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:16.961] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:16.961] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:16.977] [INFO ] [T048] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:16.977] [INFO ] [T048] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:16.993] [INFO ] [T019] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:16.993] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:17.267] [INFO ] [T017] [FileSyncService] 文件写入已完成，准备同步: C0017.MP4
+[2025-09-21 13:23:17.641] [INFO ] [T047] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:23:18.095] [INFO ] [T059] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:23:18.250] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: C0018.MP4
+[2025-09-21 13:23:18.253] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-21 13:23:18.265] [INFO ] [T069] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:18.265] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-21 13:23:18.265] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:18.280] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: C4539.MP4
+[2025-09-21 13:23:18.281] [INFO ] [T057] [FileSyncService] 检测到文件变化，等待写入完成: C4539.MP4
+[2025-09-21 13:23:18.502] [INFO ] [T030] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-21 13:23:18.676] [INFO ] [T027] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:23:18.799] [INFO ] [T056] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:23:18.938] [INFO ] [T067] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.938] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.938] [INFO ] [T067] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:18.938] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:18.949] [INFO ] [T067] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.949] [INFO ] [T067] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:18.959] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.959] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:18.959] [INFO ] [T059] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:23:18.968] [INFO ] [T067] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.968] [INFO ] [T067] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:18.978] [INFO ] [T039] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:18.978] [INFO ] [T039] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:19.061] [INFO ] [T060] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:23:19.239] [INFO ] [T061] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:23:19.462] [INFO ] [T063] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-21 13:23:19.612] [INFO ] [T004] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:23:19.863] [INFO ] [T054] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-21 13:23:19.941] [WARN ] [T054] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:20.948] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:20.948] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:20.958] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:20.959] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:20.970] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:20.970] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:20.977] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C4539.MP4
+[2025-09-21 13:23:20.981] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:20.991] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: C4540.MP4
+[2025-09-21 13:23:20.991] [INFO ] [T054] [FileSyncService] 检测到文件变化，等待写入完成: C4540.MP4
+[2025-09-21 13:23:21.275] [INFO ] [T054] [FileSyncService] 文件写入已完成，准备同步: C0018.MP4
+[2025-09-21 13:23:22.052] [WARN ] [T063] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:22.301] [INFO ] [T047] [FileSyncService] 文件写入已完成，准备同步: C0018.MP4
+[2025-09-21 13:23:22.301] [INFO ] [T061] [FileSyncService] 文件写入已完成，准备同步: C0018.MP4
+[2025-09-21 13:23:22.696] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: C4540.MP4
+[2025-09-21 13:23:22.699] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:22.707] [INFO ] [T033] [FileSyncService] 检测到文件变化，等待写入完成: C4541.MP4
+[2025-09-21 13:23:22.707] [INFO ] [T061] [FileSyncService] 检测到文件变化，等待写入完成: C4541.MP4
+[2025-09-21 13:23:23.340] [INFO ] [T054] [FileSyncService] 文件写入已完成，准备同步: C4539.MP4
+[2025-09-21 13:23:23.340] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C4539.MP4
+[2025-09-21 13:23:23.805] [WARN ] [T054] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:24.005] [INFO ] [T033] [FileSyncService] 文件写入已完成，准备同步: C4539.MP4
+[2025-09-21 13:23:24.735] [WARN ] [T063] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:24.793] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: C4541.MP4
+[2025-09-21 13:23:24.795] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:24.804] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: C4542.MP4
+[2025-09-21 13:23:24.804] [INFO ] [T054] [FileSyncService] 检测到文件变化，等待写入完成: C4542.MP4
+[2025-09-21 13:23:25.727] [INFO ] [T047] [FileSyncService] 文件写入已完成，准备同步: C4540.MP4
+[2025-09-21 13:23:26.022] [INFO ] [T045] [FileSyncService] 文件写入已完成，准备同步: C4540.MP4
+[2025-09-21 13:23:26.022] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4540.MP4
+[2025-09-21 13:23:27.753] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4541.MP4
+[2025-09-21 13:23:27.753] [INFO ] [T047] [FileSyncService] 文件写入已完成，准备同步: C4541.MP4
+[2025-09-21 13:23:27.814] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4541.MP4
+[2025-09-21 13:23:28.947] [INFO ] [T060] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:28.947] [INFO ] [T060] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:28.964] [INFO ] [T060] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:28.964] [INFO ] [T060] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:29.814] [INFO ] [T034] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:30.593] [INFO ] [T004] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:30.621] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-21 13:23:30.783] [INFO ] [T004] [FileSyncService] 检测到文件变化，等待写入完成: C4542.MP4
+[2025-09-21 13:23:30.786] [INFO ] [T037] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:30.800] [INFO ] [T040] [FileSyncService] 检测到文件变化，等待写入完成: C4543.MP4
+[2025-09-21 13:23:30.800] [INFO ] [T037] [FileSyncService] 检测到文件变化，等待写入完成: C4543.MP4
+[2025-09-21 13:23:30.942] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:30.943] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:30.943] [INFO ] [T054] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:30.943] [INFO ] [T040] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:30.943] [INFO ] [T040] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:30.943] [INFO ] [T054] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:30.960] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:30.960] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:30.973] [INFO ] [T040] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:30.974] [INFO ] [T040] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:31.003] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:31.003] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:31.015] [INFO ] [T040] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:31.015] [INFO ] [T040] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:31.029] [INFO ] [T063] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:31.029] [INFO ] [T063] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:31.042] [INFO ] [T040] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:31.043] [INFO ] [T040] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:31.070] [INFO ] [T040] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:31.070] [INFO ] [T040] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:32.830] [INFO ] [T075] [FileSyncService] 文件写入已完成，准备同步: C4542.MP4
+[2025-09-21 13:23:32.830] [INFO ] [T077] [FileSyncService] 文件写入已完成，准备同步: C4542.MP4
+[2025-09-21 13:23:33.357] [WARN ] [T040] [FileSyncService] 文件写入未完成，跳过同步: 右边机位
+[2025-09-21 13:23:33.373] [WARN ] [T076] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:33.373] [WARN ] [T077] [FileSyncService] 文件写入未完成，跳过同步: Ibanez A
+[2025-09-21 13:23:33.373] [WARN ] [T040] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:33.791] [INFO ] [T077] [FileSyncService] 文件写入已完成，准备同步: C4542.MP4
+[2025-09-21 13:23:34.554] [INFO ] [T069] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:34.941] [INFO ] [T065] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-21 13:23:35.553] [INFO ] [T065] [FileSyncService] 检测到文件变化，等待写入完成: C4543.MP4
+[2025-09-21 13:23:35.557] [INFO ] [T065] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:35.566] [INFO ] [T077] [FileSyncService] 检测到文件变化，等待写入完成: C4545.MP4
+[2025-09-21 13:23:35.566] [INFO ] [T040] [FileSyncService] 检测到文件变化，等待写入完成: C4545.MP4
+[2025-09-21 13:23:35.622] [INFO ] [T027] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:35.819] [INFO ] [T041] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-21 13:23:36.083] [INFO ] [T030] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:36.084] [WARN ] [T051] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:36.438] [INFO ] [T024] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:36.505] [INFO ] [T023] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:36.528] [INFO ] [T021] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-21 13:23:36.668] [INFO ] [T044] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:36.690] [INFO ] [T071] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-21 13:23:36.718] [INFO ] [T064] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:36.737] [INFO ] [T053] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-21 13:23:36.748] [INFO ] [T066] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:36.768] [INFO ] [T048] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-21 13:23:36.905] [INFO ] [T048] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:36.950] [INFO ] [T059] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:36.950] [INFO ] [T059] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:36.960] [INFO ] [T059] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:36.961] [INFO ] [T059] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:37.739] [INFO ] [T067] [FileSyncService] 检测到文件变化，等待写入完成: C4545.MP4
+[2025-09-21 13:23:37.750] [INFO ] [T067] [FileSyncService] 检测到文件变化，等待写入完成: C4546.MP4
+[2025-09-21 13:23:37.750] [INFO ] [T043] [FileSyncService] 检测到文件变化，等待写入完成: C4546.MP4
+[2025-09-21 13:23:37.797] [WARN ] [T043] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:37.872] [INFO ] [T053] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:38.570] [INFO ] [T043] [FileSyncService] 文件写入已完成，准备同步: C4543.MP4
+[2025-09-21 13:23:38.956] [INFO ] [T043] [FileSyncService] 文件写入已完成，准备同步: C4543.MP4
+[2025-09-21 13:23:38.956] [INFO ] [T053] [FileSyncService] 文件写入已完成，准备同步: C4543.MP4
+[2025-09-21 13:23:39.890] [WARN ] [T053] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:40.586] [INFO ] [T059] [FileSyncService] 文件写入已完成，准备同步: C4545.MP4
+[2025-09-21 13:23:40.586] [INFO ] [T043] [FileSyncService] 文件写入已完成，准备同步: C4545.MP4
+[2025-09-21 13:23:40.740] [INFO ] [T059] [FileSyncService] 文件写入已完成，准备同步: C4545.MP4
+[2025-09-21 13:23:40.929] [ERROR] [T074] [FastCopyService] FastCopy复制失败: 退出码 -1
+[2025-09-21 13:23:41.843] [ERROR] [T025] [FastCopyService] FastCopy复制失败: 退出码 -1
+[2025-09-21 13:23:43.028] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: C4546.MP4
+[2025-09-21 13:23:43.039] [INFO ] [T063] [FileSyncService] 检测到文件变化，等待写入完成: C4547.MP4
+[2025-09-21 13:23:43.039] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: C4547.MP4
+[2025-09-21 13:23:43.206] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: C4547.MP4
+[2025-09-21 13:23:43.209] [INFO ] [T053] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:43.210] [INFO ] [T053] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:43.211] [INFO ] [T053] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:43.220] [INFO ] [T059] [FileSyncService] 检测到文件变化，等待写入完成: C4548.MP4
+[2025-09-21 13:23:43.220] [INFO ] [T067] [FileSyncService] 检测到文件变化，等待写入完成: C4548.MP4
+[2025-09-21 13:23:43.321] [INFO ] [T053] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:43.321] [INFO ] [T053] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:43.365] [INFO ] [T063] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:43.841] [INFO ] [T073] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:44.053] [INFO ] [T035] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:44.076] [INFO ] [T045] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-21 13:23:44.951] [INFO ] [T045] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:44.951] [INFO ] [T008] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:44.952] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:44.952] [INFO ] [T045] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-21 13:23:44.969] [INFO ] [T008] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:44.969] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:44.986] [INFO ] [T045] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:44.986] [INFO ] [T045] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-21 13:23:45.000] [INFO ] [T008] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:45.001] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:45.783] [INFO ] [T035] [FileSyncService] 文件写入已完成，准备同步: C4546.MP4
+[2025-09-21 13:23:45.783] [INFO ] [T008] [FileSyncService] 文件写入已完成，准备同步: C4546.MP4
+[2025-09-21 13:23:45.876] [WARN ] [T064] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:46.047] [INFO ] [T035] [FileSyncService] 文件写入已完成，准备同步: C4546.MP4
+[2025-09-21 13:23:46.063] [INFO ] [T064] [FileSyncService] 文件写入已完成，准备同步: C4547.MP4
+[2025-09-21 13:23:46.063] [INFO ] [T035] [FileSyncService] 文件写入已完成，准备同步: C4547.MP4
+[2025-09-21 13:23:46.234] [INFO ] [T059] [FileSyncService] 文件写入已完成，准备同步: C4547.MP4
+[2025-09-21 13:23:46.344] [INFO ] [T052] [FileSyncService] 检测到文件变化，等待写入完成: C4548.MP4
+[2025-09-21 13:23:46.348] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:46.359] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: C4549.MP4
+[2025-09-21 13:23:46.359] [INFO ] [T035] [FileSyncService] 检测到文件变化，等待写入完成: C4549.MP4
+[2025-09-21 13:23:46.462] [INFO ] [T048] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:46.583] [INFO ] [T007] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:46.676] [INFO ] [T056] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:46.783] [INFO ] [T061] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:46.898] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-21 13:23:47.545] [INFO ] [T054] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:47.657] [INFO ] [T060] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:47.676] [INFO ] [T039] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-21 13:23:48.267] [INFO ] [T060] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:48.902] [INFO ] [T060] [FileSyncService] 检测到文件变化，等待写入完成: C4549.MP4
+[2025-09-21 13:23:48.945] [INFO ] [T049] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:48.945] [INFO ] [T049] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:48.987] [INFO ] [T060] [FileSyncService] 检测到文件变化，等待写入完成: C4550.MP4
+[2025-09-21 13:23:48.987] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C4550.MP4
+[2025-09-21 13:23:49.037] [INFO ] [T049] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:49.453] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4548.MP4
+[2025-09-21 13:23:50.645] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:50.939] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:50.939] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:23:50.954] [INFO ] [T068] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:50.954] [INFO ] [T068] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:23:51.038] [INFO ] [T060] [FileSyncService] 检测到文件变化，等待写入完成: C4550.MP4
+[2025-09-21 13:23:51.050] [INFO ] [T060] [FileSyncService] 检测到文件变化，等待写入完成: C4551.MP4
+[2025-09-21 13:23:51.050] [INFO ] [T068] [FileSyncService] 检测到文件变化，等待写入完成: C4551.MP4
+[2025-09-21 13:23:51.327] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4548.MP4
+[2025-09-21 13:23:51.327] [INFO ] [T068] [FileSyncService] 文件写入已完成，准备同步: C4548.MP4
+[2025-09-21 13:23:51.650] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4549.MP4
+[2025-09-21 13:23:51.650] [INFO ] [T066] [FileSyncService] 文件写入已完成，准备同步: C4549.MP4
+[2025-09-21 13:23:51.977] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4549.MP4
+[2025-09-21 13:23:51.992] [WARN ] [T060] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:52.282] [INFO ] [T056] [FileSyncService] 检测到文件变化，等待写入完成: C4551.MP4
+[2025-09-21 13:23:52.285] [INFO ] [T068] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-21 13:23:52.967] [WARN ] [T060] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:54.017] [INFO ] [T066] [FileSyncService] 文件写入已完成，准备同步: C4550.MP4
+[2025-09-21 13:23:54.017] [INFO ] [T060] [FileSyncService] 文件写入已完成，准备同步: C4550.MP4
+[2025-09-21 13:23:54.047] [INFO ] [T068] [FileSyncService] 文件写入已完成，准备同步: C4550.MP4
+[2025-09-21 13:23:54.121] [INFO ] [T061] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-21 13:23:54.232] [INFO ] [T073] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-21 13:23:54.322] [INFO ] [T072] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-21 13:23:54.372] [INFO ] [T047] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:54.466] [INFO ] [T067] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-21 13:23:55.302] [INFO ] [T072] [FileSyncService] 文件写入已完成，准备同步: C4551.MP4
+[2025-09-21 13:23:55.335] [INFO ] [T034] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:55.548] [INFO ] [T063] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:55.588] [INFO ] [T045] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-21 13:23:56.076] [INFO ] [T063] [FileSyncService] 文件写入已完成，准备同步: C4551.MP4
+[2025-09-21 13:23:56.076] [INFO ] [T045] [FileSyncService] 文件写入已完成，准备同步: C4551.MP4
+[2025-09-21 13:23:57.390] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:23:57.433] [INFO ] [T055] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:23:58.299] [WARN ] [T049] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:23:58.949] [INFO ] [T054] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.949] [INFO ] [T054] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:23:58.949] [INFO ] [T045] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.949] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.949] [INFO ] [T072] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.949] [INFO ] [T029] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.950] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-21 13:23:58.950] [INFO ] [T045] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-21 13:23:58.950] [INFO ] [T072] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-21 13:23:58.950] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:23:58.968] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:58.968] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-21 13:23:59.006] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:59.006] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:23:59.016] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:23:59.016] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:24:00.945] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:24:00.945] [INFO ] [T028] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:24:00.946] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:00.946] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:00.955] [INFO ] [T073] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:24:00.956] [INFO ] [T073] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:00.965] [INFO ] [T028] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 13:24:00.965] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-21 13:24:01.435] [WARN ] [T060] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:24:03.336] [WARN ] [T060] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:24:04.123] [WARN ] [T017] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:24:07.358] [WARN ] [T017] [FileSyncService] 文件写入未完成，跳过同步: 左边机位
+[2025-09-21 13:24:08.369] [INFO ] [T056] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:08.456] [INFO ] [T066] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:08.481] [INFO ] [T053] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-21 13:24:10.818] [INFO ] [T061] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:24:10.899] [INFO ] [T072] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-21 13:24:10.961] [INFO ] [T049] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:24:10.972] [INFO ] [T074] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-21 13:24:10.999] [INFO ] [T063] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-21 13:24:11.016] [INFO ] [T073] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-21 13:24:11.778] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-21 13:24:11.792] [INFO ] [T047] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-21 13:24:11.806] [INFO ] [T055] [FastCopyService] FastCopy复制成功: S:\Cache\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4

@@ -13,7 +13,7 @@ namespace CacheMax.GUI.Services
         private readonly FileSyncService _fileSyncService;
         private readonly ErrorRecoveryService _errorRecovery;
         private readonly PerformanceMonitoringService _performanceMonitor;
-        private readonly ParallelSyncEngine _parallelSyncEngine;
+        private readonly FastCopyService _fastCopyService;
 
         /// <summary>
         /// 公开FileSyncService以便UI订阅队列事件
@@ -26,7 +26,7 @@ namespace CacheMax.GUI.Services
             _fileSyncService = new FileSyncService();
             _errorRecovery = new ErrorRecoveryService();
             _performanceMonitor = new PerformanceMonitoringService();
-            _parallelSyncEngine = new ParallelSyncEngine();
+            _fastCopyService = new FastCopyService();
 
             // 订阅同步事件
             _fileSyncService.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
@@ -63,7 +63,7 @@ namespace CacheMax.GUI.Services
                 if (isActive && Directory.Exists(folder.CachePath) && Directory.Exists(folder.OriginalPath))
                 {
                     // 恢复文件同步监控（这是关键！）
-                    _fileSyncService.StartMonitoring(folder.CachePath, folder.OriginalPath, SyncMode.Batch, 3);
+                    _fileSyncService.StartMonitoring(folder.CachePath, folder.OriginalPath, SyncMode.Immediate, 3);
                     LogMessage?.Invoke(this, $"恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
 
                     // 恢复性能监控
@@ -135,7 +135,7 @@ namespace CacheMax.GUI.Services
         public async Task<bool> InitializeCacheAcceleration(
             string sourcePath,
             string cacheRoot,
-            SyncMode syncMode = SyncMode.Batch,
+            SyncMode syncMode = SyncMode.Immediate,
             int syncDelaySeconds = 3,
             IProgress<string>? progress = null)
         {
@@ -505,7 +505,7 @@ namespace CacheMax.GUI.Services
             });
         }
 
-        // 新的异步批量复制方法 - 集成ParallelSyncEngine
+        // 新的异步批量复制方法 - 使用FastCopy
         private async Task CopyDirectoryRecursiveAsync(string sourcePath, string targetPath, IProgress<string>? progress, CancellationToken cancellationToken = default)
         {
             // 创建目标目录
@@ -516,7 +516,7 @@ namespace CacheMax.GUI.Services
 
             var batchProgressReporter = new BatchProgressReporter(progress, 100);
             var tasks = new List<Task>();
-            const long LARGE_FILE_THRESHOLD = 50 * 1024 * 1024; // 50MB以上使用ParallelSyncEngine
+            const long LARGE_FILE_THRESHOLD = 50 * 1024 * 1024; // 50MB以上使用FastCopy
 
             try
             {
@@ -549,7 +549,7 @@ namespace CacheMax.GUI.Services
                     tasks.Add(task);
                 }
 
-                // 大文件使用ParallelSyncEngine
+                // 大文件使用FastCopy
                 foreach (var file in largeFiles)
                 {
                     var task = CopyLargeFileAsync(file, sourcePath, targetPath, batchProgressReporter, cancellationToken);
@@ -611,7 +611,7 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 使用ParallelSyncEngine复制大文件，获得最佳性能
+        /// 使用FastCopy复制大文件，获得最佳性能
         /// </summary>
         private async Task CopyLargeFileAsync(string sourceFile, string sourcePath, string targetPath,
             BatchProgressReporter progressReporter, CancellationToken cancellationToken)
@@ -621,9 +621,8 @@ namespace CacheMax.GUI.Services
                 var fileName = Path.GetFileName(sourceFile);
                 var targetFile = Path.Combine(targetPath, fileName);
 
-                // 使用ParallelSyncEngine的高性能文件操作
-                var success = await _parallelSyncEngine.SubmitFileOperationAsync(
-                    sourceFile, targetFile, FileOperationType.Copy, cancellationToken);
+                // 使用FastCopy的高性能文件操作
+                var success = await _fastCopyService.CopyWithVerifyAsync(sourceFile, targetFile);
 
                 if (success)
                 {
@@ -640,7 +639,7 @@ namespace CacheMax.GUI.Services
                 }
                 else
                 {
-                    // 如果ParallelSyncEngine失败，回退到传统方法
+                    // 如果FastCopy失败，回退到传统方法
                     await FallbackCopyLargeFileAsync(sourceFile, targetFile, progressReporter, cancellationToken);
                 }
             }
@@ -808,7 +807,7 @@ namespace CacheMax.GUI.Services
             _fileSyncService?.Dispose();
             _errorRecovery?.Dispose();
             _performanceMonitor?.Dispose();
-            _parallelSyncEngine?.Dispose();
+            // FastCopyService 无需手动释放
         }
     }
 

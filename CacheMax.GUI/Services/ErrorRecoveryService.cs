@@ -437,7 +437,7 @@ namespace CacheMax.GUI.Services
                 return await cacheManager.InitializeCacheAcceleration(
                     state.OriginalPath.Replace(".original", ""), // 移除.original后缀获得原始路径
                     Path.GetDirectoryName(state.CachePath) ?? "",
-                    SyncMode.Batch,
+                    SyncMode.Immediate,
                     3,
                     progress);
             }
@@ -464,7 +464,7 @@ namespace CacheMax.GUI.Services
                 return await cacheManager.InitializeCacheAcceleration(
                     state.OriginalPath.Replace(".original", ""),
                     Path.GetDirectoryName(state.CachePath) ?? "",
-                    SyncMode.Batch,
+                    SyncMode.Immediate,
                     3,
                     progress);
             }

@@ -53,9 +53,6 @@ namespace CacheMax.GUI.Services
                 public long TotalSize { get; set; }
                 public double AverageAccessInterval { get; set; }
 
-                public bool IsHotFile => AccessCount >= 5 &&
-                    (DateTime.Now - FirstAccess).TotalMinutes > 0 &&
-                    AccessCount / (DateTime.Now - FirstAccess).TotalMinutes > 0.5;
             }
 
             public enum OperationType
@@ -204,16 +201,6 @@ namespace CacheMax.GUI.Services
                 var recentWindow = DateTime.Now.AddMinutes(-5);
                 var recentActivity = recentOps.Where(op => op.Timestamp >= recentWindow).ToArray();
 
-                List<FileAccessStats> hotFiles;
-                lock (_fileStats)
-                {
-                    hotFiles = _fileStats.Values
-                        .Where(s => s.IsHotFile)
-                        .OrderByDescending(s => s.AccessCount)
-                        .Take(10)
-                        .ToList();
-                }
-
                 return new PerformanceSnapshot
                 {
                     MountPoint = _mountPoint,
@@ -229,7 +216,6 @@ namespace CacheMax.GUI.Services
                         TimeSpan.Zero,
                     ReadThroughput = uptime.TotalSeconds > 0 ? _totalBytesRead / uptime.TotalSeconds : 0,
                     WriteThroughput = uptime.TotalSeconds > 0 ? _totalBytesWritten / uptime.TotalSeconds : 0,
-                    HotFiles = hotFiles,
                     Timestamp = DateTime.Now
                 };
             }
@@ -253,7 +239,6 @@ namespace CacheMax.GUI.Services
             public TimeSpan AverageResponseTime { get; set; }
             public double ReadThroughput { get; set; }  // bytes/second
             public double WriteThroughput { get; set; } // bytes/second
-            public List<PerformanceTracker.FileAccessStats> HotFiles { get; set; } = new();
             public DateTime Timestamp { get; set; }
 
             public double ReadThroughputMBps => ReadThroughput / (1024 * 1024);

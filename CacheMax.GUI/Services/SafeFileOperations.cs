@@ -48,10 +48,6 @@ namespace CacheMax.GUI.Services
             public int AttemptCount { get; set; }
             public TimeSpan TotalWaitTime { get; set; }
             public Exception? LastException { get; set; }
-            public long BytesCopied { get; set; }
-            public double ThroughputMBps { get; set; }
-            public bool IsVerified { get; set; }
-            public VerificationMode? VerificationMode { get; set; }
         }
 
         /// <summary>
@@ -79,6 +75,55 @@ namespace CacheMax.GUI.Services
             {
                 return true;
             }
+        }
+
+        /// <summary>
+        /// 检查文件写入是否完成（安全方式，不影响其他程序读取）
+        /// </summary>
+        public static async Task<bool> IsFileWriteComplete(string filePath, int maxRetries = 15)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    // 1. 尝试以写入方式打开（检测写入锁，但立即关闭）
+                    using (var writeTest = File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.Read))
+                    {
+                        // 能写入 = 没有其他程序在写入
+                    }
+
+                    // 2. 检查大小稳定性
+                    var size1 = new FileInfo(filePath).Length;
+                    await Task.Delay(2000); // 等待2秒
+                    var size2 = new FileInfo(filePath).Length;
+
+                    if (size1 == size2)
+                    {
+                        return true; // 大小稳定 = 写入完成
+                    }
+                }
+                catch (IOException)
+                {
+                    // 文件正在被写入，等待重试
+                    await Task.Delay(1000 * (i + 1)); // 递增延迟
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // 权限问题，但可能文件已写入完成，检查大小稳定性
+                    try
+                    {
+                        var size1 = new FileInfo(filePath).Length;
+                        await Task.Delay(2000);
+                        var size2 = new FileInfo(filePath).Length;
+                        if (size1 == size2) return true;
+                    }
+                    catch { }
+
+                    await Task.Delay(1000);
+                }
+            }
+
+            return false; // 超时失败
         }
 
         /// <summary>
@@ -191,40 +236,24 @@ namespace CacheMax.GUI.Services
                         Directory.CreateDirectory(targetDir);
                     }
 
-                    // 使用流式复制技术执行文件复制（解决90GB大文件卡死问题）
-                    var logger = new AsyncLogger("Logs", "SafeFileOperations");
-                    var streamCopyService = new StreamCopyService(logger);
-
-                    // 配置流式复制选项 - 强制校验，支持大文件
-                    var copyOptions = new StreamCopyOptions
-                    {
-                        VerificationMode = Services.VerificationMode.SHA256, // 强制校验
-                        EnforceVerification = true, // 任何情况下都要校验
-                        SupportResume = false, // 不支持断点续传
-                        UseDirectIO = false, // 不使用直接IO
-                        ForceDiskSync = true, // 强制磁盘同步
-                        MaxRetries = 0, // 在SafeFileOperations层面处理重试
-                        HugeFileStrategy = HugeFileVerificationStrategy.FullHashWithProgress // 90GB+文件使用带进度的完整校验
-                    };
+                    // 使用FastCopy进行高效文件复制，支持90GB+大文件
+                    var fastCopyService = new FastCopyService();
 
                     // 创建进度报告转换器
-                    var streamProgress = progress != null ? new Progress<StreamCopyProgress>(p =>
+                    var fastCopyProgress = progress != null ? new Progress<string>(msg =>
                     {
-                        progress.Report($"复制进度: {p.ProgressPercent:F1}% - {p.CurrentSpeedMBps:F1} MB/s - {p.CurrentFileName}");
+                        progress.Report(msg);
                     }) : null;
 
-                    // 执行流式复制
-                    var copyResult = await streamCopyService.CopyFileAsync(
+                    // 执行FastCopy复制
+                    var copySuccess = await fastCopyService.CopyWithVerifyAsync(
                         sourcePath,
                         targetPath,
-                        copyOptions,
-                        streamProgress,
-                        cancellationToken);
+                        fastCopyProgress);
 
-                    if (!copyResult.Success)
+                    if (!copySuccess)
                     {
-                        result.LastException = copyResult.Exception;
-                        result.Message = $"流式复制失败: {copyResult.ErrorMessage}";
+                        result.Message = $"FastCopy复制失败";
                         if (attempt == retryConfig.MaxAttempts)
                         {
                             result.TotalWaitTime = DateTime.Now - startTime;
@@ -233,19 +262,8 @@ namespace CacheMax.GUI.Services
                         continue; // 重试
                     }
 
-                    // 复制文件属性
-                    var sourceInfo = new FileInfo(sourcePath);
-                    var targetInfo = new FileInfo(targetPath);
-                    targetInfo.CreationTime = sourceInfo.CreationTime;
-                    targetInfo.LastWriteTime = sourceInfo.LastWriteTime;
-                    targetInfo.Attributes = sourceInfo.Attributes;
-
                     result.Success = true;
-                    result.BytesCopied = copyResult.BytesCopied;
-                    result.ThroughputMBps = copyResult.ThroughputMBps;
-                    result.IsVerified = copyResult.IsVerified;
-                    result.VerificationMode = copyResult.VerificationResult?.Mode;
-                    result.Message = $"文件复制成功 - {copyResult.Summary}";
+                    result.Message = $"文件复制成功";
                     result.TotalWaitTime = DateTime.Now - startTime;
 
                     if (attempt > 1)

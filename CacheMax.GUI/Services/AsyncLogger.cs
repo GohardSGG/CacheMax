@@ -9,12 +9,16 @@ namespace CacheMax.GUI.Services
 {
     /// <summary>
     /// 完全异步的日志系统 - 高性能、非阻塞、线程安全
+    /// 单例模式确保所有日志写入同一个文件
     /// </summary>
     public class AsyncLogger : IDisposable
     {
-        private readonly Channel<LogEntry> _logChannel;
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly Task _writerTask;
+        private static readonly Lazy<AsyncLogger> _instance = new(() => new AsyncLogger());
+        public static AsyncLogger Instance => _instance.Value;
+
+        private Channel<LogEntry> _logChannel;
+        private CancellationTokenSource _cancellationTokenSource;
+        private Task _writerTask;
         private readonly string _logDirectory;
         private readonly string _logFileNamePrefix;
         private readonly long _maxLogFileSize;
@@ -24,6 +28,17 @@ namespace CacheMax.GUI.Services
         private StreamWriter? _currentWriter;
         private readonly object _fileOperationLock = new();
         private volatile bool _disposed;
+
+        private AsyncLogger()
+        {
+            // 单例模式：使用固定配置
+            _logDirectory = "Logs";
+            _logFileNamePrefix = "CacheMax";
+            _maxLogFileSize = 50 * 1024 * 1024; // 50MB
+            _maxLogFiles = 5;
+
+            Initialize();
+        }
 
         public AsyncLogger(
             string logDirectory = "Logs",
@@ -35,6 +50,12 @@ namespace CacheMax.GUI.Services
             _logFileNamePrefix = logFileNamePrefix;
             _maxLogFileSize = maxLogFileSize;
             _maxLogFiles = maxLogFiles;
+
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             _cancellationTokenSource = new CancellationTokenSource();
 
             // 创建无界Channel确保不会因为日志队列满而阻塞
