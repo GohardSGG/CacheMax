@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using System.Windows.Media;
 using CacheMax.GUI.Services;
 using CacheMax.GUI.ViewModels;
 using Microsoft.Win32;
@@ -22,6 +23,7 @@ namespace CacheMax.GUI
         private readonly ConfigService _config;
         private readonly ObservableCollection<AcceleratedFolderViewModel> _acceleratedFolders;
         private readonly ObservableCollection<SyncQueueItemViewModel> _syncQueueItems;
+        private readonly ObservableCollection<SyncQueueItemViewModel> _completedItems;
 
         public MainWindow()
         {
@@ -39,15 +41,18 @@ namespace CacheMax.GUI
             // 初始化集合
             _acceleratedFolders = new ObservableCollection<AcceleratedFolderViewModel>();
             _syncQueueItems = new ObservableCollection<SyncQueueItemViewModel>();
+            _completedItems = new ObservableCollection<SyncQueueItemViewModel>();
 
             // 绑定数据源
             AcceleratedFoldersGrid.ItemsSource = _acceleratedFolders;
             SyncQueueGrid.ItemsSource = _syncQueueItems;
+            CompletedQueueGrid.ItemsSource = _completedItems;
 
             // 订阅同步队列事件
             _cacheManager.FileSyncService.QueueItemAdded += OnQueueItemAdded;
             _cacheManager.FileSyncService.QueueItemUpdated += OnQueueItemUpdated;
             _cacheManager.FileSyncService.QueueItemRemoved += OnQueueItemRemoved;
+            _cacheManager.FileSyncService.SyncFailed += OnSyncFailed;
             CacheRootTextBox.Text = _config.Config.DefaultCacheRoot;
 
             LoadExistingAccelerations();
@@ -745,6 +750,9 @@ namespace CacheMax.GUI
                 ParseCacheStats(message);
             }
 
+            // 同时写入到文件日志（统一日志输出）
+            AsyncLogger.Instance.LogInfo(message, "MainWindow");
+
             Dispatcher.BeginInvoke(() =>
             {
                 LogTextBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\n");
@@ -966,6 +974,27 @@ namespace CacheMax.GUI
         {
             Dispatcher.BeginInvoke(() =>
             {
+                // 如果文件完成了，移动到已完成选项卡
+                if (e.Item.Status == "完成" && e.Item.Progress >= 100)
+                {
+                    var itemToMove = _syncQueueItems.FirstOrDefault(x => x.FilePath == e.Item.FilePath && x.CreatedAt == e.Item.CreatedAt);
+                    if (itemToMove != null)
+                    {
+                        // 设置完成时间
+                        itemToMove.CompletedAt = DateTime.Now;
+
+                        // 移动到已完成列表
+                        _completedItems.Insert(0, itemToMove);  // 插入到顶部
+                        _syncQueueItems.Remove(itemToMove);
+
+                        // 限制已完成列表大小（最多保留100个）
+                        while (_completedItems.Count > 100)
+                        {
+                            _completedItems.RemoveAt(_completedItems.Count - 1);
+                        }
+                    }
+                }
+
                 // 项目已经在集合中，属性变更会自动更新UI
                 UpdateQueueStats();
             });
@@ -984,6 +1013,29 @@ namespace CacheMax.GUI
             });
         }
 
+        private void OnSyncFailed(object? sender, FileSyncService.SyncEventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                // 在状态栏显示错误信息
+                StatusText.Text = $"同步失败: {Path.GetFileName(e.FilePath)} - {e.Message}";
+                StatusText.Foreground = Brushes.Red;
+
+                // 5秒后恢复状态栏
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+                timer.Tick += (s, args) =>
+                {
+                    timer.Stop();
+                    StatusText.Text = "Ready";
+                    StatusText.Foreground = Brushes.Black;
+                };
+                timer.Start();
+
+                // 记录到日志
+                AddLog($"❌ 同步失败: {Path.GetFileName(e.FilePath)} - {e.Message}");
+            });
+        }
+
         private void UpdateQueueStats()
         {
             var stats = _cacheManager.FileSyncService.GetQueueStats();
@@ -996,7 +1048,15 @@ namespace CacheMax.GUI
 
         private void ClearCompletedButton_Click(object sender, RoutedEventArgs e)
         {
-            _cacheManager.FileSyncService.ClearCompletedItems();
+            var result = MessageBox.Show("确定要清理所有已完成的文件记录吗？", "确认清理",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                var count = _completedItems.Count;
+                _completedItems.Clear();
+                AddLog($"已清理 {count} 个已完成文件记录");
+            }
         }
 
         private void ClearFailedButton_Click(object sender, RoutedEventArgs e)

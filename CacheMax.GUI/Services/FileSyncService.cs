@@ -74,6 +74,10 @@ namespace CacheMax.GUI.Services
                 _periodicTimer = new Timer(ProcessPeriodicSync, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
                 _intelligentTimer = new Timer(ProcessIntelligentSync, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
                 _statsTimer = new Timer(UpdateStats, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+
+                // SemaphoreSlim健康检查定时器（每2分钟检查一次）
+                var semaphoreHealthTimer = new Timer(SemaphoreHealthCheck, null,
+                    TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2));
             });
 
             _logger.LogInfo("FileSyncService 初始化完成", "FileSyncService");
@@ -420,6 +424,75 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
+        /// 检查并修复FastCopy SemaphoreSlim计数
+        /// </summary>
+        public void ValidateAndRepairSemaphoreCount()
+        {
+            try
+            {
+                // 获取当前运行的FastCopy进程数
+                var (runningCount, _) = _fastCopyService.GetRunningProcessStatus();
+                var currentCount = _fastCopyLimiter.CurrentCount;
+                var maxConcurrency = GetFastCopyMaxConcurrency();
+
+                // 计算应该可用的许可数
+                var expectedAvailableCount = maxConcurrency - runningCount;
+
+                if (currentCount != expectedAvailableCount)
+                {
+                    _logger.LogWarning($"检测到SemaphoreSlim计数不一致: 当前可用={currentCount}, 预期可用={expectedAvailableCount}, 运行中的进程={runningCount}", "FileSyncService");
+
+                    // 如果计数过少，释放一些许可
+                    if (currentCount < expectedAvailableCount)
+                    {
+                        var releaseCount = expectedAvailableCount - currentCount;
+                        for (int i = 0; i < releaseCount; i++)
+                        {
+                            _fastCopyLimiter.Release();
+                        }
+                        _logger.LogInfo($"修复SemaphoreSlim计数: 释放了 {releaseCount} 个许可", "FileSyncService");
+                    }
+                    // 如果计数过多，消耗一些许可（异步进行，避免阻塞）
+                    else if (currentCount > expectedAvailableCount)
+                    {
+                        var waitCount = currentCount - expectedAvailableCount;
+                        _ = Task.Run(async () =>
+                        {
+                            for (int i = 0; i < waitCount; i++)
+                            {
+                                await _fastCopyLimiter.WaitAsync();
+                            }
+                            _logger.LogInfo($"修复SemaphoreSlim计数: 消耗了 {waitCount} 个许可", "FileSyncService");
+                        });
+                    }
+                }
+                else
+                {
+                    _logger.LogDebug($"SemaphoreSlim计数正常: 可用={currentCount}, 运行中的进程={runningCount}", "FileSyncService");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"验证SemaphoreSlim计数时发生错误: {ex.Message}", ex, "FileSyncService");
+            }
+        }
+
+        /// <summary>
+        /// 定期健康检查方法
+        /// </summary>
+        private void SemaphoreHealthCheck(object? state)
+        {
+            try
+            {
+                ValidateAndRepairSemaphoreCount();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"SemaphoreSlim健康检查异常: {ex.Message}", ex, "FileSyncService");
+            }
+        }
+
+        /// <summary>
         /// 获取同步队列状态
         /// </summary>
         public (int Count, DateTime? OldestTimestamp) GetQueueStatus()
@@ -512,140 +585,198 @@ namespace CacheMax.GUI.Services
             if (changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed)
             {
                 var fileKey = filePath.ToLowerInvariant();
+                var tcs = new TaskCompletionSource<bool>();
 
-                // 检查是否已有同一文件的处理任务
-                if (_processingFiles.ContainsKey(fileKey))
+                // 尝试添加到处理队列，如果已存在则跳过
+                if (!_processingFiles.TryAdd(fileKey, tcs))
                 {
                     _logger.LogInfo($"文件已在处理队列中，跳过重复事件: {Path.GetFileName(filePath)}", "FileSyncService");
                     return;
                 }
+
+                // 异步处理该文件
+                _ = Task.Run(async () => await ProcessFileChangeAsync(filePath, cacheRoot, changeType, fileKey, tcs));
+                return;
             }
 
-            // 立即异步处理，避免阻塞FileSystemWatcher线程
-            _ = Task.Run(async () =>
+            // 删除和重命名事件的处理（非创建/修改事件）
+            if (changeType == WatcherChangeTypes.Deleted || changeType == WatcherChangeTypes.Renamed)
             {
-                // 声明在外层作用域，以便在catch块中访问
-                string? fileKey = null;
-                TaskCompletionSource<bool>? tcs = null;
+                // 异步处理删除/重命名事件
+                _ = Task.Run(async () => await ProcessOtherFileChangeAsync(filePath, cacheRoot, changeType));
+            }
+        }
 
-                try
+        /// <summary>
+        /// 处理新建和修改文件的异步方法
+        /// </summary>
+        private async Task ProcessFileChangeAsync(string filePath, string cacheRoot, WatcherChangeTypes changeType, string fileKey, TaskCompletionSource<bool> tcs)
+        {
+            try
+            {
+                if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
+                    return;
+
+                // 过滤临时文件
+                if (IsTemporaryFile(filePath))
+                    return;
+
+                _logger.LogInfo($"检测到文件变化，等待写入完成: {Path.GetFileName(filePath)}", "FileSyncService");
+
+                // 检查文件是否仍然存在
+                if (!File.Exists(filePath))
                 {
-                    if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
-                        return;
+                    _logger.LogInfo($"文件已被删除，跳过同步: {Path.GetFileName(filePath)}", "FileSyncService");
+                    return;
+                }
 
-                    // 过滤临时文件
-                    if (IsTemporaryFile(filePath))
-                        return;
+                // 等待文件写入完成
+                var writeComplete = await SafeFileOperations.IsFileWriteComplete(filePath);
+                if (!writeComplete)
+                {
+                    _logger.LogWarning($"文件写入未完成，跳过同步: {Path.GetFileName(filePath)}", "FileSyncService");
+                    return;
+                }
 
-                    // 对于新建或修改的文件，等待写入完成并加锁
-                    if (changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed)
-                    {
-                        _logger.LogInfo($"检测到文件变化，等待写入完成: {Path.GetFileName(filePath)}", "FileSyncService");
+                _logger.LogInfo($"文件写入已完成，准备同步: {Path.GetFileName(filePath)}", "FileSyncService");
 
-                        // 文件级去重机制 - 在等待写入完成前就加锁
-                        fileKey = filePath.ToLowerInvariant();
-                        tcs = new TaskCompletionSource<bool>();
-
-                        // 添加文件到处理列表（事件检测阶段已经做过去重检查）
-                        _processingFiles.TryAdd(fileKey, tcs);
-
-                        // 等待文件写入完成
-                        var writeComplete = await SafeFileOperations.IsFileWriteComplete(filePath);
-                        if (!writeComplete)
-                        {
-                            _logger.LogWarning($"文件写入未完成，跳过同步: {Path.GetFileName(filePath)}", "FileSyncService");
-                            // 清理文件锁
-                            _processingFiles.TryRemove(fileKey, out _);
-                            return;
-                        }
-
-                        _logger.LogInfo($"文件写入已完成，准备同步: {Path.GetFileName(filePath)}", "FileSyncService");
-                    }
-
-                    // 记录操作用于智能分析
-                    if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
-                    {
-                        var fileSize = 0L;
-                        try
-                        {
-                            if (File.Exists(filePath))
-                            {
-                                fileSize = new FileInfo(filePath).Length;
-                            }
-                        }
-                        catch { }
-
-                        analyzer.RecordOperation(filePath, changeType, fileSize);
-                    }
-
-                    var operation = new SyncOperation
-                    {
-                        FilePath = filePath,
-                        SourceRoot = config.CachePath,
-                        TargetRoot = config.OriginalPath,
-                        ChangeType = changeType,
-                        Timestamp = DateTime.Now,
-                        Mode = config.Mode
-                    };
-
-                    // 创建队列项目视图模型
-                    var queueItem = new SyncQueueItemViewModel
-                    {
-                        FilePath = filePath,
-                        Status = "等待中",
-                        CreatedAt = DateTime.Now
-                    };
-
-                    // 尝试获取文件大小
+                // 记录操作用于智能分析
+                if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
+                {
+                    var fileSize = 0L;
                     try
                     {
                         if (File.Exists(filePath))
                         {
-                            queueItem.FileSize = new FileInfo(filePath).Length;
+                            var fileInfo = new FileInfo(filePath);
+                            if (fileInfo.Exists)
+                            {
+                                fileSize = fileInfo.Length;
+                            }
                         }
                     }
-                    catch { }
-
-                    // 添加到队列项目字典
-                    var itemKey = $"{filePath}_{DateTime.Now.Ticks}";
-                    lock (_lockObject)
+                    catch (Exception ex)
                     {
-                        _queueItems[itemKey] = queueItem;
+                        _logger.LogWarning($"获取文件大小用于分析失败: {Path.GetFileName(filePath)} - {ex.Message}", "FileSyncService");
                     }
 
-                    // 安全触发队列项目添加事件（通过Channel）
-                    await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
+                    analyzer.RecordOperation(filePath, changeType, fileSize);
+                }
+
+                var operation = new SyncOperation
+                {
+                    FilePath = filePath,
+                    SourceRoot = config.CachePath,
+                    TargetRoot = config.OriginalPath,
+                    ChangeType = changeType,
+                    Timestamp = DateTime.Now,
+                    Mode = config.Mode
+                };
+
+                // 创建队列项目视图模型
+                var queueItem = new SyncQueueItemViewModel
+                {
+                    FilePath = filePath,
+                    Status = "等待中",
+                    CreatedAt = DateTime.Now
+                };
+
+                // 尝试获取文件大小
+                try
+                {
+                    if (File.Exists(filePath))
                     {
-                        Type = UIUpdateType.QueueItemAdded,
-                        QueueItem = queueItem
-                    });
-
-                    // 直接同步所有文件
-                    queueItem.Status = "处理中";
-                    await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
-                    {
-                        Type = UIUpdateType.QueueItemUpdated,
-                        QueueItem = queueItem
-                    });
-
-                    _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, fileKey, tcs));
-                    SafeLog($"开始同步文件：{Path.GetFileName(filePath)}");
-
+                        var fileInfo = new FileInfo(filePath);
+                        // 再次检查文件是否存在，因为它可能在检查后被删除
+                        if (fileInfo.Exists)
+                        {
+                            queueItem.FileSize = fileInfo.Length;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    // 清理文件锁（如果存在）
-                    if ((changeType == WatcherChangeTypes.Created || changeType == WatcherChangeTypes.Changed) &&
-                        fileKey != null && tcs != null)
-                    {
-                        if (_processingFiles.TryRemove(fileKey, out var removedTcs))
-                        {
-                            removedTcs.SetResult(false);
-                        }
-                    }
-                    SafeLog($"文件变化处理异常: {ex.Message}");
+                    _logger.LogWarning($"获取文件大小失败: {Path.GetFileName(filePath)} - {ex.Message}", "FileSyncService");
                 }
-            });
+
+                // 添加到队列项目字典
+                var itemKey = $"{filePath}_{DateTime.Now.Ticks}";
+                lock (_lockObject)
+                {
+                    _queueItems[itemKey] = queueItem;
+                }
+
+                // 安全触发队列项目添加事件（通过Channel）
+                await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
+                {
+                    Type = UIUpdateType.QueueItemAdded,
+                    QueueItem = queueItem
+                });
+
+                // 直接同步所有文件
+                queueItem.Status = "处理中";
+                await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
+                {
+                    Type = UIUpdateType.QueueItemUpdated,
+                    QueueItem = queueItem
+                });
+
+                _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, fileKey, tcs));
+                SafeLog($"开始同步文件：{Path.GetFileName(filePath)}");
+            }
+            catch (Exception ex)
+            {
+                // 清理文件锁
+                if (_processingFiles.TryRemove(fileKey, out var removedTcs))
+                {
+                    removedTcs.SetResult(false);
+                }
+                SafeLog($"文件变化处理异常: {ex.Message}");
+            }
+            finally
+            {
+                // 确保总是清理文件锁
+                _processingFiles.TryRemove(fileKey, out _);
+            }
+        }
+
+        /// <summary>
+        /// 处理删除和重命名事件的异步方法
+        /// </summary>
+        private async Task ProcessOtherFileChangeAsync(string filePath, string cacheRoot, WatcherChangeTypes changeType)
+        {
+            try
+            {
+                if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
+                    return;
+
+                // 过滤临时文件
+                if (IsTemporaryFile(filePath))
+                    return;
+
+                // 记录操作用于智能分析
+                if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
+                {
+                    analyzer.RecordOperation(filePath, changeType, 0);
+                }
+
+                var operation = new SyncOperation
+                {
+                    FilePath = filePath,
+                    SourceRoot = config.CachePath,
+                    TargetRoot = config.OriginalPath,
+                    ChangeType = changeType,
+                    Timestamp = DateTime.Now,
+                    Mode = config.Mode
+                };
+
+                // 对于删除操作，直接处理，不需要队列项
+                _ = Task.Run(() => ProcessSyncOperation(operation));
+            }
+            catch (Exception ex)
+            {
+                SafeLog($"文件删除/重命名事件处理异常: {ex.Message}");
+            }
         }
 
         private void OnFileRenamed(string oldPath, string newPath, string cacheRoot)
@@ -759,8 +890,24 @@ namespace CacheMax.GUI.Services
                 InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Processing"), "QueueItemUpdated");
 
                 var startTime = DateTime.Now;
-                var relativePath = Path.GetRelativePath(operation.SourceRoot, operation.FilePath);
-                var targetPath = Path.Combine(operation.TargetRoot, relativePath);
+
+                // 安全地计算相对路径和目标路径
+                string relativePath;
+                string targetPath;
+                try
+                {
+                    relativePath = Path.GetRelativePath(operation.SourceRoot, operation.FilePath);
+                    targetPath = Path.Combine(operation.TargetRoot, relativePath);
+                }
+                catch (Exception ex)
+                {
+                    var errorMsg = $"路径计算失败: {ex.Message}";
+                    queueItem.Status = "失败";
+                    queueItem.ErrorMessage = errorMsg;
+                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Failed"), "QueueItemUpdated");
+                    SafeLog($"路径计算失败: {Path.GetFileName(operation.FilePath)} - {ex.Message}");
+                    return;
+                }
 
                 bool success = false;
                 string message = "";
@@ -769,9 +916,42 @@ namespace CacheMax.GUI.Services
                 {
                     case WatcherChangeTypes.Created:
                     case WatcherChangeTypes.Changed:
-                        var syncResult = await SyncFileWithProgressAsync(operation.FilePath, targetPath, queueItem);
-                        success = syncResult.Success;
-                        message = syncResult.Message;
+                        // 在尝试获取锁定前，再次确认文件存在
+                        if (!File.Exists(operation.FilePath))
+                        {
+                            success = false;
+                            message = "文件已被删除，跳过同步";
+                            SafeLog($"源文件已被删除，跳过同步: {Path.GetFileName(operation.FilePath)}");
+                            break;
+                        }
+
+                        // 获取文件只读锁定，防止在同步过程中被其他进程修改
+                        using (var fileLock = SafeFileOperations.AcquireReadOnlyLock(operation.FilePath))
+                        {
+                            if (fileLock == null || !fileLock.IsValid)
+                            {
+                                // 再次检查文件是否存在，可能在获取锁定时被删除
+                                if (!File.Exists(operation.FilePath))
+                                {
+                                    success = false;
+                                    message = "文件已被删除，跳过同步";
+                                    SafeLog($"文件在获取锁定时被删除: {Path.GetFileName(operation.FilePath)}");
+                                }
+                                else
+                                {
+                                    success = false;
+                                    message = "无法获取文件锁定，文件可能正被其他进程使用";
+                                    SafeLog($"无法获取文件锁定: {Path.GetFileName(operation.FilePath)}");
+                                }
+                                break;
+                            }
+
+                            SafeLog($"已获取文件锁定，开始同步: {Path.GetFileName(operation.FilePath)}");
+                            var syncResult = await SyncFileWithProgressAsync(operation.FilePath, targetPath, queueItem);
+                            success = syncResult.Success;
+                            message = syncResult.Message;
+                            SafeLog($"同步完成，释放文件锁定: {Path.GetFileName(operation.FilePath)}");
+                        }
                         break;
 
                     case WatcherChangeTypes.Deleted:
@@ -792,7 +972,7 @@ namespace CacheMax.GUI.Services
                     InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Completed"), "QueueItemUpdated");
 
                     // 延迟移除完成的项目
-                    Task.Delay(5000).ContinueWith(_ =>
+                    _ = Task.Delay(5000).ContinueWith(_ =>
                     {
                         lock (_lockObject)
                         {
@@ -955,6 +1135,17 @@ namespace CacheMax.GUI.Services
                     await _fastCopyLimiter.WaitAsync();
                     try
                     {
+                        // 在获取许可后再次确认文件存在
+                        if (!File.Exists(sourcePath))
+                        {
+                            _logger.LogWarning($"源文件在获取FastCopy许可后已被删除: {Path.GetFileName(sourcePath)}", "FileSyncService");
+                            return new SafeFileOperations.FileOperationResult
+                            {
+                                Success = false,
+                                Message = "源文件已被删除"
+                            };
+                        }
+
                         _logger.LogInfo($"获取FastCopy并发许可，开始复制: {Path.GetFileName(sourcePath)}", "FileSyncService");
                         return await SafeFileOperations.SafeCopyFileAsync(sourcePath, targetPath, true, retryConfig, progress);
                     }

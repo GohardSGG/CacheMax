@@ -27,7 +27,8 @@
       "Bash(dotnet build:*)",
       "Bash(dotnet run:*)",
       "Bash(del \"C:\\Code\\CacheMax\\CacheMax.GUI\\Services\\ParallelSyncEngine.cs\")",
-      "WebFetch(domain:fastcopy.jp)"
+      "WebFetch(domain:fastcopy.jp)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

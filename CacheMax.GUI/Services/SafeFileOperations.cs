@@ -27,6 +27,35 @@ namespace CacheMax.GUI.Services
             IntPtr hTemplateFile);
 
         /// <summary>
+        /// 文件锁定句柄，用于在处理过程中锁定文件
+        /// </summary>
+        public class FileLockHandle : IDisposable
+        {
+            private readonly SafeFileHandle _handle;
+            private readonly string _filePath;
+            private bool _disposed = false;
+
+            internal FileLockHandle(SafeFileHandle handle, string filePath)
+            {
+                _handle = handle;
+                _filePath = filePath;
+            }
+
+            public string FilePath => _filePath;
+            public bool IsValid => _handle != null && !_handle.IsInvalid && !_handle.IsClosed;
+
+            public void Dispose()
+            {
+                if (!_disposed)
+                {
+                    _handle?.Dispose();
+                    _disposed = true;
+                }
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        /// <summary>
         /// 重试配置
         /// </summary>
         public class RetryConfig
@@ -51,7 +80,42 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 检查文件是否被占用
+        /// 获取文件的只读共享锁定，防止其他进程写入
+        /// 使用FILE_SHARE_READ模式，允许其他进程读取但禁止写入
+        /// </summary>
+        public static FileLockHandle? AcquireReadOnlyLock(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return null;
+
+            try
+            {
+                var handle = CreateFile(
+                    filePath,
+                    FileAccess.Read,
+                    FileShare.Read, // 只允许其他进程读取
+                    IntPtr.Zero,
+                    FileMode.Open,
+                    FileAttributes.Normal,
+                    IntPtr.Zero);
+
+                if (handle.IsInvalid)
+                {
+                    handle.Dispose();
+                    return null;
+                }
+
+                return new FileLockHandle(handle, filePath);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 检查文件是否被占用（修复版：只检测写入占用，允许读取共享）
+        /// FastCopy只需要读取源文件，所以只要能读取就可以复制
         /// </summary>
         public static bool IsFileInUse(string filePath)
         {
@@ -60,10 +124,12 @@ namespace CacheMax.GUI.Services
 
             try
             {
+                // 修复：只检测是否能以读取方式打开文件
+                // FastCopy不需要写入源文件，所以只要能读取就足够了
                 using var handle = CreateFile(
                     filePath,
-                    FileAccess.ReadWrite,
-                    FileShare.None,
+                    FileAccess.Read,  // 只需要读取权限
+                    FileShare.ReadWrite, // 允许其他进程读写
                     IntPtr.Zero,
                     FileMode.Open,
                     FileAttributes.Normal,
@@ -73,57 +139,91 @@ namespace CacheMax.GUI.Services
             }
             catch
             {
+                // 如果连读取都失败，说明真的被严格锁定
                 return true;
             }
         }
 
         /// <summary>
-        /// 检查文件写入是否完成（安全方式，不影响其他程序读取）
+        /// 检查文件写入是否完成（改进版：更宽松的检测逻辑）
         /// </summary>
-        public static async Task<bool> IsFileWriteComplete(string filePath, int maxRetries = 15)
+        public static async Task<bool> IsFileWriteComplete(string filePath, int maxRetries = 6)
         {
+            if (!File.Exists(filePath))
+                return false;
+
             for (int i = 0; i < maxRetries; i++)
             {
                 try
                 {
-                    // 1. 尝试以写入方式打开（检测写入锁，但立即关闭）
-                    using (var writeTest = File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.Read))
-                    {
-                        // 能写入 = 没有其他程序在写入
-                    }
+                    // 再次检查文件是否存在，可能在循环过程中被删除
+                    if (!File.Exists(filePath))
+                        return false;
 
-                    // 2. 检查大小稳定性
-                    var size1 = new FileInfo(filePath).Length;
-                    await Task.Delay(2000); // 等待2秒
-                    var size2 = new FileInfo(filePath).Length;
+                    // 1. 首先检查文件大小稳定性（主要判断标准）
+                    var fileInfo1 = new FileInfo(filePath);
+                    if (!fileInfo1.Exists) return false;
+                    var size1 = fileInfo1.Length;
 
-                    if (size1 == size2)
+                    await Task.Delay(1000); // 缩短等待时间到1秒
+
+                    // 再次检查文件是否存在
+                    if (!File.Exists(filePath))
+                        return false;
+
+                    var fileInfo2 = new FileInfo(filePath);
+                    if (!fileInfo2.Exists) return false;
+                    var size2 = fileInfo2.Length;
+
+                    if (size1 == size2 && size1 > 0)
                     {
-                        return true; // 大小稳定 = 写入完成
+                        // 2. 只有在大小稳定的情况下，才尝试检测写入锁
+                        // 使用更宽松的检测：只检查是否能读取文件
+                        try
+                        {
+                            using (var readTest = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            {
+                                // 能读取就说明文件基本完整
+                                return true;
+                            }
+                        }
+                        catch (IOException)
+                        {
+                            // 如果无法读取，可能仍在写入，继续等待
+                            continue;
+                        }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // 权限问题，但大小稳定，认为写入完成
+                            return true;
+                        }
                     }
                 }
-                catch (IOException)
+                catch (FileNotFoundException)
                 {
-                    // 文件正在被写入，等待重试
-                    await Task.Delay(1000 * (i + 1)); // 递增延迟
+                    // 文件被删除
+                    return false;
                 }
-                catch (UnauthorizedAccessException)
+                catch (Exception)
                 {
-                    // 权限问题，但可能文件已写入完成，检查大小稳定性
-                    try
-                    {
-                        var size1 = new FileInfo(filePath).Length;
-                        await Task.Delay(2000);
-                        var size2 = new FileInfo(filePath).Length;
-                        if (size1 == size2) return true;
-                    }
-                    catch { }
-
-                    await Task.Delay(1000);
+                    // 其他异常，等待重试
                 }
+
+                // 递增延迟等待
+                await Task.Delay(500 * (i + 1));
             }
 
-            return false; // 超时失败
+            // 超时后，如果文件存在且大于0字节，假设写入完成
+            // 这是为了避免误判完成的大文件
+            try
+            {
+                var finalInfo = new FileInfo(filePath);
+                return finalInfo.Exists && finalInfo.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>

@@ -1,0 +1,14 @@
+﻿[2025-09-21 17:25:05.918] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:25:05.947] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:25:05.951] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:25:05.964] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:25:05.965] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-21 17:25:05.965] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-21 17:25:05.965] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:25:05.980] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:25:06.077] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-21 17:25:06.083] [INFO ] [T001] [MainWindow] 恢复文件同步监控：S:\Cache\Test -> A:\Test.original
+[2025-09-21 17:25:06.084] [INFO ] [T009] [MainWindow] 开始监控：S:\Cache\Test (模式：Immediate，延迟：3秒)
+[2025-09-21 17:25:06.084] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\Test
+[2025-09-21 17:25:06.084] [INFO ] [T001] [MainWindow] 恢复性能监控：A:\Test
+[2025-09-21 17:25:06.084] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃

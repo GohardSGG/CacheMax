@@ -17,6 +17,7 @@ namespace CacheMax.GUI.ViewModels
         private double _progress;
         private string _progressText = "0%";
         private DateTime _createdAt;
+        private DateTime? _completedAt;
         private string? _errorMessage;
 
         public string Status
@@ -124,6 +125,25 @@ namespace CacheMax.GUI.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public DateTime? CompletedAt
+        {
+            get => _completedAt;
+            set
+            {
+                if (_completedAt != value)
+                {
+                    _completedAt = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CompletedAtFormatted));
+                }
+            }
+        }
+
+        public string CompletedAtFormatted
+        {
+            get => _completedAt?.ToString("HH:mm:ss") ?? "";
         }
 
         public string? ErrorMessage

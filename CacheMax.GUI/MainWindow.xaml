@@ -162,53 +162,104 @@
                     </StackPanel>
                 </GroupBox>
 
-                <!-- Sync Queue List -->
-                <GroupBox Grid.Row="1" Header="文件同步队列">
-                    <DataGrid Name="SyncQueueGrid"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              SelectionMode="Single"
-                              FontSize="10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="50">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Status}" Value="处理中">
-                                                <Setter Property="Foreground" Value="Green"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="等待中">
-                                                <Setter Property="Foreground" Value="Orange"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="失败">
-                                                <Setter Property="Foreground" Value="Red"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="完成">
-                                                <Setter Property="Foreground" Value="Gray"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="文件名" Binding="{Binding FileName}" Width="*">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="ToolTip" Value="{Binding FilePath}"/>
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="大小" Binding="{Binding FileSizeFormatted}" Width="60"/>
-                            <DataGridTextColumn Header="进度" Binding="{Binding ProgressText}" Width="50"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </GroupBox>
+                <!-- Sync Queue Tabs -->
+                <TabControl Grid.Row="1" Name="SyncQueueTabControl">
+                    <!-- 进行中的同步 -->
+                    <TabItem Header="进行中">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                <!-- Queue Controls -->
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
-                    <Button Name="ClearCompletedButton" Content="清理已完成" Margin="0,0,5,0" Padding="5,2"/>
-                    <Button Name="ClearFailedButton" Content="清理失败" Margin="0,0,5,0" Padding="5,2"/>
-                    <Button Name="RetryFailedButton" Content="重试失败" Padding="5,2"/>
-                </StackPanel>
+                            <DataGrid Name="SyncQueueGrid" Grid.Row="0"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      SelectionMode="Single"
+                                      FontSize="10">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="50">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="ToolTip" Value="{Binding ErrorMessage}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Status}" Value="处理中">
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="等待中">
+                                                        <Setter Property="Foreground" Value="Orange"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Status}" Value="失败">
+                                                        <Setter Property="Foreground" Value="Red"/>
+                                                        <Setter Property="ToolTip" Value="{Binding ErrorMessage, StringFormat='错误: {0}'}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="文件名" Binding="{Binding FileName}" Width="*">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="ToolTip" Value="{Binding FilePath}"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="大小" Binding="{Binding FileSizeFormatted}" Width="60"/>
+                                    <DataGridTextColumn Header="进度" Binding="{Binding ProgressText}" Width="50"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Queue Controls -->
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                                <Button Name="ClearFailedButton" Content="清理失败" Margin="0,0,5,0" Padding="5,2"/>
+                                <Button Name="RetryFailedButton" Content="重试失败" Padding="5,2"/>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- 已完成的同步 -->
+                    <TabItem Header="已完成">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <DataGrid Name="CompletedQueueGrid" Grid.Row="0"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      SelectionMode="Single"
+                                      FontSize="10">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="状态" Binding="{Binding Status}" Width="50">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="文件名" Binding="{Binding FileName}" Width="*">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="ToolTip" Value="{Binding FilePath}"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="大小" Binding="{Binding FileSizeFormatted}" Width="60"/>
+                                    <DataGridTextColumn Header="完成时间" Binding="{Binding CompletedAtFormatted}" Width="70"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- Completed Queue Controls -->
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                                <Button Name="ClearCompletedButton" Content="清理已完成" Margin="0,0,5,0" Padding="5,2" Click="ClearCompletedButton_Click"/>
+                                <TextBlock Text="{Binding ElementName=CompletedQueueGrid, Path=Items.Count, StringFormat='共 {0} 个已完成文件'}"
+                                          VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </Grid>
         </Grid>
 
