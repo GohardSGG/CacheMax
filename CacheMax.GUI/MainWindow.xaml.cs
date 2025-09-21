@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Media;
+using System.Windows.Input;
 using CacheMax.GUI.Services;
 using CacheMax.GUI.ViewModels;
 using Microsoft.Win32;
@@ -21,7 +22,7 @@ namespace CacheMax.GUI
         private readonly FastCopyService _fastCopy;
         private readonly CacheManagerService _cacheManager;
         private readonly ConfigService _config;
-        private readonly ObservableCollection<AcceleratedFolderViewModel> _acceleratedFolders;
+        private readonly ObservableCollection<AcceleratedFolder> _acceleratedFolders;
         private readonly ObservableCollection<SyncQueueItemViewModel> _syncQueueItems;
         private readonly ObservableCollection<SyncQueueItemViewModel> _completedItems;
 
@@ -39,7 +40,7 @@ namespace CacheMax.GUI
             _cacheManager.PerformanceStatsUpdated += OnPerformanceStatsUpdated;
 
             // 初始化集合
-            _acceleratedFolders = new ObservableCollection<AcceleratedFolderViewModel>();
+            _acceleratedFolders = new ObservableCollection<AcceleratedFolder>();
             _syncQueueItems = new ObservableCollection<SyncQueueItemViewModel>();
             _completedItems = new ObservableCollection<SyncQueueItemViewModel>();
 
@@ -68,29 +69,17 @@ namespace CacheMax.GUI
 
             foreach (var folder in _config.Config.AcceleratedFolders)
             {
-                var vm = new AcceleratedFolderViewModel
-                {
-                    OriginalPath = folder.OriginalPath,
-                    CachePath = folder.CachePath,
-                    MountPoint = folder.MountPoint,
-                    CreatedAt = folder.CreatedAt,
-                    CacheSize = folder.CacheSize,
-                    Status = _cacheManager.IsAccelerated(folder.MountPoint) ? "✅" : "⭕"
-                };
-                _acceleratedFolders.Add(vm);
+                // 设置默认状态
+                folder.Status = _cacheManager.IsAccelerated(folder.MountPoint) ? "已完成" : "未加速";
+                folder.ProgressPercentage = _cacheManager.IsAccelerated(folder.MountPoint) ? 100.0 : 0.0;
+
+                _acceleratedFolders.Add(folder);
             }
         }
 
         private async void AccelerateButton_Click(object sender, RoutedEventArgs e)
         {
-            var sourceFolder = SourceFolderTextBox.Text.Trim();
             var cacheRoot = CacheRootTextBox.Text.Trim();
-
-            if (string.IsNullOrEmpty(sourceFolder) || !Directory.Exists(sourceFolder))
-            {
-                MessageBox.Show("请选择有效的源文件夹", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
 
             if (string.IsNullOrEmpty(cacheRoot))
             {
@@ -98,88 +87,114 @@ namespace CacheMax.GUI
                 return;
             }
 
-            // Junction不需要管理员权限，移除此检查
+            // 查找所有未加速的文件夹
+            var unacceleratedFolders = _acceleratedFolders.Where(f => f.Status == "未加速").ToList();
 
-            // 准备路径
-            var folderName = Path.GetFileName(sourceFolder);
-            var originalPath = $"{sourceFolder}.original";
-            var cachePath = Path.Combine(cacheRoot, folderName);
-
-            // 检查是否已经加速
-            if (_acceleratedFolders.Any(f => f.MountPoint == sourceFolder))
+            if (unacceleratedFolders.Count == 0)
             {
-                MessageBox.Show("此文件夹已经加速", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("没有需要加速的文件夹。请先添加路径。", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            // 检查是否已经是Junction
-            if (_cacheManager.IsAccelerated(sourceFolder))
-            {
-                MessageBox.Show("此文件夹已经是Junction", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+            var result = MessageBox.Show($"检测到 {unacceleratedFolders.Count} 个未加速的文件夹。\n\n是否开始批量加速？",
+                "确认批量加速", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
                 return;
-            }
 
             try
             {
                 AccelerateButton.IsEnabled = false;
-                UpdateStatus("开始加速过程...");
+                UpdateStatus("开始批量加速...");
 
-                // 进度报告器
-                var progress = new Progress<string>(msg => AddLog(msg));
-
-                // 使用GUI选择的同步设置
-                var syncMode = GetSelectedSyncMode();
-                var syncDelay = GetSyncDelay();
-
-                AddLog($"开始加速：{sourceFolder}");
-                if (!await _cacheManager.InitializeCacheAcceleration(sourceFolder, cacheRoot, syncMode, syncDelay, progress))
+                foreach (var folder in unacceleratedFolders)
                 {
-                    throw new Exception("缓存加速初始化失败");
+                    try
+                    {
+                        // 更新状态为初始化中
+                        folder.Status = "初始化中";
+                        folder.ProgressPercentage = 0;
+
+                        AddLog($"开始加速：{folder.OriginalPath}");
+
+                        // 进度报告器 - 更新表格中的进度
+                        var progress = new Progress<string>(msg =>
+                        {
+                            AddLog(msg);
+
+                            // 解析进度信息并更新
+                            if (msg.Contains("步骤"))
+                            {
+                                if (msg.Contains("1/4")) folder.ProgressPercentage = 25;
+                                else if (msg.Contains("2/4")) folder.ProgressPercentage = 50;
+                                else if (msg.Contains("3/4")) folder.ProgressPercentage = 75;
+                                else if (msg.Contains("4/4")) folder.ProgressPercentage = 100;
+                            }
+                            else if (msg.Contains("Robocopy") && msg.Contains("%"))
+                            {
+                                // 尝试解析Robocopy进度
+                                var match = Regex.Match(msg, @"(\d+)%");
+                                if (match.Success && int.TryParse(match.Groups[1].Value, out int percent))
+                                {
+                                    folder.ProgressPercentage = Math.Max(folder.ProgressPercentage, percent * 0.6); // Robocopy占60%
+                                }
+                            }
+                        });
+
+                        // 使用默认同步设置
+                        var syncMode = SyncMode.Immediate;
+                        var syncDelay = 3;
+
+                        bool initSuccess = await _cacheManager.InitializeCacheAcceleration(
+                            folder.OriginalPath, cacheRoot, syncMode, syncDelay, progress);
+
+                        if (initSuccess)
+                        {
+                            folder.Status = "已完成";
+                            folder.ProgressPercentage = 100;
+
+                            // 更新缓存大小
+                            var folderName = Path.GetFileName(folder.OriginalPath);
+                            var cachePath = Path.Combine(cacheRoot, folderName);
+                            folder.CacheSize = GetDirectorySize(cachePath);
+
+                            AddLog($"✅ 加速完成：{folder.OriginalPath}");
+                        }
+                        else
+                        {
+                            folder.Status = "失败";
+                            folder.ProgressPercentage = 0;
+                            AddLog($"❌ 加速失败：{folder.OriginalPath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        folder.Status = "失败";
+                        folder.ProgressPercentage = 0;
+                        AddLog($"❌ 加速异常：{folder.OriginalPath} - {ex.Message}");
+                    }
                 }
 
                 // 保存配置
-                var acceleratedFolder = new AcceleratedFolder
-                {
-                    OriginalPath = originalPath,
-                    CachePath = cachePath,
-                    MountPoint = sourceFolder,
-                    CreatedAt = DateTime.Now,
-                    CacheSize = GetDirectorySize(cachePath)
-                };
-                _config.AddAcceleratedFolder(acceleratedFolder);
+                _config.SaveConfig();
 
-                // 更新UI
-                var vm = new AcceleratedFolderViewModel
-                {
-                    OriginalPath = originalPath,
-                    CachePath = cachePath,
-                    MountPoint = sourceFolder,
-                    CreatedAt = acceleratedFolder.CreatedAt,
-                    CacheSize = acceleratedFolder.CacheSize,
-                    Status = "✅"
-                };
-                _acceleratedFolders.Add(vm);
+                var successCount = unacceleratedFolders.Count(f => f.Status == "已完成");
+                var failedCount = unacceleratedFolders.Count(f => f.Status == "失败");
 
-                UpdateStatus($"成功加速 {sourceFolder}");
-                AddLog($"加速完成！{sourceFolder} 现在已加速");
+                UpdateStatus($"批量加速完成：成功 {successCount} 个，失败 {failedCount} 个");
 
-                // 清空输入
-                SourceFolderTextBox.Clear();
-
-                // 显示性能提示
                 MessageBox.Show(
-                    $"加速成功！\n\n" +
-                    $"• 读取性能：预期可达 1500+ MB/s\n" +
-                    $"• 写入同步：{syncDelay}秒延迟批量同步\n" +
-                    $"• 缓存位置：{cachePath}\n\n" +
-                    $"您现在可以正常使用 {sourceFolder}，所有读取将直接从高速缓存执行！",
-                    "加速成功", MessageBoxButton.OK, MessageBoxImage.Information);
+                    $"批量加速完成！\n\n" +
+                    $"✅ 成功：{successCount} 个文件夹\n" +
+                    $"❌ 失败：{failedCount} 个文件夹\n\n" +
+                    $"成功加速的文件夹现在已启用高速缓存！",
+                    "批量加速完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                AddLog($"错误：{ex.Message}");
-                UpdateStatus($"加速失败：{ex.Message}");
-                MessageBox.Show($"加速文件夹失败：\n{ex.Message}", "错误",
+                AddLog($"批量加速错误：{ex.Message}");
+                UpdateStatus($"批量加速失败：{ex.Message}");
+                MessageBox.Show($"批量加速失败：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -191,7 +206,7 @@ namespace CacheMax.GUI
 
         private async void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
                 MessageBox.Show("请选择要停止加速的文件夹", "信息",
@@ -363,18 +378,6 @@ namespace CacheMax.GUI
             }
         }
 
-        private void BrowseSourceButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new System.Windows.Forms.FolderBrowserDialog
-            {
-                Description = "Select folder to accelerate"
-            };
-
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                SourceFolderTextBox.Text = dialog.SelectedPath;
-            }
-        }
 
         private void BrowseCacheButton_Click(object sender, RoutedEventArgs e)
         {
@@ -396,53 +399,10 @@ namespace CacheMax.GUI
             UpdateUI();
         }
 
-        private async void SyncNowButton_Click(object sender, RoutedEventArgs e)
-        {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
-            if (selected == null)
-            {
-                MessageBox.Show("请选择要同步的文件夹", "信息",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            try
-            {
-                SyncNowButton.IsEnabled = false;
-                UpdateStatus($"正在同步 {selected.CachePath}...");
-
-                var progress = new Progress<string>(msg => AddLog(msg));
-
-                if (await _cacheManager.SyncToOriginal(selected.CachePath, progress))
-                {
-                    AddLog($"同步完成：{selected.CachePath}");
-                    UpdateStatus("同步完成");
-                    MessageBox.Show("同步完成！", "成功", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    AddLog($"同步失败：{selected.CachePath}");
-                    UpdateStatus("同步失败");
-                    MessageBox.Show("同步失败，请查看日志了解详情", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"同步异常：{ex.Message}");
-                UpdateStatus($"同步异常：{ex.Message}");
-                MessageBox.Show($"同步时发生异常：\n{ex.Message}", "错误",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                SyncNowButton.IsEnabled = true;
-                UpdateUI();
-            }
-        }
 
         private async void CleanCacheButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
                 MessageBox.Show("请选择要清理缓存的文件夹", "信息",
@@ -503,7 +463,7 @@ namespace CacheMax.GUI
 
         private void ValidateButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
                 MessageBox.Show("请选择要验证的文件夹", "信息",
@@ -549,7 +509,7 @@ namespace CacheMax.GUI
 
         private void UpdateSyncModeButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
                 MessageBox.Show("请选择要更新同步模式的文件夹", "信息",
@@ -564,9 +524,9 @@ namespace CacheMax.GUI
 
                 var progress = new Progress<string>(msg => AddLog(msg));
 
-                // 获取新的同步模式和延迟
-                var newMode = GetSelectedSyncMode();
-                var delaySeconds = GetSyncDelay();
+                // 使用默认同步模式和延迟
+                var newMode = SyncMode.Immediate;
+                var delaySeconds = 3;
 
                 if (_cacheManager.UpdateSyncMode(selected.CachePath, selected.OriginalPath, newMode, delaySeconds, progress))
                 {
@@ -599,39 +559,17 @@ namespace CacheMax.GUI
 
         private void UpdateUI()
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             StopButton.IsEnabled = selected != null && selected.Status == "✅";
             DeleteButton.IsEnabled = selected != null;
 
-            // 同步控制按钮
-            SyncNowButton.IsEnabled = selected != null && selected.Status == "✅";
+            // 控制按钮状态
             ValidateButton.IsEnabled = selected != null;
-            UpdateSyncModeButton.IsEnabled = selected != null && selected.Status == "✅";
+            UpdateSyncModeButton.IsEnabled = selected != null && selected.Status == "已完成";
             RecoveryButton.IsEnabled = selected != null;
 
-            var runningCount = _acceleratedFolders.Count(f => f.Status == "✅");
+            var runningCount = _acceleratedFolders.Count(f => f.Status == "已完成");
             RunningCountText.Text = $"Running: {runningCount}";
-        }
-
-        private SyncMode GetSelectedSyncMode()
-        {
-            var selectedItem = SyncModeComboBox.SelectedItem as ComboBoxItem;
-            var tag = selectedItem?.Tag?.ToString();
-            return tag switch
-            {
-                "Immediate" => SyncMode.Immediate,
-                "Periodic" => SyncMode.Periodic,
-                _ => SyncMode.Immediate
-            };
-        }
-
-        private int GetSyncDelay()
-        {
-            if (int.TryParse(SyncDelayTextBox.Text, out var delay) && delay > 0)
-            {
-                return delay;
-            }
-            return 3; // 默认3秒
         }
 
         private async void HealthCheckButton_Click(object sender, RoutedEventArgs e)
@@ -683,7 +621,7 @@ namespace CacheMax.GUI
 
         private async void RecoveryButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
                 MessageBox.Show("请选择要恢复的文件夹", "信息",
@@ -912,51 +850,96 @@ namespace CacheMax.GUI
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolderViewModel;
+            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
+            {
+                MessageBox.Show("请选择要删除的路径", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
+            }
 
-            var result = MessageBox.Show(
-                $"确定要删除加速条目吗？\n\n原始路径: {selected.OriginalPath}\n挂载点: {selected.MountPoint}\n\n注意：如果正在加速，将会停止加速并恢复原始文件夹。",
-                "确认删除",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+            // 检查是否已经加速，需要不同的处理方式
+            bool isAccelerated = selected.Status == "已完成" || _cacheManager.IsAccelerated(selected.MountPoint);
+
+            string message;
+            if (isAccelerated)
+            {
+                message = $"路径 '{selected.OriginalPath}' 已被加速。\n\n" +
+                         "删除将会：\n" +
+                         "• 停止加速并恢复原始文件夹\n" +
+                         "• 移除Junction链接\n" +
+                         "• 清理缓存文件\n\n" +
+                         "确定要继续吗？";
+            }
+            else
+            {
+                message = $"确定要删除路径 '{selected.OriginalPath}' 吗？";
+            }
+
+            var result = MessageBox.Show(message, "确认删除", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    // 如果正在运行，先停止加速
-                    if (selected.Status == "✅")
+                    DeleteButton.IsEnabled = false;
+
+                    if (isAccelerated)
                     {
-                        AddLog($"正在停止 {selected.MountPoint} 的加速...");
+                        // 执行完整的停止加速流程
+                        AddLog($"正在停止加速：{selected.OriginalPath}");
+                        UpdateStatus($"正在停止加速：{selected.MountPoint}");
+
+                        selected.Status = "停止中";
+                        selected.ProgressPercentage = 0;
 
                         var progress = new Progress<string>(msg => AddLog(msg));
 
-                        // 停止缓存加速（不删除缓存文件）
-                        await _cacheManager.StopCacheAcceleration(
+                        bool stopSuccess = await _cacheManager.StopCacheAcceleration(
                             selected.MountPoint,
                             selected.OriginalPath,
                             selected.CachePath,
-                            false, // 保留缓存文件
+                            true, // 删除缓存文件
                             progress);
+
+                        if (stopSuccess)
+                        {
+                            AddLog($"✅ 加速停止成功：{selected.OriginalPath}");
+                            UpdateStatus($"成功停止加速：{selected.MountPoint}");
+                        }
+                        else
+                        {
+                            AddLog($"⚠️ 加速停止过程中出现问题：{selected.OriginalPath}");
+                            UpdateStatus($"停止加速时出现问题：{selected.MountPoint}");
+
+                            // 即使停止失败，也询问是否强制删除记录
+                            var forceResult = MessageBox.Show(
+                                "停止加速过程中出现问题，但可能部分操作已完成。\n\n是否强制删除此记录？\n\n注意：您可能需要手动清理残留的文件链接。",
+                                "强制删除", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                            if (forceResult != MessageBoxResult.Yes)
+                            {
+                                selected.Status = "失败";
+                                return;
+                            }
+                        }
                     }
 
-                    // 从配置中删除
-                    _config.RemoveAcceleratedFolder(selected.MountPoint);
-
-                    // 从UI中删除
+                    // 从列表和配置中删除
                     _acceleratedFolders.Remove(selected);
-
-                    AddLog($"已删除加速条目: {selected.MountPoint}");
-                    UpdateStatus($"已删除加速条目: {selected.MountPoint}");
-                    UpdateUI();
+                    _config.RemoveAcceleratedFolder(selected.MountPoint);
+                    AddLog($"已删除路径记录：{selected.OriginalPath}");
+                    UpdateStatus("删除完成");
                 }
                 catch (Exception ex)
                 {
-                    AddLog($"删除条目时出错: {ex.Message}");
-                    MessageBox.Show($"删除条目时出错:\n{ex.Message}", "错误",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    AddLog($"删除路径时出错：{ex.Message}");
+                    UpdateStatus($"删除失败：{ex.Message}");
+                    MessageBox.Show($"删除路径时出错：\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    DeleteButton.IsEnabled = true;
+                    UpdateUI();
                 }
             }
         }
@@ -1164,45 +1147,136 @@ namespace CacheMax.GUI
             }
             base.OnClosing(e);
         }
-    }
 
-    public class AcceleratedFolderViewModel : INotifyPropertyChanged
-    {
-        private string _status = "⭕";
+        // 新的UI事件处理程序
 
-        public string Status
+        private void AddPathButton_Click(object sender, RoutedEventArgs e)
         {
-            get => _status;
-            set { _status = value; OnPropertyChanged(); }
+            var pathText = NewPathTextBox.Text.Trim();
+
+            // 路径格式验证
+            if (!ValidatePath(pathText, out string errorMessage))
+            {
+                MessageBox.Show(errorMessage, "路径验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 重复检查
+            if (_acceleratedFolders.Any(f => f.OriginalPath.Equals(pathText, StringComparison.OrdinalIgnoreCase)))
+            {
+                MessageBox.Show("此路径已存在于列表中", "重复路径", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 创建新的AcceleratedFolder对象
+            var newFolder = new AcceleratedFolder
+            {
+                OriginalPath = pathText,
+                CachePath = "", // 将在加速时设置
+                MountPoint = pathText,
+                CreatedAt = DateTime.Now,
+                CacheSize = 0,
+                Status = "未加速",
+                ProgressPercentage = 0
+            };
+
+            _acceleratedFolders.Add(newFolder);
+            _config.AddAcceleratedFolder(newFolder);
+
+            NewPathTextBox.Clear();
+            AddLog($"已添加路径：{pathText}");
         }
 
-        public string OriginalPath { get; set; } = string.Empty;
-        public string CachePath { get; set; } = string.Empty;
-        public string MountPoint { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-        public long CacheSize { get; set; }
 
-        public string CacheSizeFormatted
+        private void NewPathTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            get
+            if (e.Key == Key.Enter)
             {
-                var sizes = new[] { "B", "KB", "MB", "GB", "TB" };
-                var len = (double)CacheSize;
-                var order = 0;
-                while (len >= 1024 && order < sizes.Length - 1)
-                {
-                    order++;
-                    len /= 1024;
-                }
-                return $"{len:0.##} {sizes[order]}";
+                AddPathButton_Click(sender, e);
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        private bool ValidatePath(string path, out string errorMessage)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            errorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                errorMessage = "路径不能为空";
+                return false;
+            }
+
+            // 检查是否为绝对路径
+            if (!Path.IsPathRooted(path))
+            {
+                errorMessage = "请输入绝对路径（例如：C:\\MyFolder）";
+                return false;
+            }
+
+            // 检查路径格式
+            try
+            {
+                var fullPath = Path.GetFullPath(path);
+
+                // 检查是否为目录
+                if (!Directory.Exists(fullPath))
+                {
+                    errorMessage = "指定的目录不存在";
+                    return false;
+                }
+
+                // 检查是否为禁止目录
+                var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+                var forbiddenDirs = new[]
+                {
+                    @"C:\Windows",
+                    @"C:\Program Files",
+                    @"C:\Program Files (x86)",
+                    @"C:\System Volume Information",
+                    @"C:\$Recycle.Bin",
+                    @"C:\Recovery",
+                    @"C:\Boot",
+                    @"C:\EFI",
+                    @"C:\Users\All Users",
+                    @"C:\Users\Default",
+                    @"C:\Users\Public",
+                    @"C:\ProgramData",
+                    @"C:\Documents and Settings"
+                };
+
+                foreach (var forbiddenDir in forbiddenDirs)
+                {
+                    if (fullPath.StartsWith(forbiddenDir, StringComparison.OrdinalIgnoreCase))
+                    {
+                        errorMessage = $"禁止加速系统目录：{forbiddenDir}";
+                        return false;
+                    }
+                }
+
+                // 检查权限（尝试访问目录）
+                try
+                {
+                    Directory.GetFiles(fullPath, "*", SearchOption.TopDirectoryOnly);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    errorMessage = "没有访问此目录的权限";
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = $"访问目录时出错：{ex.Message}";
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"路径格式无效：{ex.Message}";
+                return false;
+            }
+
+            return true;
         }
     }
+
 }

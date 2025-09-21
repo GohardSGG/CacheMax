@@ -499,6 +499,82 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
+        /// 使用FastCopy复制整个目录（支持自定义参数）
+        /// </summary>
+        public async Task<bool> CopyDirectoryAsync(string sourceDir, string destinationDir, string[]? customOptions = null, IProgress<string>? progress = null)
+        {
+            if (!File.Exists(_fastCopyPath))
+            {
+                _logger.LogWarning($"FastCopy可执行文件未找到: {_fastCopyPath}，使用内置复制方法", "FastCopyService");
+                progress?.Report($"FastCopy未找到，使用内置复制方法");
+                return await CopyWithBuiltinMethod(sourceDir, destinationDir, progress);
+            }
+
+            try
+            {
+                // 构建FastCopy命令行参数
+                var argumentsList = new List<string>();
+
+                // 添加自定义选项
+                if (customOptions != null && customOptions.Length > 0)
+                {
+                    argumentsList.AddRange(customOptions);
+                }
+                else
+                {
+                    // 默认选项
+                    argumentsList.Add("/cmd=force_copy");
+                    argumentsList.Add("/verify");
+                    argumentsList.Add("/auto_close");
+                    argumentsList.Add("/error_stop");
+                    argumentsList.Add("/no_ui");
+                }
+
+                // 添加日志和路径
+                argumentsList.Add("/log");
+                argumentsList.Add($"\"{sourceDir}\"");
+                argumentsList.Add($"/to=\"{destinationDir}\"");
+
+                var arguments = string.Join(" ", argumentsList);
+
+                _logger.LogInfo($"开始FastCopy目录复制: {sourceDir} -> {destinationDir}", "FastCopyService");
+                _logger.LogDebug($"FastCopy参数: {arguments}", "FastCopyService");
+                progress?.Report($"正在复制目录: {Path.GetFileName(sourceDir)}");
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = _fastCopyPath,
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                var success = await ExecuteWithMonitoringAsync(processStartInfo, sourceDir, destinationDir, progress);
+
+                if (success)
+                {
+                    _logger.LogInfo($"FastCopy目录复制成功: {sourceDir} -> {destinationDir}", "FastCopyService");
+                    progress?.Report($"目录复制完成: {Path.GetFileName(sourceDir)}");
+                }
+                else
+                {
+                    _logger.LogError($"FastCopy目录复制失败: {sourceDir} -> {destinationDir}", null, "FastCopyService");
+                    progress?.Report($"目录复制失败: {Path.GetFileName(sourceDir)}");
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"FastCopy目录复制异常: {ex.Message}", ex, "FastCopyService");
+                progress?.Report($"目录复制异常: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// 强制终止所有运行的FastCopy进程
         /// </summary>
         public async Task ForceKillAllProcessesAsync()

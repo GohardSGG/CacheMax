@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -157,10 +159,6 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
-                var folderName = Path.GetFileName(sourcePath);
-                var originalPath = $"{sourcePath}.original";
-                var cachePath = Path.Combine(cacheRoot, folderName);
-
                 progress?.Report("开始缓存加速初始化...");
 
                 // 步骤1：检查是否已经加速
@@ -170,9 +168,48 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
-                // 步骤2：复制到缓存（使用FastCopy提高性能）
+                // 步骤2：生成路径并检查缓存冲突
+                var folderName = Path.GetFileName(sourcePath);
+                var driveLetter = Path.GetPathRoot(sourcePath)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
+                var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
+                var cachePath = Path.Combine(driveSpecificCacheRoot, folderName);
+
+                bool useSyncMode = false;
+                if (Directory.Exists(cachePath))
+                {
+                    progress?.Report($"检测到缓存目录已存在：{cachePath}");
+
+                    var choice = await ShowCacheConflictDialog(cachePath, progress);
+
+                    if (choice == CacheConflictChoice.Cancel)
+                    {
+                        progress?.Report("用户取消操作");
+                        return false;
+                    }
+
+                    useSyncMode = (choice == CacheConflictChoice.SyncMode);
+                    progress?.Report("用户选择同步模式：与现有缓存同步");
+                }
+                else
+                {
+                    progress?.Report("缓存目录不存在，将创建新的缓存");
+                }
+
+                // 步骤3：确认开始后才进行路径操作
+                progress?.Report("开始创建缓存目录和备份路径...");
+
+                // 确保驱动器专用缓存根目录存在
+                if (!Directory.Exists(driveSpecificCacheRoot))
+                {
+                    Directory.CreateDirectory(driveSpecificCacheRoot);
+                    progress?.Report($"创建驱动器专用缓存目录：{driveSpecificCacheRoot}");
+                }
+
+                var originalPath = $"{sourcePath}.original";
+
+                // 步骤4：复制到缓存（使用Robocopy+FastCopy组合）
                 progress?.Report($"复制数据到缓存：{sourcePath} -> {cachePath}");
-                if (!await CopyDirectoryAsync(sourcePath, cachePath, progress))
+                if (!await CopyDirectoryUsingRobocopyWithFastCopyVerify(sourcePath, cachePath, useSyncMode, progress))
                 {
                     progress?.Report("复制到缓存失败");
                     _errorRecovery.RecordError(sourcePath, "CopyFailure", "复制到缓存失败", null, ErrorRecoveryService.ErrorSeverity.High);
@@ -802,6 +839,428 @@ namespace CacheMax.GUI.Services
             return _performanceMonitor.GetAllStats();
         }
 
+        /// <summary>
+        /// 显示缓存冲突对话框（目前简化实现，后续应该改为WPF对话框）
+        /// </summary>
+        private async Task<CacheConflictChoice> ShowCacheConflictDialog(string cachePath, IProgress<string>? progress)
+        {
+            progress?.Report("缓存目录已存在，可选择：");
+            progress?.Report("1. 同步模式：保留现有缓存，仅同步差异文件（推荐）");
+            progress?.Report("2. 取消操作");
+            progress?.Report("当前默认使用同步模式");
+
+            // TODO: 实现真正的WPF对话框供用户选择
+            // 目前返回同步模式作为默认选择
+            return await Task.FromResult(CacheConflictChoice.SyncMode);
+        }
+
+        /// <summary>
+        /// 使用Robocopy+FastCopy组合进行高性能目录复制和校验
+        /// </summary>
+        private async Task<bool> CopyDirectoryUsingRobocopyWithFastCopyVerify(string sourcePath, string targetPath, bool useSyncMode, IProgress<string>? progress)
+        {
+            try
+            {
+                if (useSyncMode)
+                {
+                    // 同步模式：使用Robocopy智能同步
+                    progress?.Report("使用Robocopy同步模式：智能同步差异文件");
+                    return await ExecuteRobocopyForSyncAsync(sourcePath, targetPath, progress);
+                }
+                else
+                {
+                    // 新目录：使用Robocopy高速复制 + FastCopy校验
+                    progress?.Report("使用Robocopy高速多线程复制 + FastCopy完整性校验");
+
+                    // 阶段1：Robocopy 高速多线程复制
+                    progress?.Report("阶段1/2：Robocopy多线程复制中...");
+                    bool copySuccess = await ExecuteRobocopyAsync(sourcePath, targetPath, progress);
+
+                    if (!copySuccess)
+                    {
+                        progress?.Report("Robocopy复制失败");
+                        return false;
+                    }
+
+                    progress?.Report("阶段1/2：Robocopy复制完成");
+
+                    // 阶段2：FastCopy 完整性校验
+                    progress?.Report("阶段2/2：FastCopy完整性校验中...");
+                    bool verifySuccess = await ExecuteFastCopyVerifyAsync(sourcePath, targetPath, progress);
+
+                    if (!verifySuccess)
+                    {
+                        progress?.Report("FastCopy校验失败，数据可能不完整");
+                        return false;
+                    }
+
+                    progress?.Report("✅ Robocopy+FastCopy组合复制和校验完成");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"Robocopy+FastCopy组合复制异常：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 执行Robocopy多线程复制
+        /// </summary>
+        private async Task<bool> ExecuteRobocopyAsync(string sourcePath, string targetPath, IProgress<string>? progress)
+        {
+            try
+            {
+                // 从配置读取Robocopy参数
+                var robocopyConfig = GetRobocopyConfig();
+
+                // 构建最优化的Robocopy命令参数
+                var argumentsList = new List<string>
+                {
+                    $"\"{sourcePath}\"",
+                    $"\"{targetPath}\"",
+                    "/E",                              // 复制所有子目录（包括空目录）
+                    "/COPYALL",                        // 复制所有文件信息（数据+属性+时间戳+安全性+所有者+审计）
+                    $"/MT:{robocopyConfig.ThreadCount}", // 多线程复制
+                    $"/R:{robocopyConfig.RetryCount}",   // 重试次数
+                    $"/W:{robocopyConfig.RetryWaitSeconds}", // 重试等待时间
+                };
+
+                // 性能优化参数
+                if (robocopyConfig.EnableUnbufferedIO)
+                    argumentsList.Add("/J");           // 无缓冲I/O（大文件优化）
+
+                // 不使用可重启模式，确保缓存一致性
+                // if (robocopyConfig.EnableRestart)
+                //     argumentsList.Add("/ZB");      // 已禁用：为确保缓存一致性从头构建
+
+                if (robocopyConfig.EnableLowSpaceMode)
+                    argumentsList.Add("/LFSM");        // 低空间模式
+
+                if (robocopyConfig.EnableCompression)
+                    argumentsList.Add("/COMPRESS");    // 网络压缩
+
+                if (robocopyConfig.EnableSparseFiles)
+                    argumentsList.Add("/SPARSE");      // 保持稀疏文件
+
+                // 日志和进度参数
+                if (robocopyConfig.ShowProgress)
+                {
+                    argumentsList.Add("/BYTES");       // 以字节显示大小
+                    argumentsList.Add("/FP");          // 显示完整路径
+                }
+
+                if (robocopyConfig.ShowETA)
+                    argumentsList.Add("/ETA");         // 显示预计完成时间
+
+                // 日志参数（简化输出以减少性能影响）
+                argumentsList.Add("/NFL");             // 不记录文件名
+                argumentsList.Add("/NDL");             // 不记录目录名
+
+                var arguments = string.Join(" ", argumentsList);
+
+                progress?.Report($"执行Robocopy: robocopy {arguments}");
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "robocopy",
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = new Process { StartInfo = processStartInfo };
+
+                var outputBuilder = new List<string>();
+                var errorBuilder = new List<string>();
+
+                process.OutputDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        outputBuilder.Add(e.Data);
+
+                        // 捕捉所有有用的进度信息
+                        if (e.Data.Contains("Files :") ||
+                            e.Data.Contains("Dirs :") ||
+                            e.Data.Contains("Bytes :") ||
+                            e.Data.Contains("Times :") ||
+                            e.Data.Contains("Speed :") ||
+                            e.Data.Contains("ETA:") ||
+                            e.Data.Contains("%") ||
+                            (e.Data.Contains("New File") && robocopyConfig.ShowProgress))
+                        {
+                            progress?.Report($"Robocopy: {e.Data.Trim()}");
+                        }
+                    }
+                };
+
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        errorBuilder.Add(e.Data);
+                    }
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                await process.WaitForExitAsync();
+
+                // Robocopy退出码：0-3表示成功，4+表示错误
+                bool success = process.ExitCode <= 3;
+
+                if (success)
+                {
+                    progress?.Report($"Robocopy完成，退出码: {process.ExitCode}");
+                }
+                else
+                {
+                    progress?.Report($"Robocopy失败，退出码: {process.ExitCode}");
+                    if (errorBuilder.Count > 0)
+                    {
+                        progress?.Report($"错误信息: {string.Join("; ", errorBuilder.Take(3))}");
+                    }
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"执行Robocopy异常：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 执行FastCopy完整性校验
+        /// </summary>
+        private async Task<bool> ExecuteFastCopyVerifyAsync(string sourcePath, string targetPath, IProgress<string>? progress)
+        {
+            try
+            {
+                // 使用FastCopy进行校验
+                var verifyOptions = new List<string>
+                {
+                    "/cmd=diff_only",  // 仅对比差异
+                    "/verify",         // 启用校验
+                    "/auto_close",     // 自动关闭
+                    "/log"             // 输出日志
+                };
+
+                progress?.Report("FastCopy校验：检查复制完整性...");
+                bool verifyResult = await _fastCopyService.CopyDirectoryAsync(sourcePath, targetPath, verifyOptions.ToArray());
+
+                if (verifyResult)
+                {
+                    progress?.Report("✅ FastCopy校验通过：文件完整性确认");
+                }
+                else
+                {
+                    progress?.Report("❌ FastCopy校验失败：发现文件差异或损坏");
+                }
+
+                return verifyResult;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"FastCopy校验异常：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 执行Robocopy同步模式复制（智能同步）
+        /// </summary>
+        private async Task<bool> ExecuteRobocopyForSyncAsync(string sourcePath, string targetPath, IProgress<string>? progress)
+        {
+            try
+            {
+                // 从配置读取Robocopy参数
+                var robocopyConfig = GetRobocopyConfig();
+
+                // 构建同步模式的Robocopy命令参数
+                var argumentsList = new List<string>
+                {
+                    $"\"{sourcePath}\"",
+                    $"\"{targetPath}\"",
+                    "/E",                              // 复制所有子目录（包括空目录）
+                    "/COPYALL",                        // 复制所有文件信息
+                    $"/MT:{robocopyConfig.ThreadCount}", // 多线程复制
+                    $"/R:{robocopyConfig.RetryCount}",   // 重试次数
+                    $"/W:{robocopyConfig.RetryWaitSeconds}", // 重试等待时间
+                    "/IM",                             // 包含修改的文件（确保同步一致性）
+                };
+
+                // 性能优化参数（同新建模式）
+                if (robocopyConfig.EnableUnbufferedIO)
+                    argumentsList.Add("/J");
+
+                // 不使用可重启模式，确保同步一致性
+                // if (robocopyConfig.EnableRestart)
+                //     argumentsList.Add("/ZB");
+
+                if (robocopyConfig.EnableLowSpaceMode)
+                    argumentsList.Add("/LFSM");
+
+                if (robocopyConfig.EnableCompression)
+                    argumentsList.Add("/COMPRESS");
+
+                if (robocopyConfig.EnableSparseFiles)
+                    argumentsList.Add("/SPARSE");
+
+                // 日志和进度参数
+                if (robocopyConfig.ShowProgress)
+                {
+                    argumentsList.Add("/BYTES");
+                    argumentsList.Add("/FP");
+                }
+
+                if (robocopyConfig.ShowETA)
+                    argumentsList.Add("/ETA");
+
+                argumentsList.Add("/NFL");
+                argumentsList.Add("/NDL");
+
+                var arguments = string.Join(" ", argumentsList);
+
+                progress?.Report($"执行Robocopy同步: robocopy {arguments}");
+
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "robocopy",
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = new Process { StartInfo = processStartInfo };
+
+                var outputBuilder = new List<string>();
+                var errorBuilder = new List<string>();
+
+                process.OutputDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        outputBuilder.Add(e.Data);
+
+                        // 捕捉同步模式的详细进度信息
+                        if (e.Data.Contains("Files :") ||
+                            e.Data.Contains("Dirs :") ||
+                            e.Data.Contains("Bytes :") ||
+                            e.Data.Contains("Times :") ||
+                            e.Data.Contains("Speed :") ||
+                            e.Data.Contains("ETA:") ||
+                            e.Data.Contains("%") ||
+                            e.Data.Contains("Modified File") ||
+                            e.Data.Contains("Newer File") ||
+                            e.Data.Contains("Same File"))
+                        {
+                            progress?.Report($"Robocopy同步: {e.Data.Trim()}");
+                        }
+                    }
+                };
+
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        errorBuilder.Add(e.Data);
+                    }
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                await process.WaitForExitAsync();
+
+                // Robocopy退出码：0-3表示成功
+                bool success = process.ExitCode <= 3;
+
+                if (success)
+                {
+                    progress?.Report($"Robocopy同步完成，退出码: {process.ExitCode}");
+                }
+                else
+                {
+                    progress?.Report($"Robocopy同步失败，退出码: {process.ExitCode}");
+                    if (errorBuilder.Count > 0)
+                    {
+                        progress?.Report($"错误信息: {string.Join("; ", errorBuilder.Take(3))}");
+                    }
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"执行Robocopy同步异常：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取Robocopy配置
+        /// </summary>
+        private RobocopyConfig GetRobocopyConfig()
+        {
+            try
+            {
+                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                if (File.Exists(configPath))
+                {
+                    var configContent = File.ReadAllText(configPath);
+                    var config = JsonSerializer.Deserialize<JsonElement>(configContent);
+
+                    if (config.TryGetProperty("Robocopy", out var robocopyConfig))
+                    {
+                        return new RobocopyConfig
+                        {
+                            ThreadCount = robocopyConfig.TryGetProperty("ThreadCount", out var tc) ? tc.GetInt32() : 64,
+                            RetryCount = robocopyConfig.TryGetProperty("RetryCount", out var rc) ? rc.GetInt32() : 3600,
+                            RetryWaitSeconds = robocopyConfig.TryGetProperty("RetryWaitSeconds", out var rw) ? rw.GetInt32() : 1,
+                            EnableUnbufferedIO = robocopyConfig.TryGetProperty("EnableUnbufferedIO", out var uio) ? uio.GetBoolean() : true,
+                            EnableRestart = robocopyConfig.TryGetProperty("EnableRestart", out var er) ? er.GetBoolean() : false,
+                            EnableLowSpaceMode = robocopyConfig.TryGetProperty("EnableLowSpaceMode", out var lsm) ? lsm.GetBoolean() : false,
+                            EnableCompression = robocopyConfig.TryGetProperty("EnableCompression", out var comp) ? comp.GetBoolean() : false,
+                            EnableSparseFiles = robocopyConfig.TryGetProperty("EnableSparseFiles", out var sf) ? sf.GetBoolean() : false,
+                            ShowProgress = robocopyConfig.TryGetProperty("ShowProgress", out var sp) ? sp.GetBoolean() : true,
+                            ShowETA = robocopyConfig.TryGetProperty("ShowETA", out var eta) ? eta.GetBoolean() : true
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 配置读取失败时使用默认值
+                LogMessage?.Invoke(this, $"读取Robocopy配置失败，使用默认值: {ex.Message}");
+            }
+
+            // 返回默认配置
+            return new RobocopyConfig
+            {
+                ThreadCount = 64,
+                RetryCount = 3600,
+                RetryWaitSeconds = 1,
+                EnableUnbufferedIO = true,
+                EnableRestart = false,
+                EnableLowSpaceMode = false,
+                EnableCompression = false,
+                EnableSparseFiles = false,
+                ShowProgress = true,
+                ShowETA = true
+            };
+        }
+
         public void Dispose()
         {
             _fileSyncService?.Dispose();
@@ -880,5 +1339,31 @@ namespace CacheMax.GUI.Services
             }
             _flushTimer?.Dispose();
         }
+    }
+
+    /// <summary>
+    /// 缓存冲突选择
+    /// </summary>
+    public enum CacheConflictChoice
+    {
+        Cancel,
+        SyncMode
+    }
+
+    /// <summary>
+    /// Robocopy配置类
+    /// </summary>
+    public class RobocopyConfig
+    {
+        public int ThreadCount { get; set; } = 64;
+        public int RetryCount { get; set; } = 3;
+        public int RetryWaitSeconds { get; set; } = 1;
+        public bool EnableUnbufferedIO { get; set; } = true;
+        public bool EnableRestart { get; set; } = true;
+        public bool EnableLowSpaceMode { get; set; } = true;
+        public bool EnableCompression { get; set; } = true;
+        public bool EnableSparseFiles { get; set; } = true;
+        public bool ShowProgress { get; set; } = true;
+        public bool ShowETA { get; set; } = true;
     }
 }

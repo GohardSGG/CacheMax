@@ -1,0 +1,15 @@
+﻿[2025-09-21 20:02:12.483] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:02:12.513] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:02:12.517] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:02:12.534] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:02:12.534] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-21 20:02:12.534] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-21 20:02:12.535] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:02:12.549] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:02:12.637] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-21 20:02:12.643] [INFO ] [T001] [MainWindow] 恢复文件同步监控：S:\Cache\Test -> A:\Test.original
+[2025-09-21 20:02:12.644] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\Test
+[2025-09-21 20:02:12.644] [INFO ] [T001] [MainWindow] 恢复性能监控：A:\Test
+[2025-09-21 20:02:12.644] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-21 20:02:12.644] [INFO ] [T008] [MainWindow] 开始监控：S:\Cache\Test (模式：Immediate，延迟：3秒)
+[2025-09-21 20:03:14.538] [DEBUG] [T017] [FileSyncService] SemaphoreSlim计数正常: 可用=3, 运行中的进程=0

@@ -17,8 +17,8 @@
         <ToolBar Grid.Row="0" Height="40">
             <Button Name="AccelerateButton" Click="AccelerateButton_Click" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="➕" FontSize="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="Accelerate Folder" VerticalAlignment="Center"/>
+                    <TextBlock Text="🚀" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="批量加速" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Separator/>
@@ -59,12 +59,10 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Input section -->
-                <GroupBox Grid.Row="0" Header="Acceleration Settings" Padding="10" Margin="0,0,0,10">
+                <!-- Global Settings -->
+                <GroupBox Grid.Row="0" Header="全局设置" Padding="10" Margin="0,0,0,10">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -74,38 +72,16 @@
                             <ColumnDefinition Width="100"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Source folder -->
-                        <Label Grid.Row="0" Grid.Column="0" Content="Source Folder:" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Name="SourceFolderTextBox"
-                                 VerticalAlignment="Center" Margin="5"/>
-                        <Button Grid.Row="0" Grid.Column="2" Name="BrowseSourceButton"
-                                Content="Browse..." Click="BrowseSourceButton_Click" Margin="5"/>
-
                         <!-- Cache root -->
-                        <Label Grid.Row="1" Grid.Column="0" Content="Cache Root:" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Name="CacheRootTextBox"
+                        <Label Grid.Row="0" Grid.Column="0" Content="缓存根目录:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Name="CacheRootTextBox"
                                  Text="S:\Cache" VerticalAlignment="Center" Margin="5"/>
-                        <Button Grid.Row="1" Grid.Column="2" Name="BrowseCacheButton"
+                        <Button Grid.Row="0" Grid.Column="2" Name="BrowseCacheButton"
                                 Content="Browse..." Click="BrowseCacheButton_Click" Margin="5"/>
 
-                        <!-- Sync Settings -->
-                        <Label Grid.Row="2" Grid.Column="0" Content="Sync Mode:" VerticalAlignment="Center"/>
-                        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
-                            <ComboBox Name="SyncModeComboBox" Width="120" VerticalAlignment="Center">
-                                <ComboBoxItem Content="即时同步" Tag="Immediate"/>
-                                <ComboBoxItem Content="批量同步" Tag="Batch" IsSelected="True"/>
-                                <ComboBoxItem Content="定期同步" Tag="Periodic"/>
-                            </ComboBox>
-                            <Label Content="延迟:" Margin="10,0,5,0" VerticalAlignment="Center"/>
-                            <TextBox Name="SyncDelayTextBox" Text="3" Width="50" VerticalAlignment="Center"/>
-                            <Label Content="秒" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <Button Grid.Row="2" Grid.Column="2" Name="SyncNowButton"
-                                Content="立即同步" Click="SyncNowButton_Click" Margin="5" IsEnabled="False"/>
-
                         <!-- Core Controls -->
-                        <Label Grid.Row="3" Grid.Column="0" Content="操作:" VerticalAlignment="Center"/>
-                        <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+                        <Label Grid.Row="1" Grid.Column="0" Content="操作:" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
                             <Button Name="ValidateButton" Content="验证完整性" Click="ValidateButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
                             <Button Name="UpdateSyncModeButton" Content="更新同步模式" Click="UpdateSyncModeButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
                             <Button Name="HealthCheckButton" Content="健康检查" Click="HealthCheckButton_Click" Margin="0,0,10,0"/>
@@ -115,21 +91,129 @@
                 </GroupBox>
 
                 <!-- Accelerated folders list -->
-                <GroupBox Grid.Row="1" Header="Accelerated Folders">
-                    <DataGrid Name="AcceleratedFoldersGrid"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              SelectionMode="Single"
-                              SelectionChanged="AcceleratedFoldersGrid_SelectionChanged">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="60"/>
-                            <DataGridTextColumn Header="Original Path" Binding="{Binding OriginalPath}" Width="*"/>
-                            <DataGridTextColumn Header="Cache Path" Binding="{Binding CachePath}" Width="*"/>
-                            <DataGridTextColumn Header="Mount Point" Binding="{Binding MountPoint}" Width="150"/>
-                            <DataGridTextColumn Header="Cache Size" Binding="{Binding CacheSizeFormatted}" Width="80"/>
-                            <DataGridTextColumn Header="Created" Binding="{Binding CreatedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                <GroupBox Grid.Row="1" Header="加速文件夹管理">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- DataGrid -->
+                        <DataGrid Name="AcceleratedFoldersGrid" Grid.Row="0"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  SelectionMode="Single"
+                                  SelectionChanged="AcceleratedFoldersGrid_SelectionChanged"
+                                  GridLinesVisibility="Horizontal"
+                                  AlternatingRowBackground="LightGray">
+                            <DataGrid.Columns>
+                                <!-- Status Column with Icons -->
+                                <DataGridTemplateColumn Header="状态" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Name="StatusIcon" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Status}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="未加速">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="⚪"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="初始化中">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="🔄"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Blue"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="同步中">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="⚡"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Orange"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="已完成">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="✅"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="失败">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="❌"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Progress Column -->
+                                <DataGridTemplateColumn Header="进度" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <ProgressBar Name="ProgressBar"
+                                                           Height="18"
+                                                           Minimum="0"
+                                                           Maximum="100"
+                                                           Value="{Binding ProgressPercentage}"
+                                                           Background="LightGray"
+                                                           BorderBrush="DarkGray"
+                                                           BorderThickness="1"/>
+                                                <TextBlock Text="{Binding ProgressText}"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         FontSize="10"
+                                                         FontWeight="Bold"/>
+                                            </Grid>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="未加速">
+                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="初始化中">
+                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Blue"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="同步中">
+                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Orange"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="已完成">
+                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="失败">
+                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="源路径" Binding="{Binding OriginalPath}" Width="2*"/>
+                                <DataGridTextColumn Header="缓存路径" Binding="{Binding CachePath}" Width="2*"/>
+                                <DataGridTextColumn Header="挂载点" Binding="{Binding MountPoint}" Width="120"/>
+                                <DataGridTextColumn Header="缓存大小" Binding="{Binding CacheSizeFormatted}" Width="80"/>
+                                <DataGridTextColumn Header="创建时间" Binding="{Binding CreatedAt, StringFormat='{}{0:MM-dd HH:mm}'}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Path Input Section -->
+                        <GroupBox Grid.Row="1" Header="添加新路径" Margin="0,10,0,0" Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Name="NewPathTextBox" Grid.Column="0"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,10,0"
+                                         Padding="8,6"
+                                         FontSize="12"
+                                         ToolTip="输入要加速的文件夹路径，例如：C:\MyFolder"
+                                         KeyDown="NewPathTextBox_KeyDown"/>
+
+                                <Button Name="AddPathButton" Grid.Column="1"
+                                        Content="➕ 添加"
+                                        Click="AddPathButton_Click"
+                                        Padding="8,6"
+                                        Background="LightGreen"
+                                        BorderBrush="Green"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
                 </GroupBox>
             </Grid>
 

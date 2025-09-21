@@ -1,0 +1,41 @@
+﻿[2025-09-21 20:03:55.505] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:03:55.531] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:03:55.534] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:03:55.547] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:03:55.547] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-21 20:03:55.547] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-21 20:03:55.548] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 20:03:55.559] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 20:03:55.643] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-21 20:03:55.649] [INFO ] [T001] [MainWindow] 恢复文件同步监控：S:\Cache\Test -> A:\Test.original
+[2025-09-21 20:03:55.649] [INFO ] [T010] [MainWindow] 开始监控：S:\Cache\Test (模式：Immediate，延迟：3秒)
+[2025-09-21 20:03:55.649] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\Test
+[2025-09-21 20:03:55.649] [INFO ] [T001] [MainWindow] 恢复性能监控：A:\Test
+[2025-09-21 20:03:55.649] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-21 20:04:18.913] [INFO ] [T001] [MainWindow] 已删除路径：A:\Test.original
+[2025-09-21 20:04:57.552] [DEBUG] [T017] [FileSyncService] SemaphoreSlim计数正常: 可用=3, 运行中的进程=0
+[2025-09-21 20:06:13.051] [INFO ] [T001] [MainWindow] 已添加路径：A:\Test
+[2025-09-21 20:06:21.110] [INFO ] [T001] [MainWindow] 开始加速：A:\Test
+[2025-09-21 20:06:21.113] [INFO ] [T001] [MainWindow] ❌ 加速失败：A:\Test
+[2025-09-21 20:06:21.233] [INFO ] [T001] [MainWindow] 使用目录连接点，无需管理员权限
+[2025-09-21 20:06:21.233] [INFO ] [T001] [MainWindow] 开始缓存加速初始化...
+[2025-09-21 20:06:21.234] [INFO ] [T001] [MainWindow] 目录已经是Junction，可能已加速
+[2025-09-21 20:06:29.773] [INFO ] [T001] [MainWindow] 已删除加速条目: A:\Test
+[2025-09-21 20:06:57.550] [DEBUG] [T020] [FileSyncService] SemaphoreSlim计数正常: 可用=3, 运行中的进程=0
+[2025-09-21 20:07:02.695] [INFO ] [T001] [MainWindow] 已添加路径：A:\Test
+[2025-09-21 20:07:05.737] [INFO ] [T001] [MainWindow] 开始加速：A:\Test
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 使用目录连接点，无需管理员权限
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 开始缓存加速初始化...
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 缓存目录不存在，将创建新的缓存
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 开始创建缓存目录和备份路径...
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 创建驱动器专用缓存目录：S:\Cache\A
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 复制数据到缓存：A:\Test -> S:\Cache\A\Test
+[2025-09-21 20:07:05.756] [INFO ] [T001] [MainWindow] 使用Robocopy高速多线程复制 + FastCopy完整性校验
+[2025-09-21 20:07:05.757] [INFO ] [T001] [MainWindow] 阶段1/2：Robocopy多线程复制中...
+[2025-09-21 20:07:05.757] [INFO ] [T001] [MainWindow] 执行Robocopy: robocopy "A:\Test" "S:\Cache\A\Test" /E /COPYALL /MT:64 /R:3 /W:1 /J /LFSM /COMPRESS /SPARSE /BYTES /FP /ETA /NFL /NDL
+[2025-09-21 20:07:05.803] [INFO ] [T001] [MainWindow] Robocopy失败，退出码: 16
+[2025-09-21 20:07:05.804] [INFO ] [T001] [MainWindow] Robocopy复制失败
+[2025-09-21 20:07:05.805] [INFO ] [T001] [MainWindow] 记录错误：A:\Test - CopyFailure: 复制到缓存失败 (严重程度：High)
+[2025-09-21 20:07:05.807] [INFO ] [T001] [MainWindow] 安排恢复：A:\Test (策略：Retry，延迟：1分钟)
+[2025-09-21 20:07:05.807] [INFO ] [T001] [MainWindow] 复制到缓存失败
+[2025-09-21 20:07:05.808] [INFO ] [T001] [MainWindow] ❌ 加速失败：A:\Test

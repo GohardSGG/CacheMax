@@ -1,17 +1,70 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Newtonsoft.Json;
 
 namespace CacheMax.GUI.Services
 {
-    public class AcceleratedFolder
+    public class AcceleratedFolder : INotifyPropertyChanged
     {
         public string OriginalPath { get; set; } = string.Empty;
         public string CachePath { get; set; } = string.Empty;
         public string MountPoint { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public long CacheSize { get; set; }
+
+        private string _status = "未加速";
+        public string Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged(nameof(Status));
+            }
+        }
+
+        private double _progressPercentage = 0.0;
+        public double ProgressPercentage
+        {
+            get => _progressPercentage;
+            set
+            {
+                _progressPercentage = value;
+                OnPropertyChanged(nameof(ProgressPercentage));
+                OnPropertyChanged(nameof(ProgressText));
+            }
+        }
+
+        [JsonIgnore]
+        public string ProgressText => $"{ProgressPercentage:F0}%";
+
+        [JsonIgnore]
+        public string CacheSizeFormatted => FormatBytes(CacheSize);
+
+        private static string FormatBytes(long bytes)
+        {
+            if (bytes == 0) return "0 B";
+
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+            double size = bytes;
+            int suffixIndex = 0;
+
+            while (size >= 1024 && suffixIndex < suffixes.Length - 1)
+            {
+                size /= 1024;
+                suffixIndex++;
+            }
+
+            return $"{size:F1} {suffixes[suffixIndex]}";
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public class AppConfig
