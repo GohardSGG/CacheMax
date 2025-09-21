@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Channels;
 using CacheMax.GUI.ViewModels;
 
 namespace CacheMax.GUI.Services
@@ -23,6 +24,19 @@ namespace CacheMax.GUI.Services
         private readonly Dictionary<string, SyncConfiguration> _syncConfigs = new();
         private readonly Dictionary<string, FileOperationAnalyzer> _analyzers = new();
         private readonly Dictionary<string, SyncQueueItemViewModel> _queueItems = new();
+        private readonly Dictionary<SyncOperation, (SyncQueueItemViewModel item, string key)> _operationToQueueItem = new();
+
+        // 工业级并行引擎
+        private readonly ParallelSyncEngine _parallelEngine;
+        private readonly BatchIOProcessor _batchProcessor;
+        private readonly LockFreeQueueSystem<IOOperation> _priorityQueue;
+
+        // 异步日志系统
+        private readonly AsyncLogger _logger;
+
+        // Channel通信系统
+        private readonly Channel<UIUpdateMessage> _uiUpdateChannel;
+        private readonly CancellationTokenSource _serviceCancellation;
 
         private Timer? _batchTimer;
         private Timer? _periodicTimer;
@@ -30,6 +44,78 @@ namespace CacheMax.GUI.Services
         private Timer? _statsTimer;
         private readonly object _lockObject = new object();
         private bool _disposed = false;
+
+        public FileSyncService()
+        {
+            _parallelEngine = new ParallelSyncEngine();
+            _batchProcessor = new BatchIOProcessor(maxBatchSize: 1000, batchTimeoutMs: 50);
+            _priorityQueue = new LockFreeQueueSystem<IOOperation>(5);
+            _logger = new AsyncLogger();
+            _serviceCancellation = new CancellationTokenSource();
+
+            // 创建UI更新Channel
+            _uiUpdateChannel = Channel.CreateUnbounded<UIUpdateMessage>(new UnboundedChannelOptions
+            {
+                SingleReader = true,
+                SingleWriter = false
+            });
+
+            // 启动UI更新处理循环
+            _ = Task.Run(() => ProcessUIUpdatesAsync(_serviceCancellation.Token));
+
+            // 延迟启动定时器，避免初始化时阻塞
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(2000); // 延迟2秒启动
+                _batchTimer = new Timer(ProcessBatchSync, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+                _periodicTimer = new Timer(ProcessPeriodicSync, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+                _intelligentTimer = new Timer(ProcessIntelligentSync, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+                _statsTimer = new Timer(UpdateStats, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+            });
+
+            _logger.LogInfo("FileSyncService 初始化完成", "FileSyncService");
+        }
+
+        /// <summary>
+        /// 完全异步的事件调用方法 - 避免阻塞UI线程
+        /// </summary>
+        private void InvokeEventAsync<T>(EventHandler<T>? eventHandler, T args, string eventName) where T : EventArgs
+        {
+            if (eventHandler == null) return;
+
+            // 完全异步调用，不阻塞当前线程
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    eventHandler.Invoke(this, args);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"事件调用异常: {eventName}", ex, "FileSyncService");
+                }
+            });
+        }
+
+        /// <summary>
+        /// 完全异步的LogMessage事件调用
+        /// </summary>
+        private void InvokeLogMessageAsync(string message)
+        {
+            if (LogMessage == null) return;
+
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    LogMessage.Invoke(this, message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"LogMessage事件调用异常: {message}", ex, "FileSyncService");
+                }
+            });
+        }
 
         // 统计数据
         private int _completedOperations = 0;
@@ -55,7 +141,7 @@ namespace CacheMax.GUI.Services
             public bool Enabled { get; set; } = true;
         }
 
-        public class SyncOperation
+        public class SyncOperation : IEquatable<SyncOperation>
         {
             public string FilePath { get; set; } = string.Empty;
             public string SourceRoot { get; set; } = string.Empty;
@@ -63,6 +149,25 @@ namespace CacheMax.GUI.Services
             public WatcherChangeTypes ChangeType { get; set; }
             public DateTime Timestamp { get; set; } = DateTime.Now;
             public SyncMode Mode { get; set; }
+            public long LastFileSize { get; set; } = -1;
+            public DateTime LastSizeCheck { get; set; } = DateTime.Now;
+            public int StabilityCheckCount { get; set; } = 0;
+
+            public bool Equals(SyncOperation? other)
+            {
+                if (other == null) return false;
+                return FilePath == other.FilePath && Timestamp == other.Timestamp;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return Equals(obj as SyncOperation);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(FilePath, Timestamp);
+            }
         }
 
         public class SyncEventArgs : EventArgs
@@ -82,6 +187,18 @@ namespace CacheMax.GUI.Services
             public TimeSpan AverageProcessingTime { get; set; }
             public DateTime LastUpdate { get; set; } = DateTime.Now;
             public string SyncMode { get; set; } = string.Empty;
+        }
+
+        public class SyncQueueEventArgs : EventArgs
+        {
+            public SyncQueueItemViewModel Item { get; }
+            public string Key { get; }
+
+            public SyncQueueEventArgs(SyncQueueItemViewModel item, string key = "")
+            {
+                Item = item;
+                Key = key;
+            }
         }
 
         public class FileOperationAnalyzer
@@ -201,13 +318,6 @@ namespace CacheMax.GUI.Services
             }
         }
 
-        public FileSyncService()
-        {
-            // 启动批量处理定时器
-            _batchTimer = new Timer(ProcessBatchSync, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
-            _periodicTimer = new Timer(ProcessPeriodicSync, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
-            _intelligentTimer = new Timer(ProcessIntelligentSync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
-        }
 
         /// <summary>
         /// 开始监控目录
@@ -268,7 +378,7 @@ namespace CacheMax.GUI.Services
 
                     _watchers[cachePath] = watcher;
 
-                    LogMessage?.Invoke(this, $"开始监控：{cachePath} (模式：{mode}，延迟：{delaySeconds}秒)");
+                    SafeLog($"开始监控：{cachePath} (模式：{mode}，延迟：{delaySeconds}秒)");
                     progress?.Report("文件监控启动成功");
                     return true;
                 }
@@ -276,7 +386,7 @@ namespace CacheMax.GUI.Services
             catch (Exception ex)
             {
                 progress?.Report($"启动监控异常：{ex.Message}");
-                LogMessage?.Invoke(this, $"启动监控异常：{ex.Message}");
+                SafeLog($"启动监控异常：{ex.Message}");
                 return false;
             }
         }
@@ -304,7 +414,7 @@ namespace CacheMax.GUI.Services
                     _syncConfigs.Remove(cachePath);
                     _analyzers.Remove(cachePath);
 
-                    LogMessage?.Invoke(this, $"停止监控：{cachePath}");
+                    SafeLog($"停止监控：{cachePath}");
                     progress?.Report("文件监控停止成功");
                     return true;
                 }
@@ -312,7 +422,7 @@ namespace CacheMax.GUI.Services
             catch (Exception ex)
             {
                 progress?.Report($"停止监控异常：{ex.Message}");
-                LogMessage?.Invoke(this, $"停止监控异常：{ex.Message}");
+                SafeLog($"停止监控异常：{ex.Message}");
                 return false;
             }
         }
@@ -335,14 +445,14 @@ namespace CacheMax.GUI.Services
                 var (totalSyncCount, totalErrorCount) = await SyncDirectoryRecursiveAsync(config.CachePath, config.OriginalPath, progress);
 
                 progress?.Report($"强制同步完成：成功 {totalSyncCount} 个文件，失败 {totalErrorCount} 个文件");
-                LogMessage?.Invoke(this, $"强制同步完成：{cachePath}，成功 {totalSyncCount}，失败 {totalErrorCount}");
+                SafeLog($"强制同步完成：{cachePath}，成功 {totalSyncCount}，失败 {totalErrorCount}");
 
                 return totalErrorCount == 0;
             }
             catch (Exception ex)
             {
                 progress?.Report($"强制同步异常：{ex.Message}");
-                LogMessage?.Invoke(this, $"强制同步异常：{ex.Message}");
+                SafeLog($"强制同步异常：{ex.Message}");
                 return false;
             }
         }
@@ -370,93 +480,184 @@ namespace CacheMax.GUI.Services
             }
         }
 
-        private void OnFileChanged(string filePath, string cacheRoot, WatcherChangeTypes changeType)
+        /// <summary>
+        /// 获取当前队列项目
+        /// </summary>
+        public IEnumerable<SyncQueueItemViewModel> GetCurrentQueueItems()
         {
-            if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
-                return;
-
-            // 过滤临时文件
-            if (IsTemporaryFile(filePath))
-                return;
-
-            // 记录操作用于智能分析
-            if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
-            {
-                var fileSize = 0L;
-                try
-                {
-                    if (File.Exists(filePath))
-                    {
-                        fileSize = new FileInfo(filePath).Length;
-                    }
-                }
-                catch { }
-
-                analyzer.RecordOperation(filePath, changeType, fileSize);
-            }
-
-            var operation = new SyncOperation
-            {
-                FilePath = filePath,
-                SourceRoot = config.CachePath,
-                TargetRoot = config.OriginalPath,
-                ChangeType = changeType,
-                Timestamp = DateTime.Now,
-                Mode = config.Mode
-            };
-
-            // 创建队列项目视图模型
-            var queueItem = new SyncQueueItemViewModel
-            {
-                FilePath = filePath,
-                Status = "等待中",
-                CreatedAt = DateTime.Now
-            };
-
-            // 尝试获取文件大小
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    queueItem.FileSize = new FileInfo(filePath).Length;
-                }
-            }
-            catch { }
-
-            // 添加到队列项目字典
-            var itemKey = $"{filePath}_{DateTime.Now.Ticks}";
             lock (_lockObject)
             {
-                _queueItems[itemKey] = queueItem;
+                return _queueItems.Values.ToList();
             }
+        }
 
-            // 触发队列项目添加事件
-            QueueItemAdded?.Invoke(this, new SyncQueueEventArgs(queueItem, "Added"));
-
-            // 智能同步决策
-            var priority = analyzer?.GetFilePriority(filePath) ?? FileOperationAnalyzer.SyncPriority.Normal;
-
-            if (config.Mode == SyncMode.Immediate || priority == FileOperationAnalyzer.SyncPriority.Critical)
+        /// <summary>
+        /// 获取队列统计信息
+        /// </summary>
+        public SyncQueueStats GetQueueStats()
+        {
+            lock (_lockObject)
             {
-                // 即时同步（包括关键文件）
-                queueItem.Status = "处理中";
-                QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Processing"));
+                var items = _queueItems.Values.ToList();
+                return new SyncQueueStats
+                {
+                    TotalCount = items.Count,
+                    PendingCount = items.Count(x => x.Status == "等待中"),
+                    ProcessingCount = items.Count(x => x.Status == "处理中"),
+                    CompletedCount = items.Count(x => x.Status == "完成"),
+                    FailedCount = items.Count(x => x.Status == "失败"),
+                    TotalSizeMB = items.Sum(x => x.FileSize) / (1024.0 * 1024.0),
+                    ProcessedSizeMB = items.Where(x => x.Status == "完成").Sum(x => x.FileSize) / (1024.0 * 1024.0)
+                };
+            }
+        }
 
-                Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey));
-                LogMessage?.Invoke(this, $"立即同步文件：{Path.GetFileName(filePath)} (优先级：{priority})");
-            }
-            else if (priority == FileOperationAnalyzer.SyncPriority.High)
+        /// <summary>
+        /// 清理已完成的队列项目
+        /// </summary>
+        public void ClearCompletedItems()
+        {
+            lock (_lockObject)
             {
-                // 高优先级文件，缩短延迟
-                operation.Mode = SyncMode.Batch; // 强制批量模式以便快速处理
-                _syncQueue.Enqueue(operation);
-                LogMessage?.Invoke(this, $"高优先级文件入队：{Path.GetFileName(filePath)}");
+                var completedItems = _queueItems.Where(kv => kv.Value.Status == "完成").ToList();
+                foreach (var item in completedItems)
+                {
+                    _queueItems.Remove(item.Key);
+                    InvokeEventAsync(QueueItemRemoved, new SyncQueueEventArgs(item.Value, "Removed"), "QueueItemRemoved");
+                }
             }
-            else
+        }
+
+        /// <summary>
+        /// 清理失败的队列项目
+        /// </summary>
+        public void ClearFailedItems()
+        {
+            lock (_lockObject)
             {
-                // 加入队列等待批量处理
-                _syncQueue.Enqueue(operation);
+                var failedItems = _queueItems.Where(kv => kv.Value.Status == "失败").ToList();
+                foreach (var item in failedItems)
+                {
+                    _queueItems.Remove(item.Key);
+                    InvokeEventAsync(QueueItemRemoved, new SyncQueueEventArgs(item.Value, "Removed"), "QueueItemRemoved");
+                }
             }
+        }
+
+        private void OnFileChanged(string filePath, string cacheRoot, WatcherChangeTypes changeType)
+        {
+            // 立即异步处理，避免阻塞FileSystemWatcher线程
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    if (!_syncConfigs.TryGetValue(cacheRoot, out var config) || !config.Enabled)
+                        return;
+
+                    // 过滤临时文件
+                    if (IsTemporaryFile(filePath))
+                        return;
+
+                    // 记录操作用于智能分析
+                    if (_analyzers.TryGetValue(cacheRoot, out var analyzer))
+                    {
+                        var fileSize = 0L;
+                        try
+                        {
+                            if (File.Exists(filePath))
+                            {
+                                fileSize = new FileInfo(filePath).Length;
+                            }
+                        }
+                        catch { }
+
+                        analyzer.RecordOperation(filePath, changeType, fileSize);
+                    }
+
+                    var operation = new SyncOperation
+                    {
+                        FilePath = filePath,
+                        SourceRoot = config.CachePath,
+                        TargetRoot = config.OriginalPath,
+                        ChangeType = changeType,
+                        Timestamp = DateTime.Now,
+                        Mode = config.Mode
+                    };
+
+                    // 创建队列项目视图模型
+                    var queueItem = new SyncQueueItemViewModel
+                    {
+                        FilePath = filePath,
+                        Status = "等待中",
+                        CreatedAt = DateTime.Now
+                    };
+
+                    // 尝试获取文件大小
+                    try
+                    {
+                        if (File.Exists(filePath))
+                        {
+                            queueItem.FileSize = new FileInfo(filePath).Length;
+                        }
+                    }
+                    catch { }
+
+                    // 添加到队列项目字典
+                    var itemKey = $"{filePath}_{DateTime.Now.Ticks}";
+                    lock (_lockObject)
+                    {
+                        _queueItems[itemKey] = queueItem;
+                    }
+
+                    // 安全触发队列项目添加事件（通过Channel）
+                    await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
+                    {
+                        Type = UIUpdateType.QueueItemAdded,
+                        QueueItem = queueItem
+                    });
+
+                    // 智能同步决策
+                    var priority = analyzer?.GetFilePriority(filePath) ?? FileOperationAnalyzer.SyncPriority.Normal;
+
+                    if (config.Mode == SyncMode.Immediate || priority == FileOperationAnalyzer.SyncPriority.Critical)
+                    {
+                        // 即时同步（包括关键文件）
+                        queueItem.Status = "处理中";
+                        await _uiUpdateChannel.Writer.WriteAsync(new UIUpdateMessage
+                        {
+                            Type = UIUpdateType.QueueItemUpdated,
+                            QueueItem = queueItem
+                        });
+
+                        _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey));
+                        SafeLog($"立即同步文件：{Path.GetFileName(filePath)} (优先级：{priority})");
+                    }
+                    else
+                    {
+                        // 所有其他文件都加入队列，但保存队列项目的引用以便后续追踪
+                        if (priority == FileOperationAnalyzer.SyncPriority.High)
+                        {
+                            operation.Mode = SyncMode.Batch; // 强制批量模式以便快速处理
+                            SafeLog($"高优先级文件入队：{Path.GetFileName(filePath)}");
+                        }
+
+                        // 将队列项目引用保存到操作中，以便批量处理时能找到
+                        lock (_lockObject)
+                        {
+                            if (!_operationToQueueItem.ContainsKey(operation))
+                            {
+                                _operationToQueueItem[operation] = (queueItem, itemKey);
+                            }
+                        }
+
+                        _syncQueue.Enqueue(operation);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SafeLog($"文件变化处理异常: {ex.Message}");
+                }
+            });
         }
 
         private void OnFileRenamed(string oldPath, string newPath, string cacheRoot)
@@ -499,11 +700,38 @@ namespace CacheMax.GUI.Services
             // 批量处理操作
             if (operations.Count > 0)
             {
+                // 通过Channel发送日志，不直接调用UI事件
+                _ = _uiUpdateChannel.Writer.TryWrite(new UIUpdateMessage
+                {
+                    Type = UIUpdateType.LogMessage,
+                    Message = $"智能同步处理：{operations.Count} 个操作"
+                });
+
                 Task.Run(() =>
                 {
                     foreach (var op in operations)
                     {
-                        ProcessSyncOperation(op);
+                        // 尝试获取队列项目进行追踪
+                        (SyncQueueItemViewModel item, string key)? queueInfo = null;
+                        lock (_lockObject)
+                        {
+                            if (_operationToQueueItem.TryGetValue(op, out var info))
+                            {
+                                queueInfo = info;
+                                _operationToQueueItem.Remove(op); // 开始处理后移除
+                            }
+                        }
+
+                        if (queueInfo.HasValue)
+                        {
+                            // 使用带追踪的方法
+                            ProcessSyncOperationWithTracking(op, queueInfo.Value.item, queueInfo.Value.key);
+                        }
+                        else
+                        {
+                            // 回退到原有方法
+                            ProcessSyncOperation(op);
+                        }
                     }
                 });
             }
@@ -582,7 +810,7 @@ namespace CacheMax.GUI.Services
             // 智能批量处理
             if (prioritizedOperations.Count > 0)
             {
-                LogMessage?.Invoke(this, $"智能同步处理：{prioritizedOperations.Count} 个操作");
+                SafeLog($"智能同步处理：{prioritizedOperations.Count} 个操作");
 
                 Task.Run(() =>
                 {
@@ -636,7 +864,7 @@ namespace CacheMax.GUI.Services
             {
                 queueItem.Status = "处理中";
                 queueItem.Progress = 0;
-                QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Processing"));
+                InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Processing"), "QueueItemUpdated");
 
                 var startTime = DateTime.Now;
                 var relativePath = Path.GetRelativePath(operation.SourceRoot, operation.FilePath);
@@ -659,7 +887,7 @@ namespace CacheMax.GUI.Services
                         success = deleteResult.Success;
                         message = deleteResult.Message;
                         queueItem.Progress = 100;
-                        QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Progress"));
+                        InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Progress"), "QueueItemUpdated");
                         break;
                 }
 
@@ -669,7 +897,7 @@ namespace CacheMax.GUI.Services
                 {
                     queueItem.Status = "完成";
                     queueItem.Progress = 100;
-                    QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Completed"));
+                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Completed"), "QueueItemUpdated");
 
                     // 延迟移除完成的项目
                     Task.Delay(5000).ContinueWith(_ =>
@@ -678,47 +906,47 @@ namespace CacheMax.GUI.Services
                         {
                             if (_queueItems.Remove(itemKey))
                             {
-                                QueueItemRemoved?.Invoke(this, new SyncQueueEventArgs(queueItem, "Removed"));
+                                InvokeEventAsync(QueueItemRemoved, new SyncQueueEventArgs(queueItem, "Removed"), "QueueItemRemoved");
                             }
                         }
                     });
 
-                    SyncCompleted?.Invoke(this, new SyncEventArgs
+                    InvokeEventAsync(SyncCompleted, new SyncEventArgs
                     {
                         FilePath = operation.FilePath,
                         Success = true,
                         Message = message,
                         Duration = duration
-                    });
+                    }, "SyncCompleted");
                 }
                 else
                 {
                     queueItem.Status = "失败";
                     queueItem.ErrorMessage = message;
-                    QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Failed"));
+                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Failed"), "QueueItemUpdated");
 
-                    SyncFailed?.Invoke(this, new SyncEventArgs
+                    InvokeEventAsync(SyncFailed, new SyncEventArgs
                     {
                         FilePath = operation.FilePath,
                         Success = false,
                         Message = message,
                         Duration = duration
-                    });
+                    }, "SyncFailed");
                 }
             }
             catch (Exception ex)
             {
                 queueItem.Status = "失败";
                 queueItem.ErrorMessage = ex.Message;
-                QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Failed"));
+                InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Failed"), "QueueItemUpdated");
 
-                SyncFailed?.Invoke(this, new SyncEventArgs
+                InvokeEventAsync(SyncFailed, new SyncEventArgs
                 {
                     FilePath = operation.FilePath,
                     Success = false,
                     Message = ex.Message,
                     Duration = TimeSpan.Zero
-                });
+                }, "SyncFailed");
             }
         }
 
@@ -760,16 +988,16 @@ namespace CacheMax.GUI.Services
 
                 if (success)
                 {
-                    SyncCompleted?.Invoke(this, eventArgs);
+                    InvokeEventAsync(SyncCompleted, eventArgs, "SyncCompleted");
                     if (message.Contains("经过") && message.Contains("次尝试"))
                     {
-                        LogMessage?.Invoke(this, $"同步成功（重试后）：{Path.GetFileName(operation.FilePath)} - {message}");
+                        SafeLog($"同步成功（重试后）：{Path.GetFileName(operation.FilePath)} - {message}");
                     }
                 }
                 else
                 {
-                    SyncFailed?.Invoke(this, eventArgs);
-                    LogMessage?.Invoke(this, $"同步失败：{operation.FilePath} - {message}");
+                    InvokeEventAsync(SyncFailed, eventArgs, "SyncFailed");
+                    SafeLog($"同步失败：{operation.FilePath} - {message}");
                 }
             }
             catch (Exception ex)
@@ -783,8 +1011,8 @@ namespace CacheMax.GUI.Services
                     Duration = duration
                 };
 
-                SyncFailed?.Invoke(this, eventArgs);
-                LogMessage?.Invoke(this, $"同步异常：{operation.FilePath} - {ex.Message}");
+                InvokeEventAsync(SyncFailed, eventArgs, "SyncFailed");
+                SafeLog($"同步异常：{operation.FilePath} - {ex.Message}");
             }
         }
 
@@ -804,7 +1032,7 @@ namespace CacheMax.GUI.Services
 
                     var progress = new Progress<string>(msg =>
                     {
-                        LogMessage?.Invoke(this, msg);
+                        SafeLog(msg);
 
                         // 解析进度信息并更新队列项目
                         if (msg.Contains("正在复制") && msg.Contains("%"))
@@ -816,7 +1044,7 @@ namespace CacheMax.GUI.Services
                                 if (spaceIndex >= 0 && double.TryParse(msg.Substring(spaceIndex + 1, percentIndex - spaceIndex - 1), out var percent))
                                 {
                                     queueItem.Progress = percent;
-                                    QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Progress"));
+                                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Progress"), "QueueItemUpdated");
                                 }
                             }
                         }
@@ -833,7 +1061,7 @@ namespace CacheMax.GUI.Services
                             Directory.CreateDirectory(targetPath);
                         }
                         queueItem.Progress = 100;
-                        QueueItemUpdated?.Invoke(this, new SyncQueueEventArgs(queueItem, "Progress"));
+                        InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Progress"), "QueueItemUpdated");
 
                         return new SafeFileOperations.FileOperationResult
                         {
@@ -890,7 +1118,7 @@ namespace CacheMax.GUI.Services
                         BackoffMultiplier = 1.5
                     };
 
-                    var progress = new Progress<string>(msg => LogMessage?.Invoke(this, msg));
+                    var progress = new Progress<string>(msg => SafeLog(msg));
                     return await SafeFileOperations.SafeCopyFileAsync(sourcePath, targetPath, true, retryConfig, progress);
                 }
                 else if (Directory.Exists(sourcePath))
@@ -956,7 +1184,7 @@ namespace CacheMax.GUI.Services
                         BackoffMultiplier = 2.0
                     };
 
-                    var progress = new Progress<string>(msg => LogMessage?.Invoke(this, msg));
+                    var progress = new Progress<string>(msg => SafeLog(msg));
                     return await SafeFileOperations.SafeDeleteFileAsync(targetPath, retryConfig, progress);
                 }
                 else if (Directory.Exists(targetPath))
@@ -1084,12 +1312,136 @@ namespace CacheMax.GUI.Services
             return false;
         }
 
+        /// <summary>
+        /// 安全的日志记录方法 - 通过Channel发送，不阻塞调用线程
+        /// </summary>
+        private void SafeLog(string message)
+        {
+            _ = _uiUpdateChannel.Writer.TryWrite(new UIUpdateMessage
+            {
+                Type = UIUpdateType.LogMessage,
+                Message = message
+            });
+        }
+
+        /// <summary>
+        /// 更新统计信息
+        /// </summary>
+        private void UpdateStats(object? state)
+        {
+            var stats = new SyncStatsEventArgs
+            {
+                QueueCount = _syncQueue.Count,
+                CompletedOperations = _completedOperations,
+                FailedOperations = _failedOperations,
+                BytesProcessed = _bytesProcessed,
+                AverageProcessingTime = _processingTimes.Any() ? TimeSpan.FromMilliseconds(_processingTimes.Average(t => t.TotalMilliseconds)) : TimeSpan.Zero
+            };
+
+            // 通过Channel发送统计更新
+            _ = _uiUpdateChannel.Writer.TryWrite(new UIUpdateMessage
+            {
+                Type = UIUpdateType.StatsUpdated,
+                Stats = stats
+            });
+        }
+
+        /// <summary>
+        /// 异步处理UI更新消息
+        /// </summary>
+        private async Task ProcessUIUpdatesAsync(CancellationToken cancellationToken)
+        {
+            await foreach (var message in _uiUpdateChannel.Reader.ReadAllAsync(cancellationToken))
+            {
+                try
+                {
+                    switch (message.Type)
+                    {
+                        case UIUpdateType.QueueItemAdded:
+                            if (message.QueueItem != null)
+                                InvokeEventAsync(QueueItemAdded, new SyncQueueEventArgs(message.QueueItem, ""), "QueueItemAdded");
+                            break;
+                        case UIUpdateType.QueueItemUpdated:
+                            if (message.QueueItem != null)
+                                InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(message.QueueItem, ""), "QueueItemUpdated");
+                            break;
+                        case UIUpdateType.QueueItemRemoved:
+                            if (message.QueueItem != null)
+                                InvokeEventAsync(QueueItemRemoved, new SyncQueueEventArgs(message.QueueItem, ""), "QueueItemRemoved");
+                            break;
+                        case UIUpdateType.StatsUpdated:
+                            InvokeEventAsync(StatsUpdated, message.Stats!, "StatsUpdated");
+                            break;
+                        case UIUpdateType.LogMessage:
+                            InvokeLogMessageAsync(message.Message ?? string.Empty);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // UI更新失败不应影响主流程
+                    System.Diagnostics.Debug.WriteLine($"UI update failed: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 使用ParallelSyncEngine处理文件操作
+        /// </summary>
+        public async Task<bool> ProcessWithEngineAsync(string sourcePath, string targetPath, FileOperationType operationType)
+        {
+            try
+            {
+                return await _parallelEngine.SubmitFileOperationAsync(sourcePath, targetPath, operationType, _serviceCancellation.Token);
+            }
+            catch (Exception ex)
+            {
+                SafeLog($"引擎处理失败: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 提交IO操作到批处理器
+        /// </summary>
+        private async Task SubmitToBatchProcessor(string sourcePath, string targetPath, IOType ioType)
+        {
+            var operation = new IOOperation
+            {
+                SourcePath = sourcePath,
+                TargetPath = targetPath,
+                Type = ioType,
+                Priority = CalculateOperationPriority(sourcePath)
+            };
+
+            await _batchProcessor.SubmitOperationAsync(operation);
+        }
+
+        /// <summary>
+        /// 计算操作优先级
+        /// </summary>
+        private int CalculateOperationPriority(string filePath)
+        {
+            var ext = Path.GetExtension(filePath).ToLowerInvariant();
+            return ext switch
+            {
+                ".exe" or ".dll" => 0, // 最高优先级
+                ".cs" or ".cpp" or ".h" => 1,
+                ".txt" or ".md" or ".json" => 2,
+                ".log" or ".tmp" => 4, // 最低优先级
+                _ => 3 // 默认优先级
+            };
+        }
+
         public void Dispose()
         {
             if (_disposed)
                 return;
 
             _disposed = true;
+
+            // 取消所有异步操作
+            _serviceCancellation?.Cancel();
 
             lock (_lockObject)
             {
@@ -1107,8 +1459,38 @@ namespace CacheMax.GUI.Services
             _batchTimer?.Dispose();
             _periodicTimer?.Dispose();
             _intelligentTimer?.Dispose();
+            _statsTimer?.Dispose();
+
+            // 关闭Channel
+            _uiUpdateChannel.Writer.TryComplete();
+
+            // 释放引擎和处理器
+            _parallelEngine?.Dispose();
+            _batchProcessor?.Dispose();
+            _logger?.Dispose();
+            _serviceCancellation?.Dispose();
 
             GC.SuppressFinalize(this);
         }
+    }
+
+    /// <summary>
+    /// UI更新消息
+    /// </summary>
+    public class UIUpdateMessage
+    {
+        public UIUpdateType Type { get; set; }
+        public SyncQueueItemViewModel? QueueItem { get; set; }
+        public FileSyncService.SyncStatsEventArgs? Stats { get; set; }
+        public string? Message { get; set; }
+    }
+
+    public enum UIUpdateType
+    {
+        QueueItemAdded,
+        QueueItemUpdated,
+        QueueItemRemoved,
+        StatsUpdated,
+        LogMessage
     }
 }

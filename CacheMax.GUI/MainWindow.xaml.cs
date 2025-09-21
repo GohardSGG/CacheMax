@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using CacheMax.GUI.Services;
+using CacheMax.GUI.ViewModels;
 using Microsoft.Win32;
 
 namespace CacheMax.GUI
@@ -20,6 +21,7 @@ namespace CacheMax.GUI
         private readonly CacheManagerService _cacheManager;
         private readonly ConfigService _config;
         private readonly ObservableCollection<AcceleratedFolderViewModel> _acceleratedFolders;
+        private readonly ObservableCollection<SyncQueueItemViewModel> _syncQueueItems;
 
         public MainWindow()
         {
@@ -33,9 +35,19 @@ namespace CacheMax.GUI
             _cacheManager.LogMessage += (sender, message) => AddLog(message);
             _cacheManager.StatsUpdated += OnCacheStatsUpdated;
             _cacheManager.PerformanceStatsUpdated += OnPerformanceStatsUpdated;
-            _acceleratedFolders = new ObservableCollection<AcceleratedFolderViewModel>();
 
+            // 初始化集合
+            _acceleratedFolders = new ObservableCollection<AcceleratedFolderViewModel>();
+            _syncQueueItems = new ObservableCollection<SyncQueueItemViewModel>();
+
+            // 绑定数据源
             AcceleratedFoldersGrid.ItemsSource = _acceleratedFolders;
+            SyncQueueGrid.ItemsSource = _syncQueueItems;
+
+            // 订阅同步队列事件
+            _cacheManager.FileSyncService.QueueItemAdded += OnQueueItemAdded;
+            _cacheManager.FileSyncService.QueueItemUpdated += OnQueueItemUpdated;
+            _cacheManager.FileSyncService.QueueItemRemoved += OnQueueItemRemoved;
             CacheRootTextBox.Text = _config.Config.DefaultCacheRoot;
 
             LoadExistingAccelerations();
@@ -81,13 +93,7 @@ namespace CacheMax.GUI
                 return;
             }
 
-            // 检查管理员权限
-            if (!new SymbolicLinkService().IsRunningAsAdministrator())
-            {
-                MessageBox.Show("需要管理员权限才能创建符号链接\n请以管理员身份重新运行程序", "权限不足",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            // Junction不需要管理员权限，移除此检查
 
             // 准备路径
             var folderName = Path.GetFileName(sourceFolder);
@@ -101,10 +107,10 @@ namespace CacheMax.GUI
                 return;
             }
 
-            // 检查是否已经是符号链接
+            // 检查是否已经是Junction
             if (_cacheManager.IsAccelerated(sourceFolder))
             {
-                MessageBox.Show("此文件夹已经是符号链接", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("此文件夹已经是Junction", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -453,7 +459,6 @@ namespace CacheMax.GUI
 
             try
             {
-                CleanCacheButton.IsEnabled = false;
                 UpdateStatus($"正在清理缓存：{selected.CachePath}");
 
                 var progress = new Progress<string>(msg => AddLog(msg));
@@ -487,7 +492,6 @@ namespace CacheMax.GUI
             }
             finally
             {
-                CleanCacheButton.IsEnabled = true;
                 UpdateUI();
             }
         }
@@ -596,7 +600,6 @@ namespace CacheMax.GUI
 
             // 同步控制按钮
             SyncNowButton.IsEnabled = selected != null && selected.Status == "✅";
-            CleanCacheButton.IsEnabled = selected != null && selected.Status == "✅";
             ValidateButton.IsEnabled = selected != null;
             UpdateSyncModeButton.IsEnabled = selected != null && selected.Status == "✅";
             RecoveryButton.IsEnabled = selected != null;
@@ -743,7 +746,7 @@ namespace CacheMax.GUI
                 ParseCacheStats(message);
             }
 
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke(() =>
             {
                 LogTextBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}\n");
                 LogScrollViewer.ScrollToEnd();
@@ -769,7 +772,7 @@ namespace CacheMax.GUI
         private void OnCacheStatsUpdated(object? sender, CacheManagerService.CacheStatsEventArgs e)
         {
             // 在UI线程更新缓存统计信息
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke(() =>
             {
                 try
                 {
@@ -802,7 +805,7 @@ namespace CacheMax.GUI
         private void OnPerformanceStatsUpdated(object? sender, PerformanceMonitoringService.PerformanceStatsEventArgs e)
         {
             // 在UI线程更新性能统计信息
-            Dispatcher.Invoke(() =>
+            Dispatcher.BeginInvoke(() =>
             {
                 try
                 {
@@ -883,7 +886,7 @@ namespace CacheMax.GUI
                 var writeMB = long.Parse(match.Groups[7].Value);
 
                 // Update UI on main thread
-                Dispatcher.Invoke(() =>
+                Dispatcher.BeginInvoke(() =>
                 {
                     if (HitRateText != null)
                     {
@@ -955,6 +958,70 @@ namespace CacheMax.GUI
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void OnQueueItemAdded(object? sender, FileSyncService.SyncQueueEventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                _syncQueueItems.Add(e.Item);
+                UpdateQueueStats();
+            });
+        }
+
+        private void OnQueueItemUpdated(object? sender, FileSyncService.SyncQueueEventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                // 项目已经在集合中，属性变更会自动更新UI
+                UpdateQueueStats();
+            });
+        }
+
+        private void OnQueueItemRemoved(object? sender, FileSyncService.SyncQueueEventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                var itemToRemove = _syncQueueItems.FirstOrDefault(x => x.FilePath == e.Item.FilePath && x.CreatedAt == e.Item.CreatedAt);
+                if (itemToRemove != null)
+                {
+                    _syncQueueItems.Remove(itemToRemove);
+                }
+                UpdateQueueStats();
+            });
+        }
+
+        private void UpdateQueueStats()
+        {
+            var stats = _cacheManager.FileSyncService.GetQueueStats();
+
+            QueueCountText.Text = stats.TotalCount.ToString();
+            PendingCountText.Text = stats.PendingCount.ToString();
+            ProcessingCountText.Text = stats.ProcessingCount.ToString();
+            FailedCountText.Text = stats.FailedCount.ToString();
+        }
+
+        private void ClearCompletedButton_Click(object sender, RoutedEventArgs e)
+        {
+            _cacheManager.FileSyncService.ClearCompletedItems();
+        }
+
+        private void ClearFailedButton_Click(object sender, RoutedEventArgs e)
+        {
+            _cacheManager.FileSyncService.ClearFailedItems();
+        }
+
+        private void RetryFailedButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 获取失败的项目并重新加入队列（简化实现）
+            var failedItems = _syncQueueItems.Where(x => x.Status == "失败").ToList();
+            foreach (var item in failedItems)
+            {
+                item.Status = "等待中";
+                item.Progress = 0;
+                item.ErrorMessage = null;
+            }
+            AddLog($"重新排队 {failedItems.Count} 个失败的文件");
         }
 
         protected override void OnClosing(CancelEventArgs e)

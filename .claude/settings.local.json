@@ -24,7 +24,8 @@
       "Bash(dir:*)",
       "Bash(dotnet --version)",
       "Bash(dotnet restore:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(dotnet run:*)"
     ],
     "deny": [],
     "ask": []

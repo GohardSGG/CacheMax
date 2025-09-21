@@ -11,58 +11,10 @@ namespace CacheMax.GUI.Services
     /// </summary>
     public class JunctionService
     {
-        private const uint GENERIC_READ = 0x80000000;
-        private const uint GENERIC_WRITE = 0x40000000;
-        private const uint FILE_SHARE_READ = 0x00000001;
-        private const uint FILE_SHARE_WRITE = 0x00000002;
-        private const uint FILE_SHARE_DELETE = 0x00000004;
-        private const uint OPEN_EXISTING = 3;
-        private const uint FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
-        private const uint FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000;
-        private const uint FSCTL_SET_REPARSE_POINT = 0x000900A4;
-        private const uint FSCTL_GET_REPARSE_POINT = 0x000900A8;
-        private const uint FSCTL_DELETE_REPARSE_POINT = 0x000900AC;
-        private const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
-        private const ushort MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16384;
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CreateFile(
-            string lpFileName,
-            uint dwDesiredAccess,
-            uint dwShareMode,
-            IntPtr lpSecurityAttributes,
-            uint dwCreationDisposition,
-            uint dwFlagsAndAttributes,
-            IntPtr hTemplateFile);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool DeviceIoControl(
-            IntPtr hDevice,
-            uint dwIoControlCode,
-            IntPtr lpInBuffer,
-            uint nInBufferSize,
-            IntPtr lpOutBuffer,
-            uint nOutBufferSize,
-            out uint lpBytesReturned,
-            IntPtr lpOverlapped);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool CloseHandle(IntPtr hObject);
+        private const uint FILE_ATTRIBUTE_REPARSE_POINT = 0x400;
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern uint GetFileAttributes(string lpFileName);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct REPARSE_DATA_BUFFER
-        {
-            public uint ReparseTag;
-            public ushort ReparseDataLength;
-            public ushort Reserved;
-            public ushort SubstituteNameOffset;
-            public ushort SubstituteNameLength;
-            public ushort PrintNameOffset;
-            public ushort PrintNameLength;
-        }
 
         /// <summary>
         /// 创建目录连接点
@@ -91,105 +43,49 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
-                // 创建Junction目录
-                Directory.CreateDirectory(junctionPath);
-
-                // 打开Junction目录句柄
-                IntPtr handle = CreateFile(
-                    junctionPath,
-                    GENERIC_READ | GENERIC_WRITE,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                    IntPtr.Zero,
-                    OPEN_EXISTING,
-                    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                    IntPtr.Zero);
-
-                if (handle == new IntPtr(-1))
+                // 使用cmd命令创建Junction（最可靠的方法）
+                var processInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    progress?.Report($"错误：无法打开Junction目录：{Marshal.GetLastWin32Error()}");
-                    Directory.Delete(junctionPath);
-                    return false;
-                }
+                    FileName = "cmd.exe",
+                    Arguments = $"/c mklink /J \"{junctionPath}\" \"{targetPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
 
-                try
+                using (var process = System.Diagnostics.Process.Start(processInfo))
                 {
-                    // 准备目标路径（必须是\\?\开头的格式）
-                    string nativeTarget = @"\??\" + targetPath;
-                    byte[] targetBytes = Encoding.Unicode.GetBytes(nativeTarget);
-
-                    // 计算缓冲区大小
-                    int bufferSize = Marshal.SizeOf<REPARSE_DATA_BUFFER>() + targetBytes.Length + targetBytes.Length + 12;
-                    IntPtr buffer = Marshal.AllocHGlobal(bufferSize);
-
-                    try
+                    if (process != null)
                     {
-                        // 构建REPARSE_DATA_BUFFER
-                        var reparseData = new REPARSE_DATA_BUFFER
+                        process.WaitForExit();
+
+                        if (process.ExitCode == 0)
                         {
-                            ReparseTag = IO_REPARSE_TAG_MOUNT_POINT,
-                            ReparseDataLength = (ushort)(targetBytes.Length + targetBytes.Length + 12),
-                            Reserved = 0,
-                            SubstituteNameOffset = 0,
-                            SubstituteNameLength = (ushort)targetBytes.Length,
-                            PrintNameOffset = (ushort)(targetBytes.Length + 2),
-                            PrintNameLength = (ushort)targetBytes.Length
-                        };
-
-                        // 写入缓冲区
-                        Marshal.StructureToPtr(reparseData, buffer, false);
-                        IntPtr dataStart = new IntPtr(buffer.ToInt64() + Marshal.SizeOf<REPARSE_DATA_BUFFER>());
-
-                        // 写入SubstituteName
-                        Marshal.Copy(targetBytes, 0, dataStart, targetBytes.Length);
-
-                        // 写入分隔符
-                        Marshal.WriteInt16(dataStart, targetBytes.Length, 0);
-
-                        // 写入PrintName
-                        Marshal.Copy(targetBytes, 0, new IntPtr(dataStart.ToInt64() + targetBytes.Length + 2), targetBytes.Length);
-
-                        // 写入结束符
-                        Marshal.WriteInt16(dataStart, targetBytes.Length + targetBytes.Length + 2, 0);
-
-                        // 调用DeviceIoControl设置重解析点
-                        bool result = DeviceIoControl(
-                            handle,
-                            FSCTL_SET_REPARSE_POINT,
-                            buffer,
-                            (uint)bufferSize,
-                            IntPtr.Zero,
-                            0,
-                            out _,
-                            IntPtr.Zero);
-
-                        if (!result)
+                            progress?.Report("Junction创建成功");
+                            return true;
+                        }
+                        else
                         {
-                            int error = Marshal.GetLastWin32Error();
-                            progress?.Report($"错误：设置重解析点失败：{error}");
+                            string error = process.StandardError.ReadToEnd();
+                            string output = process.StandardOutput.ReadToEnd();
+                            progress?.Report($"Junction创建失败：{error} {output}");
                             return false;
                         }
+                    }
+                }
 
-                        progress?.Report("Junction创建成功");
-                        return true;
-                    }
-                    finally
-                    {
-                        Marshal.FreeHGlobal(buffer);
-                    }
-                }
-                finally
-                {
-                    CloseHandle(handle);
-                }
+                progress?.Report("启动mklink进程失败");
+                return false;
             }
             catch (Exception ex)
             {
                 progress?.Report($"创建Junction异常：{ex.Message}");
 
-                // 清理失败的Junction目录
+                // 清理可能残留的目录
                 try
                 {
-                    if (Directory.Exists(junctionPath))
+                    if (Directory.Exists(junctionPath) && !IsJunction(junctionPath))
                     {
                         Directory.Delete(junctionPath);
                     }
@@ -201,7 +97,7 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 删除Junction
+        /// 删除目录连接点
         /// </summary>
         public bool RemoveJunction(string junctionPath, IProgress<string>? progress = null)
         {
@@ -209,75 +105,52 @@ namespace CacheMax.GUI.Services
             {
                 progress?.Report($"删除Junction：{junctionPath}");
 
+                if (!Directory.Exists(junctionPath))
+                {
+                    progress?.Report($"Junction路径不存在：{junctionPath}");
+                    return true; // 已经不存在了，算成功
+                }
+
                 if (!IsJunction(junctionPath))
                 {
                     progress?.Report($"路径不是Junction：{junctionPath}");
                     return false;
                 }
 
-                // 打开Junction目录句柄
-                IntPtr handle = CreateFile(
-                    junctionPath,
-                    GENERIC_READ | GENERIC_WRITE,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                    IntPtr.Zero,
-                    OPEN_EXISTING,
-                    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                    IntPtr.Zero);
-
-                if (handle == new IntPtr(-1))
+                // 使用cmd命令删除Junction
+                var processInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    progress?.Report($"错误：无法打开Junction目录：{Marshal.GetLastWin32Error()}");
-                    return false;
-                }
+                    FileName = "cmd.exe",
+                    Arguments = $"/c rmdir \"{junctionPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
 
-                try
+                using (var process = System.Diagnostics.Process.Start(processInfo))
                 {
-                    // 准备删除重解析点的数据
-                    var deleteData = new REPARSE_DATA_BUFFER
+                    if (process != null)
                     {
-                        ReparseTag = IO_REPARSE_TAG_MOUNT_POINT,
-                        ReparseDataLength = 0,
-                        Reserved = 0
-                    };
+                        process.WaitForExit();
 
-                    IntPtr buffer = Marshal.AllocHGlobal(Marshal.SizeOf<REPARSE_DATA_BUFFER>());
-                    try
-                    {
-                        Marshal.StructureToPtr(deleteData, buffer, false);
-
-                        // 删除重解析点
-                        bool result = DeviceIoControl(
-                            handle,
-                            FSCTL_DELETE_REPARSE_POINT,
-                            buffer,
-                            (uint)Marshal.SizeOf<REPARSE_DATA_BUFFER>(),
-                            IntPtr.Zero,
-                            0,
-                            out _,
-                            IntPtr.Zero);
-
-                        if (!result)
+                        if (process.ExitCode == 0)
                         {
-                            int error = Marshal.GetLastWin32Error();
-                            progress?.Report($"错误：删除重解析点失败：{error}");
+                            progress?.Report("Junction删除成功");
+                            return true;
+                        }
+                        else
+                        {
+                            string error = process.StandardError.ReadToEnd();
+                            string output = process.StandardOutput.ReadToEnd();
+                            progress?.Report($"Junction删除失败：{error} {output}");
                             return false;
                         }
                     }
-                    finally
-                    {
-                        Marshal.FreeHGlobal(buffer);
-                    }
-                }
-                finally
-                {
-                    CloseHandle(handle);
                 }
 
-                // 删除目录
-                Directory.Delete(junctionPath);
-                progress?.Report("Junction删除成功");
-                return true;
+                progress?.Report("启动rmdir进程失败");
+                return false;
             }
             catch (Exception ex)
             {
@@ -293,12 +166,11 @@ namespace CacheMax.GUI.Services
         {
             try
             {
-                uint attributes = GetFileAttributes(path);
-                if (attributes == 0xFFFFFFFF) // INVALID_FILE_ATTRIBUTES
+                if (!Directory.Exists(path))
                     return false;
 
-                // 检查是否有重解析点属性
-                return (attributes & 0x400) != 0; // FILE_ATTRIBUTE_REPARSE_POINT
+                uint attributes = GetFileAttributes(path);
+                return (attributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
             }
             catch
             {
@@ -311,67 +183,99 @@ namespace CacheMax.GUI.Services
         /// </summary>
         public string? GetJunctionTarget(string junctionPath)
         {
-            if (!IsJunction(junctionPath))
-                return null;
-
             try
             {
-                IntPtr handle = CreateFile(
-                    junctionPath,
-                    GENERIC_READ,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                    IntPtr.Zero,
-                    OPEN_EXISTING,
-                    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-                    IntPtr.Zero);
-
-                if (handle == new IntPtr(-1))
+                if (!IsJunction(junctionPath))
                     return null;
 
-                try
+                // 使用fsutil命令获取Junction目标（更可靠）
+                var processInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    IntPtr buffer = Marshal.AllocHGlobal(MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
-                    try
+                    FileName = "fsutil.exe",
+                    Arguments = $"reparsepoint query \"{junctionPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using (var process = System.Diagnostics.Process.Start(processInfo))
+                {
+                    if (process != null)
                     {
-                        bool result = DeviceIoControl(
-                            handle,
-                            FSCTL_GET_REPARSE_POINT,
-                            IntPtr.Zero,
-                            0,
-                            buffer,
-                            MAXIMUM_REPARSE_DATA_BUFFER_SIZE,
-                            out uint bytesReturned,
-                            IntPtr.Zero);
+                        process.WaitForExit();
 
-                        if (!result)
-                            return null;
-
-                        var reparseData = Marshal.PtrToStructure<REPARSE_DATA_BUFFER>(buffer);
-                        if (reparseData.ReparseTag != IO_REPARSE_TAG_MOUNT_POINT)
-                            return null;
-
-                        IntPtr dataStart = new IntPtr(buffer.ToInt64() + Marshal.SizeOf<REPARSE_DATA_BUFFER>());
-                        IntPtr printNameStart = new IntPtr(dataStart.ToInt64() + reparseData.PrintNameOffset);
-
-                        string targetPath = Marshal.PtrToStringUni(printNameStart, reparseData.PrintNameLength / 2);
-
-                        // 移除\\?\前缀
-                        if (targetPath?.StartsWith(@"\??\") == true)
+                        if (process.ExitCode == 0)
                         {
-                            targetPath = targetPath.Substring(4);
+                            string output = process.StandardOutput.ReadToEnd();
+                            // 解析fsutil输出来获取目标路径
+                            // 格式：Print Name:        S:\Cache\Test
+                            foreach (string line in output.Split('\n'))
+                            {
+                                if (line.Contains("Print Name:") && line.Contains(":"))
+                                {
+                                    var parts = line.Split(new[] { "Print Name:" }, StringSplitOptions.None);
+                                    if (parts.Length > 1)
+                                    {
+                                        return parts[1].Trim();
+                                    }
+                                }
+                                // 备用：Substitute Name也包含目标路径
+                                else if (line.Contains("Substitute Name:") && line.Contains("\\??\\"))
+                                {
+                                    var parts = line.Split(new[] { "Substitute Name:" }, StringSplitOptions.None);
+                                    if (parts.Length > 1)
+                                    {
+                                        string path = parts[1].Trim();
+                                        if (path.StartsWith("\\??\\"))
+                                        {
+                                            return path.Substring(4); // 移除 \\??\\ 前缀
+                                        }
+                                    }
+                                }
+                            }
                         }
+                    }
+                }
 
-                        return targetPath;
-                    }
-                    finally
-                    {
-                        Marshal.FreeHGlobal(buffer);
-                    }
-                }
-                finally
+                // 如果fsutil失败，尝试dir命令作为备用
+                processInfo = new System.Diagnostics.ProcessStartInfo
                 {
-                    CloseHandle(handle);
+                    FileName = "cmd.exe",
+                    Arguments = $"/c dir \"{junctionPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using (var process = System.Diagnostics.Process.Start(processInfo))
+                {
+                    if (process != null)
+                    {
+                        process.WaitForExit();
+
+                        if (process.ExitCode == 0)
+                        {
+                            string output = process.StandardOutput.ReadToEnd();
+                            // 查找形如 "<JUNCTION>     filename [target]" 的行
+                            foreach (string line in output.Split('\n'))
+                            {
+                                if (line.Contains("<JUNCTION>") && line.Contains("[") && line.Contains("]"))
+                                {
+                                    int start = line.LastIndexOf('[') + 1;
+                                    int end = line.LastIndexOf(']');
+                                    if (start > 0 && end > start)
+                                    {
+                                        return line.Substring(start, end - start);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+
+                return null;
             }
             catch
             {
@@ -380,7 +284,7 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 验证Junction完整性
+        /// 验证Junction是否指向正确的目标
         /// </summary>
         public bool ValidateJunction(string junctionPath, string expectedTarget, IProgress<string>? progress = null)
         {
@@ -393,29 +297,23 @@ namespace CacheMax.GUI.Services
                 }
 
                 string? actualTarget = GetJunctionTarget(junctionPath);
-                if (actualTarget == null)
-                {
-                    progress?.Report($"无法读取Junction目标：{junctionPath}");
-                    return false;
-                }
-
                 string normalizedExpected = Path.GetFullPath(expectedTarget);
-                string normalizedActual = Path.GetFullPath(actualTarget);
+                string? normalizedActual = actualTarget != null ? Path.GetFullPath(actualTarget) : null;
 
-                if (!string.Equals(normalizedExpected, normalizedActual, StringComparison.OrdinalIgnoreCase))
+                bool isValid = string.Equals(normalizedExpected, normalizedActual, StringComparison.OrdinalIgnoreCase);
+
+                if (isValid)
                 {
-                    progress?.Report($"Junction目标不匹配：期望 {normalizedExpected}，实际 {normalizedActual}");
-                    return false;
+                    progress?.Report($"Junction验证成功：{junctionPath} -> {actualTarget}");
+                }
+                else
+                {
+                    progress?.Report($"Junction验证失败：{junctionPath}");
+                    progress?.Report($"  期望目标：{normalizedExpected}");
+                    progress?.Report($"  实际目标：{normalizedActual ?? "无法读取"}");
                 }
 
-                if (!Directory.Exists(actualTarget))
-                {
-                    progress?.Report($"Junction目标目录不存在：{actualTarget}");
-                    return false;
-                }
-
-                progress?.Report("Junction验证成功");
-                return true;
+                return isValid;
             }
             catch (Exception ex)
             {
@@ -425,7 +323,7 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 安全重命名目录（避免冲突）
+        /// 安全重命名目录
         /// </summary>
         public bool SafeRenameDirectory(string sourcePath, string targetPath, IProgress<string>? progress = null)
         {
@@ -449,7 +347,7 @@ namespace CacheMax.GUI.Services
             }
             catch (Exception ex)
             {
-                progress?.Report($"重命名目录失败：{ex.Message}");
+                progress?.Report($"目录重命名失败：{ex.Message}");
                 return false;
             }
         }

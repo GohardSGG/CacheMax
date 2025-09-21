@@ -2,23 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CacheMax.GUI.Services
 {
     public class CacheManagerService
     {
-        private readonly SymbolicLinkService _symbolicLinkService;
+        private readonly JunctionService _junctionService;
         private readonly FileSyncService _fileSyncService;
         private readonly ErrorRecoveryService _errorRecovery;
         private readonly PerformanceMonitoringService _performanceMonitor;
+        private readonly ParallelSyncEngine _parallelSyncEngine;
+
+        /// <summary>
+        /// 公开FileSyncService以便UI订阅队列事件
+        /// </summary>
+        public FileSyncService FileSyncService => _fileSyncService;
 
         public CacheManagerService()
         {
-            _symbolicLinkService = new SymbolicLinkService();
+            _junctionService = new JunctionService();
             _fileSyncService = new FileSyncService();
             _errorRecovery = new ErrorRecoveryService();
             _performanceMonitor = new PerformanceMonitoringService();
+            _parallelSyncEngine = new ParallelSyncEngine();
 
             // 订阅同步事件
             _fileSyncService.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
@@ -42,7 +50,7 @@ namespace CacheMax.GUI.Services
         {
             foreach (var folder in folders)
             {
-                // 检查是否仍然是符号链接（即加速仍然活跃）
+                // 检查是否仍然是Junction（即加速仍然活跃）
                 var isActive = IsAccelerated(folder.MountPoint);
 
                 _errorRecovery.RecordAccelerationState(
@@ -51,9 +59,14 @@ namespace CacheMax.GUI.Services
                     folder.CachePath,
                     isActive);
 
-                // 如果加速仍然活跃，恢复性能监控
-                if (isActive && Directory.Exists(folder.CachePath))
+                // 如果加速仍然活跃，恢复文件同步监控和性能监控
+                if (isActive && Directory.Exists(folder.CachePath) && Directory.Exists(folder.OriginalPath))
                 {
+                    // 恢复文件同步监控（这是关键！）
+                    _fileSyncService.StartMonitoring(folder.CachePath, folder.OriginalPath, SyncMode.Batch, 3);
+                    LogMessage?.Invoke(this, $"恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
+
+                    // 恢复性能监控
                     _performanceMonitor.StartMonitoring(folder.MountPoint, folder.CachePath);
                     LogMessage?.Invoke(this, $"恢复性能监控：{folder.MountPoint}");
                 }
@@ -96,7 +109,7 @@ namespace CacheMax.GUI.Services
                 var directory = Path.GetDirectoryName(filePath);
                 while (!string.IsNullOrEmpty(directory))
                 {
-                    if (_symbolicLinkService.IsSymbolicLink(directory))
+                    if (_junctionService.IsJunction(directory))
                     {
                         return directory;
                     }
@@ -128,13 +141,8 @@ namespace CacheMax.GUI.Services
         {
             try
             {
-                // 检查管理员权限
-                if (!_symbolicLinkService.IsRunningAsAdministrator())
-                {
-                    progress?.Report("错误：需要管理员权限才能创建符号链接");
-                    _errorRecovery.RecordError(sourcePath, "PermissionError", "需要管理员权限", null, ErrorRecoveryService.ErrorSeverity.Critical);
-                    return false;
-                }
+                // Junction不需要管理员权限，移除此检查
+                progress?.Report("使用目录连接点，无需管理员权限");
 
                 // 验证输入路径
                 if (!Directory.Exists(sourcePath))
@@ -156,9 +164,9 @@ namespace CacheMax.GUI.Services
                 progress?.Report("开始缓存加速初始化...");
 
                 // 步骤1：检查是否已经加速
-                if (_symbolicLinkService.IsSymbolicLink(sourcePath))
+                if (_junctionService.IsJunction(sourcePath))
                 {
-                    progress?.Report("目录已经是符号链接，可能已加速");
+                    progress?.Report("目录已经是Junction，可能已加速");
                     return false;
                 }
 
@@ -173,7 +181,7 @@ namespace CacheMax.GUI.Services
 
                 // 步骤3：重命名原始目录
                 progress?.Report($"备份原始目录：{sourcePath} -> {originalPath}");
-                if (!_symbolicLinkService.SafeRenameDirectory(sourcePath, originalPath, progress))
+                if (!_junctionService.SafeRenameDirectory(sourcePath, originalPath, progress))
                 {
                     progress?.Report("重命名原始目录失败");
                     // 清理已复制的缓存
@@ -181,15 +189,15 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
-                // 步骤4：创建符号链接
-                progress?.Report($"创建符号链接：{sourcePath} -> {cachePath}");
-                if (!_symbolicLinkService.CreateDirectorySymbolicLink(sourcePath, cachePath, progress))
+                // 步骤4：创建Junction
+                progress?.Report($"创建Junction：{sourcePath} -> {cachePath}");
+                if (!_junctionService.CreateDirectoryJunction(sourcePath, cachePath, progress))
                 {
-                    progress?.Report("创建符号链接失败");
+                    progress?.Report("创建Junction失败");
                     // 回滚：恢复原始目录
                     try
                     {
-                        _symbolicLinkService.SafeRenameDirectory(originalPath, sourcePath, progress);
+                        _junctionService.SafeRenameDirectory(originalPath, sourcePath, progress);
                         Directory.Delete(cachePath, true);
                     }
                     catch (Exception ex)
@@ -260,13 +268,13 @@ namespace CacheMax.GUI.Services
                 progress?.Report("执行最后一次同步...");
                 await _fileSyncService.ForceSync(cachePath, progress);
 
-                // 步骤3：删除符号链接
-                progress?.Report($"删除符号链接：{mountPoint}");
-                if (_symbolicLinkService.IsSymbolicLink(mountPoint))
+                // 步骤3：删除Junction
+                progress?.Report($"删除Junction：{mountPoint}");
+                if (_junctionService.IsJunction(mountPoint))
                 {
-                    if (!_symbolicLinkService.RemoveSymbolicLink(mountPoint, progress))
+                    if (!_junctionService.RemoveJunction(mountPoint, progress))
                     {
-                        progress?.Report("删除符号链接失败，但继续执行恢复");
+                        progress?.Report("删除Junction失败，但继续执行恢复");
                     }
                 }
 
@@ -274,7 +282,7 @@ namespace CacheMax.GUI.Services
                 progress?.Report($"恢复原始目录：{originalPath} -> {mountPoint}");
                 if (Directory.Exists(originalPath))
                 {
-                    if (!_symbolicLinkService.SafeRenameDirectory(originalPath, mountPoint, progress))
+                    if (!_junctionService.SafeRenameDirectory(originalPath, mountPoint, progress))
                     {
                         progress?.Report("恢复原始目录失败");
                         return false;
@@ -313,15 +321,15 @@ namespace CacheMax.GUI.Services
         /// </summary>
         public bool IsAccelerated(string path)
         {
-            return _symbolicLinkService.IsSymbolicLink(path);
+            return _junctionService.IsJunction(path);
         }
 
         /// <summary>
-        /// 获取符号链接的目标路径
+        /// 获取Junction的目标路径
         /// </summary>
         public string? GetCachePath(string linkPath)
         {
-            return _symbolicLinkService.GetSymbolicLinkTarget(linkPath);
+            return _junctionService.GetJunctionTarget(linkPath);
         }
 
         /// <summary>
@@ -331,15 +339,15 @@ namespace CacheMax.GUI.Services
         {
             try
             {
-                // 检查符号链接
-                if (!_symbolicLinkService.IsSymbolicLink(mountPoint))
+                // 检查Junction
+                if (!_junctionService.IsJunction(mountPoint))
                 {
-                    progress?.Report($"挂载点不是符号链接：{mountPoint}");
+                    progress?.Report($"挂载点不是Junction：{mountPoint}");
                     return false;
                 }
 
-                // 检查符号链接目标
-                if (!_symbolicLinkService.ValidateSymbolicLink(mountPoint, cachePath, progress))
+                // 检查Junction目标
+                if (!_junctionService.ValidateJunction(mountPoint, cachePath, progress))
                 {
                     return false;
                 }
@@ -482,11 +490,11 @@ namespace CacheMax.GUI.Services
 
         private async Task<bool> CopyDirectoryAsync(string sourcePath, string targetPath, IProgress<string>? progress)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 try
                 {
-                    CopyDirectoryRecursive(sourcePath, targetPath, progress);
+                    await CopyDirectoryRecursiveAsync(sourcePath, targetPath, progress);
                     return true;
                 }
                 catch (Exception ex)
@@ -497,7 +505,8 @@ namespace CacheMax.GUI.Services
             });
         }
 
-        private void CopyDirectoryRecursive(string sourcePath, string targetPath, IProgress<string>? progress)
+        // 新的异步批量复制方法 - 集成ParallelSyncEngine
+        private async Task CopyDirectoryRecursiveAsync(string sourcePath, string targetPath, IProgress<string>? progress, CancellationToken cancellationToken = default)
         {
             // 创建目标目录
             if (!Directory.Exists(targetPath))
@@ -505,31 +514,177 @@ namespace CacheMax.GUI.Services
                 Directory.CreateDirectory(targetPath);
             }
 
-            // 复制所有文件
-            foreach (var file in Directory.GetFiles(sourcePath))
+            var batchProgressReporter = new BatchProgressReporter(progress, 100);
+            var tasks = new List<Task>();
+            const long LARGE_FILE_THRESHOLD = 50 * 1024 * 1024; // 50MB以上使用ParallelSyncEngine
+
+            try
             {
-                var fileName = Path.GetFileName(file);
+                // 获取所有文件和目录
+                var files = Directory.GetFiles(sourcePath);
+                var directories = Directory.GetDirectories(sourcePath);
+
+                // 分析文件大小，决定处理策略
+                var largeFiles = new List<string>();
+                var smallFiles = new List<string>();
+
+                foreach (var file in files)
+                {
+                    var fileInfo = new FileInfo(file);
+                    if (fileInfo.Length > LARGE_FILE_THRESHOLD)
+                    {
+                        largeFiles.Add(file);
+                    }
+                    else
+                    {
+                        smallFiles.Add(file);
+                    }
+                }
+
+                // 小文件使用传统并行复制
+                var semaphore = new SemaphoreSlim(Environment.ProcessorCount * 2);
+                foreach (var file in smallFiles)
+                {
+                    var task = CopyFileWithSemaphoreAsync(file, sourcePath, targetPath, batchProgressReporter, semaphore, cancellationToken);
+                    tasks.Add(task);
+                }
+
+                // 大文件使用ParallelSyncEngine
+                foreach (var file in largeFiles)
+                {
+                    var task = CopyLargeFileAsync(file, sourcePath, targetPath, batchProgressReporter, cancellationToken);
+                    tasks.Add(task);
+                }
+
+                // 等待所有文件复制完成
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+
+                // 递归处理子目录
+                foreach (var directory in directories)
+                {
+                    var dirName = Path.GetFileName(directory);
+                    var targetDir = Path.Combine(targetPath, dirName);
+                    var task = CopyDirectoryRecursiveAsync(directory, targetDir, progress, cancellationToken);
+                    tasks.Add(task);
+                }
+
+                await Task.WhenAll(tasks);
+            }
+            finally
+            {
+                batchProgressReporter.FlushPendingProgress();
+            }
+        }
+
+        private async Task CopyFileWithSemaphoreAsync(string sourceFile, string sourcePath, string targetPath,
+            BatchProgressReporter progressReporter, SemaphoreSlim semaphore, CancellationToken cancellationToken)
+        {
+            await semaphore.WaitAsync(cancellationToken);
+            try
+            {
+                var fileName = Path.GetFileName(sourceFile);
                 var targetFile = Path.Combine(targetPath, fileName);
 
-                File.Copy(file, targetFile, true);
+                // 异步复制文件
+                using var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
+                using var targetStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough);
+
+                await sourceStream.CopyToAsync(targetStream, cancellationToken);
+                await targetStream.FlushAsync(cancellationToken);
 
                 // 保持文件属性
-                var sourceInfo = new FileInfo(file);
-                var targetInfo = new FileInfo(targetFile);
-                targetInfo.CreationTime = sourceInfo.CreationTime;
-                targetInfo.LastWriteTime = sourceInfo.LastWriteTime;
-                targetInfo.Attributes = sourceInfo.Attributes;
+                var sourceInfo = new FileInfo(sourceFile);
+                var targetInfo = new FileInfo(targetFile)
+                {
+                    CreationTime = sourceInfo.CreationTime,
+                    LastWriteTime = sourceInfo.LastWriteTime,
+                    Attributes = sourceInfo.Attributes
+                };
 
-                progress?.Report($"已复制：{fileName}");
+                progressReporter.ReportProgress(fileName);
             }
-
-            // 递归复制子目录
-            foreach (var directory in Directory.GetDirectories(sourcePath))
+            finally
             {
-                var dirName = Path.GetFileName(directory);
-                var targetDir = Path.Combine(targetPath, dirName);
-                CopyDirectoryRecursive(directory, targetDir, progress);
+                semaphore.Release();
             }
+        }
+
+        /// <summary>
+        /// 使用ParallelSyncEngine复制大文件，获得最佳性能
+        /// </summary>
+        private async Task CopyLargeFileAsync(string sourceFile, string sourcePath, string targetPath,
+            BatchProgressReporter progressReporter, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(sourceFile);
+                var targetFile = Path.Combine(targetPath, fileName);
+
+                // 使用ParallelSyncEngine的高性能文件操作
+                var success = await _parallelSyncEngine.SubmitFileOperationAsync(
+                    sourceFile, targetFile, FileOperationType.Copy, cancellationToken);
+
+                if (success)
+                {
+                    // 保持文件属性
+                    var sourceInfo = new FileInfo(sourceFile);
+                    var targetInfo = new FileInfo(targetFile)
+                    {
+                        CreationTime = sourceInfo.CreationTime,
+                        LastWriteTime = sourceInfo.LastWriteTime,
+                        Attributes = sourceInfo.Attributes
+                    };
+
+                    progressReporter.ReportProgress($"{fileName} (大文件-并行处理)");
+                }
+                else
+                {
+                    // 如果ParallelSyncEngine失败，回退到传统方法
+                    await FallbackCopyLargeFileAsync(sourceFile, targetFile, progressReporter, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 出错时回退到传统复制方法
+                var fileName = Path.GetFileName(sourceFile);
+                var targetFile = Path.Combine(targetPath, fileName);
+                await FallbackCopyLargeFileAsync(sourceFile, targetFile, progressReporter, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// 大文件复制的回退方法
+        /// </summary>
+        private async Task FallbackCopyLargeFileAsync(string sourceFile, string targetFile,
+            BatchProgressReporter progressReporter, CancellationToken cancellationToken)
+        {
+            var fileName = Path.GetFileName(sourceFile);
+
+            // 使用大缓冲区优化大文件复制
+            using var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, 1024 * 1024, FileOptions.SequentialScan);
+            using var targetStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, FileOptions.WriteThrough);
+
+            await sourceStream.CopyToAsync(targetStream, cancellationToken);
+            await targetStream.FlushAsync(cancellationToken);
+
+            // 保持文件属性
+            var sourceInfo = new FileInfo(sourceFile);
+            var targetInfo = new FileInfo(targetFile)
+            {
+                CreationTime = sourceInfo.CreationTime,
+                LastWriteTime = sourceInfo.LastWriteTime,
+                Attributes = sourceInfo.Attributes
+            };
+
+            progressReporter.ReportProgress($"{fileName} (大文件-传统方法)");
+        }
+
+        // 兼容性包装器 - 逐步废弃
+        private void CopyDirectoryRecursive(string sourcePath, string targetPath, IProgress<string>? progress)
+        {
+            // 同步包装器，用于向后兼容
+            Task.Run(async () => await CopyDirectoryRecursiveAsync(sourcePath, targetPath, progress)).Wait();
         }
 
         private void UpdateCacheStats(string cachePath)
@@ -557,23 +712,15 @@ namespace CacheMax.GUI.Services
                 // 先进行基本的系统检查
                 progress?.Report("检查基本系统要求...");
 
-                // 检查管理员权限
-                if (!_symbolicLinkService.IsRunningAsAdministrator())
-                {
-                    progress?.Report("⚠️ 警告：当前没有管理员权限，无法创建符号链接");
-                    LogMessage?.Invoke(this, "健康检查：缺少管理员权限");
-                }
-                else
-                {
-                    progress?.Report("✅ 管理员权限检查通过");
-                }
+                // Junction不需要管理员权限
+                progress?.Report("✅ 使用Junction无需管理员权限");
 
                 // 检查各个服务组件
                 progress?.Report("检查服务组件状态...");
 
-                if (_symbolicLinkService == null)
+                if (_junctionService == null)
                 {
-                    progress?.Report("❌ 符号链接服务未初始化");
+                    progress?.Report("❌ Junction服务未初始化");
                     return false;
                 }
 
@@ -661,6 +808,78 @@ namespace CacheMax.GUI.Services
             _fileSyncService?.Dispose();
             _errorRecovery?.Dispose();
             _performanceMonitor?.Dispose();
+            _parallelSyncEngine?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 批量进度报告器 - 减少UI更新频率，提高性能
+    /// </summary>
+    public class BatchProgressReporter
+    {
+        private readonly IProgress<string>? _progress;
+        private readonly int _batchSize;
+        private readonly List<string> _pendingItems;
+        private readonly Timer _flushTimer;
+        private readonly object _lock = new();
+        private readonly DateTime _startTime;
+
+        public BatchProgressReporter(IProgress<string>? progress, int batchSize = 100)
+        {
+            _progress = progress;
+            _batchSize = batchSize;
+            _pendingItems = new List<string>();
+            _startTime = DateTime.Now;
+
+            // 每秒强制刷新一次，防止长时间无反馈
+            _flushTimer = new Timer(ForceFlush, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+
+        public void ReportProgress(string fileName)
+        {
+            if (_progress == null) return;
+
+            lock (_lock)
+            {
+                _pendingItems.Add(fileName);
+
+                // 达到批量大小立即报告
+                if (_pendingItems.Count >= _batchSize)
+                {
+                    FlushBatch();
+                }
+            }
+        }
+
+        private void FlushBatch()
+        {
+            if (_pendingItems.Count == 0) return;
+
+            var elapsed = DateTime.Now - _startTime;
+            var speed = _pendingItems.Count / elapsed.TotalSeconds;
+
+            _progress?.Report($"已处理 {_pendingItems.Count} 个文件 (速度: {speed:F1} 文件/秒)");
+            _pendingItems.Clear();
+        }
+
+        private void ForceFlush(object? state)
+        {
+            lock (_lock)
+            {
+                if (_pendingItems.Count > 0)
+                {
+                    FlushBatch();
+                }
+            }
+        }
+
+        public void FlushPendingProgress()
+        {
+            lock (_lock)
+            {
+                FlushBatch();
+            }
+            _flushTimer?.Dispose();
         }
     }
 }
