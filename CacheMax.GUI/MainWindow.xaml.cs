@@ -1061,20 +1061,93 @@ namespace CacheMax.GUI
 
         private void ClearFailedButton_Click(object sender, RoutedEventArgs e)
         {
-            _cacheManager.FileSyncService.ClearFailedItems();
+            var failedItems = _syncQueueItems.Where(x => x.Status == "失败").ToList();
+
+            if (failedItems.Count == 0)
+            {
+                MessageBox.Show("没有失败的文件需要清理", "信息",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show($"确定要清理 {failedItems.Count} 个失败的文件记录吗？", "确认清理",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach (var item in failedItems)
+                {
+                    _syncQueueItems.Remove(item);
+                }
+
+                AddLog($"已清理 {failedItems.Count} 个失败的文件记录");
+                UpdateQueueStats();
+            }
         }
 
         private void RetryFailedButton_Click(object sender, RoutedEventArgs e)
         {
-            // 获取失败的项目并重新加入队列（简化实现）
             var failedItems = _syncQueueItems.Where(x => x.Status == "失败").ToList();
-            foreach (var item in failedItems)
+
+            if (failedItems.Count == 0)
             {
-                item.Status = "等待中";
-                item.Progress = 0;
-                item.ErrorMessage = null;
+                MessageBox.Show("没有失败的文件需要重试", "信息",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
-            AddLog($"重新排队 {failedItems.Count} 个失败的文件");
+
+            var result = MessageBox.Show($"确定要重试 {failedItems.Count} 个失败的文件吗？", "确认重试",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                int successCount = 0;
+                int failedCount = 0;
+
+                foreach (var item in failedItems)
+                {
+                    try
+                    {
+                        if (File.Exists(item.FilePath))
+                        {
+                            // 文件存在，可以重试 - 先重置状态
+                            item.Status = "等待中";
+                            item.Progress = 0;
+                            item.ErrorMessage = null;
+
+                            // 使用文件系统监视器重新触发同步
+                            _cacheManager.FileSyncService.TriggerManualSync(item.FilePath);
+                            successCount++;
+                        }
+                        else
+                        {
+                            // 文件不存在，保持失败状态
+                            item.ErrorMessage = "文件不存在";
+                            AddLog($"重试失败，文件不存在: {Path.GetFileName(item.FilePath)}");
+                            failedCount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // 重试异常，保持失败状态
+                        item.ErrorMessage = ex.Message;
+                        AddLog($"重试失败: {Path.GetFileName(item.FilePath)} - {ex.Message}");
+                        failedCount++;
+                    }
+                }
+
+                // 根据实际成功数量记录日志
+                if (successCount > 0)
+                {
+                    AddLog($"已重新排队 {successCount} 个失败的文件");
+                }
+                if (failedCount > 0)
+                {
+                    AddLog($"{failedCount} 个文件重试失败");
+                }
+
+                UpdateQueueStats();
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

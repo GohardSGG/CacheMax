@@ -723,20 +723,17 @@ namespace CacheMax.GUI.Services
 
                 _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, fileKey, tcs));
                 SafeLog($"开始同步文件：{Path.GetFileName(filePath)}");
+
+                // 注意：不在这里清理文件锁！文件锁会在 ProcessSyncOperationWithTracking 中清理
             }
             catch (Exception ex)
             {
-                // 清理文件锁
+                // 只有在异常情况下才清理文件锁
                 if (_processingFiles.TryRemove(fileKey, out var removedTcs))
                 {
                     removedTcs.SetResult(false);
                 }
                 SafeLog($"文件变化处理异常: {ex.Message}");
-            }
-            finally
-            {
-                // 确保总是清理文件锁
-                _processingFiles.TryRemove(fileKey, out _);
             }
         }
 
@@ -925,24 +922,23 @@ namespace CacheMax.GUI.Services
                             break;
                         }
 
-                        // 获取文件只读锁定，防止在同步过程中被其他进程修改
-                        using (var fileLock = SafeFileOperations.AcquireReadOnlyLock(operation.FilePath))
+                        // 使用重试机制获取文件锁定
+                        var lockResult = await TryAcquireFileLockWithRetryAsync(operation.FilePath, queueItem);
+                        if (!lockResult.Success)
                         {
-                            if (fileLock == null || !fileLock.IsValid)
+                            success = false;
+                            message = lockResult.Message;
+                            break;
+                        }
+
+                        using (var fileLock = lockResult.FileLock!)
+                        {
+                            // 在开始实际操作前再次确认文件存在（防止锁定获取成功后文件被删除）
+                            if (!File.Exists(operation.FilePath))
                             {
-                                // 再次检查文件是否存在，可能在获取锁定时被删除
-                                if (!File.Exists(operation.FilePath))
-                                {
-                                    success = false;
-                                    message = "文件已被删除，跳过同步";
-                                    SafeLog($"文件在获取锁定时被删除: {Path.GetFileName(operation.FilePath)}");
-                                }
-                                else
-                                {
-                                    success = false;
-                                    message = "无法获取文件锁定，文件可能正被其他进程使用";
-                                    SafeLog($"无法获取文件锁定: {Path.GetFileName(operation.FilePath)}");
-                                }
+                                success = false;
+                                message = "文件在锁定获取后被删除";
+                                SafeLog($"文件在锁定获取后被删除: {Path.GetFileName(operation.FilePath)}");
                                 break;
                             }
 
@@ -1597,6 +1593,104 @@ namespace CacheMax.GUI.Services
 
             return 3; // 默认值
         }
+
+        /// <summary>
+        /// 文件锁定尝试结果
+        /// </summary>
+        public class FileLockResult
+        {
+            public bool Success { get; set; }
+            public string Message { get; set; } = string.Empty;
+            public SafeFileOperations.FileLockHandle? FileLock { get; set; }
+        }
+
+        /// <summary>
+        /// 使用指数退避重试机制尝试获取文件锁定，最大等待时间为2分钟
+        /// </summary>
+        private async Task<FileLockResult> TryAcquireFileLockWithRetryAsync(string filePath, SyncQueueItemViewModel queueItem)
+        {
+            const int maxRetries = 8; // 最多重试8次
+            const int baseDelayMs = 1000; // 基础等待时间1秒
+            const int maxDelayMs = 120000; // 最大等待时间2分钟
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                // 检查文件是否仍然存在
+                if (!File.Exists(filePath))
+                {
+                    return new FileLockResult
+                    {
+                        Success = false,
+                        Message = "文件已被删除，跳过同步"
+                    };
+                }
+
+                // 尝试获取文件锁定
+                var fileLock = SafeFileOperations.AcquireReadOnlyLock(filePath);
+                if (fileLock != null && fileLock.IsValid)
+                {
+                    SafeLog($"成功获取文件锁定 (尝试 {attempt}/{maxRetries}): {Path.GetFileName(filePath)}");
+                    return new FileLockResult
+                    {
+                        Success = true,
+                        Message = "成功获取文件锁定",
+                        FileLock = fileLock
+                    };
+                }
+
+                // 释放无效的锁定句柄
+                fileLock?.Dispose();
+
+                // 如果不是最后一次尝试，等待并重试
+                if (attempt < maxRetries)
+                {
+                    // 指数退避：1s, 2s, 4s, 8s, 16s, 32s, 64s, 120s (最大2分钟)
+                    var delayMs = Math.Min(baseDelayMs * (int)Math.Pow(2, attempt - 1), maxDelayMs);
+                    SafeLog($"文件被占用，等待 {delayMs/1000} 秒后重试 (尝试 {attempt}/{maxRetries}): {Path.GetFileName(filePath)}");
+
+                    // 更新UI状态
+                    queueItem.Status = $"等待文件释放 ({attempt}/{maxRetries})";
+                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "WaitingForLock"), "QueueItemUpdated");
+
+                    await Task.Delay(delayMs);
+                }
+            }
+
+            // 所有重试都失败了
+            SafeLog($"经过 {maxRetries} 次尝试后仍无法获取文件锁定: {Path.GetFileName(filePath)}");
+            return new FileLockResult
+            {
+                Success = false,
+                Message = $"文件被占用时间过长，经过 {maxRetries} 次重试后放弃"
+            };
+        }
+
+        /// <summary>
+        /// 手动触发文件同步（用于重试失败的文件）
+        /// </summary>
+        public void TriggerManualSync(string filePath)
+        {
+            try
+            {
+                // 找到对应的缓存路径和配置
+                var config = _syncConfigs.Values.FirstOrDefault(c => filePath.StartsWith(c.CachePath, StringComparison.OrdinalIgnoreCase));
+                if (config != null)
+                {
+                    // 手动触发文件变化事件
+                    OnFileChanged(filePath, config.CachePath, WatcherChangeTypes.Changed);
+                    _logger.LogInfo($"手动触发同步: {Path.GetFileName(filePath)}", "FileSyncService");
+                }
+                else
+                {
+                    _logger.LogWarning($"无法找到文件对应的同步配置: {filePath}", "FileSyncService");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"手动触发同步失败: {ex.Message}", ex, "FileSyncService");
+                throw;
+            }
+        }
     }
 
     /// <summary>
@@ -1609,6 +1703,7 @@ namespace CacheMax.GUI.Services
         public FileSyncService.SyncStatsEventArgs? Stats { get; set; }
         public string? Message { get; set; }
     }
+
 
     public enum UIUpdateType
     {

@@ -1,0 +1,26 @@
+﻿[2025-09-21 17:56:42.386] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:56:42.410] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:56:42.413] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:56:42.425] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:56:42.425] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-21 17:56:42.426] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-21 17:56:42.426] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-21 17:56:42.438] [INFO ] [T001] [FastCopyService] 系统中没有发现FastCopy进程
+[2025-09-21 17:56:42.522] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-21 17:56:42.527] [INFO ] [T001] [MainWindow] 恢复文件同步监控：S:\Cache\Test -> A:\Test.original
+[2025-09-21 17:56:42.528] [INFO ] [T007] [MainWindow] 开始监控：S:\Cache\Test (模式：Immediate，延迟：3秒)
+[2025-09-21 17:56:42.528] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\Test
+[2025-09-21 17:56:42.528] [INFO ] [T001] [MainWindow] 恢复性能监控：A:\Test
+[2025-09-21 17:56:42.528] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-21 17:56:50.654] [INFO ] [T007] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A.7z
+[2025-09-21 17:56:50.656] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A.7z
+[2025-09-21 17:56:56.662] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: Ibanez A.7z
+[2025-09-21 17:56:56.665] [INFO ] [T007] [MainWindow] 开始同步文件：Ibanez A.7z
+[2025-09-21 17:56:56.668] [INFO ] [T017] [MainWindow] 文件被占用，等待 1 秒后重试 (尝试 1/8): Ibanez A.7z
+[2025-09-21 17:57:02.638] [INFO ] [T010] [FileSyncService] 文件处理完成，清理锁: Ibanez A.7z
+[2025-09-21 17:57:02.643] [INFO ] [T001] [MainWindow] ❌ 同步失败: Ibanez A.7z - 文件已被删除，跳过同步
+[2025-09-21 17:57:07.846] [INFO ] [T001] [MainWindow] 重试失败，文件不存在: Ibanez A.7z
+[2025-09-21 17:57:07.847] [INFO ] [T001] [MainWindow] 1 个文件重试失败
+[2025-09-21 17:57:13.209] [INFO ] [T001] [MainWindow] 重试失败，文件不存在: Ibanez A.7z
+[2025-09-21 17:57:13.209] [INFO ] [T001] [MainWindow] 1 个文件重试失败
+[2025-09-21 17:57:18.286] [INFO ] [T001] [MainWindow] 已清理 1 个失败的文件记录
