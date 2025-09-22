@@ -81,8 +81,9 @@
                         <!-- Core Controls -->
                         <Label Grid.Row="1" Grid.Column="0" Content="操作:" VerticalAlignment="Center"/>
                         <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
-                            <Button Name="ValidateButton" Content="验证完整性" Click="ValidateButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
-                            <Button Name="RecoveryButton" Content="手动恢复" Click="RecoveryButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
+                            <Button Name="ValidateButton" Content="检查链接状态" Click="ValidateButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
+                            <Button Name="CheckIntegrityButton" Content="检查缓存完整性" Click="CheckIntegrityButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
+                            <Button Name="SyncAllButton" Content="同步所有未同步项" Click="SyncAllButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
                         </StackPanel>
                     </Grid>
                 </GroupBox>
@@ -108,11 +109,59 @@
                                 <DataGridTemplateColumn Header="状态" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Name="StatusIcon" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding Status}" VerticalAlignment="Center"/>
-                                            </StackPanel>
+                                            <Grid>
+                                                <!-- 默认状态显示 -->
+                                                <StackPanel Name="DefaultStatus" Orientation="Horizontal">
+                                                    <TextBlock Name="StatusIcon" FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Status}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <!-- 未同步状态按钮 -->
+                                                <Button Name="UnsyncedButton"
+                                                        Content="🔄 未同步"
+                                                        Background="#FFE6B3"
+                                                        BorderBrush="#FF9800"
+                                                        BorderThickness="1"
+                                                        Foreground="#E65100"
+                                                        FontWeight="Bold"
+                                                        Padding="5,2"
+                                                        Cursor="Hand"
+                                                        Click="UnsyncedStatus_Click"
+                                                        ToolTip="点击同步此项目"
+                                                        Visibility="Collapsed">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}"
+                                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                                                CornerRadius="3">
+                                                                            <ContentPresenter HorizontalAlignment="Center"
+                                                                                            VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="Background" Value="#FFD54F"/>
+                                                                                <Setter Property="BorderBrush" Value="#FF8F00"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </Grid>
                                             <DataTemplate.Triggers>
+                                                <!-- 未同步状态显示按钮 -->
+                                                <DataTrigger Binding="{Binding Status}" Value="未同步">
+                                                    <Setter TargetName="DefaultStatus" Property="Visibility" Value="Collapsed"/>
+                                                    <Setter TargetName="UnsyncedButton" Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <!-- 其他状态的图标设置 -->
                                                 <DataTrigger Binding="{Binding Status}" Value="未加速">
                                                     <Setter TargetName="StatusIcon" Property="Text" Value="⚪"/>
                                                     <Setter TargetName="StatusIcon" Property="Foreground" Value="Gray"/>
@@ -126,6 +175,10 @@
                                                     <Setter TargetName="StatusIcon" Property="Foreground" Value="Orange"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Status}" Value="已完成">
+                                                    <Setter TargetName="StatusIcon" Property="Text" Value="✅"/>
+                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="已加速">
                                                     <Setter TargetName="StatusIcon" Property="Text" Value="✅"/>
                                                     <Setter TargetName="StatusIcon" Property="Foreground" Value="Green"/>
                                                 </DataTrigger>

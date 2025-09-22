@@ -47,6 +47,9 @@ namespace CacheMax.GUI.Services
         {
             LogMessage?.Invoke(this, $"开始恢复 {folders.Count} 个加速项目的状态...");
 
+            int successCount = 0;
+            int failureCount = 0;
+
             foreach (var folder in folders)
             {
                 LogMessage?.Invoke(this, $"正在检查加速项目：{folder.MountPoint}");
@@ -60,6 +63,8 @@ namespace CacheMax.GUI.Services
                     folder.OriginalPath,
                     folder.CachePath,
                     isActive);
+
+                bool restoreSuccess = false;
 
                 // 如果加速仍然活跃，恢复文件同步监控
                 if (isActive)
@@ -76,26 +81,43 @@ namespace CacheMax.GUI.Services
                         if (monitoringStarted)
                         {
                             LogMessage?.Invoke(this, $"✓ 成功恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
+                            folder.Status = "已加速";
+                            restoreSuccess = true;
                         }
                         else
                         {
                             LogMessage?.Invoke(this, $"✗ 恢复文件同步监控失败：{folder.CachePath} -> {folder.OriginalPath}");
+                            folder.Status = "监控失败";
+                            restoreSuccess = false;
                         }
                     }
                     else
                     {
                         LogMessage?.Invoke(this, $"✗ 目录不存在，跳过监控恢复：缓存({folder.CachePath}) 原始({folder.OriginalPath})");
+                        folder.Status = "目录丢失";
+                        restoreSuccess = false;
                     }
                 }
                 else
                 {
                     LogMessage?.Invoke(this, $"✗ Junction不活跃，跳过监控恢复：{folder.MountPoint}");
+                    folder.Status = "未加速";
+                    restoreSuccess = false;
                 }
 
-                LogMessage?.Invoke(this, $"恢复加速状态记录：{folder.MountPoint} - {(isActive ? "活跃" : "非活跃")}");
+                if (restoreSuccess)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failureCount++;
+                }
+
+                LogMessage?.Invoke(this, $"恢复加速状态记录：{folder.MountPoint} - {folder.Status}");
             }
 
-            LogMessage?.Invoke(this, "加速状态恢复完成！");
+            LogMessage?.Invoke(this, $"加速状态恢复完成！成功：{successCount}，失败：{failureCount}");
         }
 
         public event EventHandler<string>? LogMessage;
@@ -184,10 +206,14 @@ namespace CacheMax.GUI.Services
                 }
 
                 // 步骤2：生成路径并检查缓存冲突
-                var folderName = Path.GetFileName(sourcePath);
+                // 使用完整路径结构避免同名文件夹冲突
                 var driveLetter = Path.GetPathRoot(sourcePath)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
                 var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
-                var cachePath = Path.Combine(driveSpecificCacheRoot, folderName);
+
+                // 获取不包含盘符的完整路径，并将路径分隔符替换为安全字符
+                var pathWithoutDrive = sourcePath.Substring(Path.GetPathRoot(sourcePath)?.Length ?? 0);
+                var safePath = pathWithoutDrive.Replace(Path.DirectorySeparatorChar, '_').Replace(Path.AltDirectorySeparatorChar, '_');
+                var cachePath = Path.Combine(driveSpecificCacheRoot, safePath);
 
                 bool useSyncMode = false;
                 if (Directory.Exists(cachePath))
@@ -554,15 +580,6 @@ namespace CacheMax.GUI.Services
             });
         }
 
-        /// <summary>
-        /// 更新同步模式
-        /// </summary>
-        public bool UpdateSyncMode(string cachePath, string originalPath, SyncMode newMode, int delaySeconds = 3, IProgress<string>? progress = null)
-        {
-            // 重新启动监控以应用新模式
-            _fileSyncService.StopMonitoring(cachePath, progress);
-            return _fileSyncService.StartMonitoring(cachePath, originalPath, newMode, delaySeconds, progress);
-        }
 
         private async Task<bool> CopyDirectoryAsync(string sourcePath, string targetPath, IProgress<string>? progress)
         {
@@ -775,92 +792,8 @@ namespace CacheMax.GUI.Services
             }
         }
 
-        /// <summary>
-        /// 执行系统健康检查
-        /// </summary>
-        public async Task<bool> PerformHealthCheck(IProgress<string>? progress = null)
-        {
-            try
-            {
-                progress?.Report("初始化健康检查系统...");
 
-                // 先进行基本的系统检查
-                progress?.Report("检查基本系统要求...");
 
-                // Junction不需要管理员权限
-                progress?.Report("✅ 使用Junction无需管理员权限");
-
-                // 检查各个服务组件
-                progress?.Report("检查服务组件状态...");
-
-                if (_junctionService == null)
-                {
-                    progress?.Report("❌ Junction服务未初始化");
-                    return false;
-                }
-
-                if (_fileSyncService == null)
-                {
-                    progress?.Report("❌ 文件同步服务未初始化");
-                    return false;
-                }
-
-                if (_errorRecovery == null)
-                {
-                    progress?.Report("❌ 错误恢复服务未初始化");
-                    return false;
-                }
-
-                progress?.Report("✅ 所有服务组件状态正常");
-
-                // 执行详细的错误恢复检查
-                progress?.Report("开始详细的加速项目检查...");
-                var hasProblems = await _errorRecovery.PerformHealthCheck(this, progress);
-
-                if (hasProblems)
-                {
-                    progress?.Report("⚠️ 健康检查发现问题，请查看详细日志");
-                }
-                else
-                {
-                    progress?.Report("🎉 系统健康检查完全通过！");
-                }
-
-                return hasProblems;
-            }
-            catch (Exception ex)
-            {
-                progress?.Report($"❌ 健康检查系统异常：{ex.Message}");
-                LogMessage?.Invoke(this, $"健康检查异常：{ex.Message}");
-                return true; // 返回true表示有问题
-            }
-        }
-
-        /// <summary>
-        /// 手动触发恢复
-        /// </summary>
-        public async Task<bool> TriggerRecovery(string mountPoint, IProgress<string>? progress = null)
-        {
-            try
-            {
-                progress?.Report($"开始手动恢复：{mountPoint}");
-                return await _errorRecovery.TriggerRecovery(mountPoint, this, progress);
-            }
-            catch (Exception ex)
-            {
-                progress?.Report($"手动恢复异常：{ex.Message}");
-                LogMessage?.Invoke(this, $"手动恢复异常：{ex.Message}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取错误统计信息
-        /// </summary>
-        public Dictionary<string, object> GetErrorStatistics()
-        {
-            return _errorRecovery.GetErrorStatistics();
-        }
 
 
 

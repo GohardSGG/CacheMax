@@ -1,0 +1,106 @@
+7. 命令行模式
+基本格式：
+
+GUI版: fastcopy.exe [/选项] file1 file2 ... [/to=dest_dir]
+CUI版: fcp.exe [/选项] file1 file2 ... [/to=dest_dir]
+（在 start "" /wait fastcopy.exe的情况下，请使用fcp.exe。注意fcp设置与fastcopy设置相同（参考fastcopy2.ini））
+
+与GUI模式不同，分隔符为空白文字。
+包含空白文字的路径名，请用 "" 区分。 
+/to=总是放结尾。 
+若想等待完成，请使用fcp，或请指定 start "" /wait fastcopy.exe [/选项]...。 
+
+以下是可指定选项。（'='前后请不要添加空白）
+
+/cmd=
+  (noexist_only
+  | diff
+  | update
+  | force_copy
+  | exist_diff
+  | exist_update
+  | sync
+  | sync_update
+  | move
+  | move_noexist
+  | delete
+  | verify
+  | verify_read
+  | verify_check)  指定操作模式。（省略cmd指定时默认指定diff模式。指定delete时不用/to=dest_dir） cmdline 用GUI 
+noexist_only 差异（不覆盖） 
+diff 差异（大小/日期） 
+update 差异（最新日期） 
+force_copy 复制（全覆盖） 
+exist_diff 现存（大小/日期） 
+exist_update 现存（最新日期） 
+sync 同步（大小/日期） 
+sync_update 同步（最新日期） 
+move 移动（全覆盖） 
+move_noexist 移动（不覆盖） 
+delete 删除所有 
+verify 校验 
+verify_read FC校验信息显示 
+verify_check FC校验信息验证 
+ 
+/auto_close 复制结束后，自动关闭。 
+/force_close 复制结束后，发生错误，也强行关闭。 
+/open_window 不存储到系统托盘中。（不立即开始运行时不需指定） 
+/estimate 预估复制完成时间。（禁用：/estimate=FALSE） 
+/balloon(=FALSE) 完成时显示气球通知。（禁用：/balloon=FALSE） 
+/no_ui 不显示确认对话框。（为后台任务。如果使用/no_confirm_del，自动设置/no_confirm_stop和/force_close。会话0隔离（主要启动任务计划）时自动设置/no_ui。就算不显示对话框，完成时会倒计时） 
+/no_confirm_del 当用/delete参数时，不显示确认界面。 
+/no_confirm_stop 不要显示错误对话框，即使发生严重错误。 
+/no_exec 对FastCopy窗口界面设置参数，但是不运行。 
+/error_stop 发生错误时显示对话框确认是否继续。（禁用：/error_stop=FALSE） 
+/bufsize=N(MB) 用MB单位来指定缓冲区大小。 
+/ini=ini文件名 指定ini文件进行设置。它不能包含目录名称。（默认：fastcopy2.ini） 
+/log 将操作/错误信息写入日志文件 (fastcopy.log)（禁用: /log=FALSE） 
+/logfile=日志文件名 指定日志文件的文件名。 
+/filelog 记录详细文件日志。在FastCopy/Log目录里面，以“日期.log”形式存储。校验时同时记录哈希值。（使用/filelog=filename可存储到指定文件。但若指定同一个文件，同时运行多个FastCopy，日志可能会混合输出） 
+/skip_empty_dir 启用过滤，不复制空文件夹。（禁用：/skip_empty_dir=FALSE） 
+/job=任务名 指定事先注册的任务。 
+/force_start(=N) 不等待其他FastCopy运行完成，立即开始。
+（/force_start=2～N指定最大并行进程数） 
+/disk_mode=
+  (auto|same|diff) 指定自动/相同/不同HDD模式。（默认：auto） 
+/speed=(full|autoslow|
+  9-1(90%-10%)|suspend) 控制速度。 
+/low_io 优先考虑其他应用程序的IO（禁用: /low_io=FALSE） 
+/srcfile="files.txt 用文件名指定来源内容，用户每行可以描述一个文件名。（不建议指定大量文件） 
+/srcfile_w="files.txt" 与/srcfile=相同，除了由UNICODE描述。 
+/include="..." 指定包括过滤器。（详情） 
+/exclude="..." 指定排除过滤器。（详情） 
+/from_date="..." 指定最旧的时间戳的过滤器。（详情） 
+/to_date="..." 指定最新的时间戳的过滤器。（详情） 
+/min_size="..." 指定最小尺寸的过滤器。（详情） 
+/max_size="..." 指定最大尺寸的过滤器。（详情） 
+/time_allow=N(ms) 指定src/dst更新日期差异的允许时间(ms)，在差异（大小/日期）或差异（最新日期）。 
+/wipe_del 在删除之前重命名文件并擦除，阻止复原。（禁用：/wipe_del=FALSE） 
+/acl 复制“访问控制表属性(ACL)”、“扩展属性”(EA)。（仅限于NTFS）（禁用：/acl=FALSE） 
+/stream 复制交换数据流（仅限于NTFS）（禁用：/stream=FALSE ） 
+/reparse 复制连接/装载点/符号链接本身（不是内容）。（复制文件内容：/reparse=FALSE）（详情 及 警告） 
+/verify 校验通过xxHash3(or MD5, SHA-1, SHA-256, SHA-512, SHA3-256, SHA3-512, xxHash) 写入的文件数据。（禁用：/verify=FALSE） 
+/verifyinfo 启用校验信息附加到交换数据流(:fc_verify)（禁用：/verifyinfo=FALSE） 
+/dlsvt=(none|auto|always) 指定夏令时的误差容限 (详情) 
+/linkdest 尽可能重现硬链接。详情 请参照这里 。 
+/recreate 将更新行为从“覆盖目标”更改为 “删除并重新创建目标”。（指定/linkdest时，不管是否指定/recreate运行这个动作）总是启用这个操作： fastcopy2.ini [main] recreate=1。 
+/postproc=结束时后运行名 指定事先注册的结束时后运行名。（禁用：/postproc=FALSE） 
+
+例子： 将C:\test内容差异复制到D:\Backup Folder
+　fastcopy.exe /cmd=diff C:\test /to="D:\Backup Folder\" 
+8. FcHash.exe
+用于快速哈希计算的命令行。
+　FcHash.exe [options] file1(or dir1) [,file2...]
+
+选择 内容 
+--(xxh|xxh3|md5|sha1|sha256|sha512|sha3_256|sha3_512) 哈希类型（Default: xxh3） 
+--recur(sive) 递归运行目录 
+--non_stop 忽略错误 
+--use_cache 使用操作系统缓存 
+
+例子：
+
+C:\> fchash --sha256 C:\
+C:\ :
+  sha256 <180a0d4144b44fc54acc9345a1453a32064ce8329ed387f4bf5faad1d7bc883a>: bootmgr
+  sha256 <6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d>: BOOTNXT

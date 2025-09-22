@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -68,9 +69,15 @@ namespace CacheMax.GUI
 
             foreach (var folder in _config.Config.AcceleratedFolders)
             {
-                // 设置默认状态
-                folder.Status = _cacheManager.IsAccelerated(folder.MountPoint) ? "已完成" : "未加速";
-                folder.ProgressPercentage = _cacheManager.IsAccelerated(folder.MountPoint) ? 100.0 : 0.0;
+                // RestoreAccelerationStates已经正确设置了状态，这里只需要设置进度条
+                if (folder.Status == "已加速")
+                {
+                    folder.ProgressPercentage = 100.0;
+                }
+                else
+                {
+                    folder.ProgressPercentage = 0.0;
+                }
 
                 _acceleratedFolders.Add(folder);
             }
@@ -476,7 +483,7 @@ namespace CacheMax.GUI
             var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
-                MessageBox.Show("请选择要验证的文件夹", "信息",
+                MessageBox.Show("请选择要检查链接状态的文件夹", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -484,30 +491,30 @@ namespace CacheMax.GUI
             try
             {
                 ValidateButton.IsEnabled = false;
-                UpdateStatus($"正在验证：{selected.MountPoint}");
+                UpdateStatus($"正在检查链接状态：{selected.MountPoint}");
 
                 var progress = new Progress<string>(msg => AddLog(msg));
 
                 if (_cacheManager.ValidateAcceleration(selected.MountPoint, selected.OriginalPath, selected.CachePath, progress))
                 {
-                    AddLog($"验证成功：{selected.MountPoint}");
-                    UpdateStatus("验证成功");
-                    MessageBox.Show("加速配置验证成功！", "验证成功",
+                    AddLog($"链接状态检查成功：{selected.MountPoint}");
+                    UpdateStatus("链接状态正常");
+                    MessageBox.Show("链接状态检查成功！所有目录和Junction配置正常。", "检查成功",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    AddLog($"验证失败：{selected.MountPoint}");
-                    UpdateStatus("验证失败");
-                    MessageBox.Show("加速配置验证失败，请查看日志了解详情", "验证失败",
+                    AddLog($"链接状态检查失败：{selected.MountPoint}");
+                    UpdateStatus("链接状态异常");
+                    MessageBox.Show("链接状态检查发现问题，请查看日志了解详情", "检查失败",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)
             {
-                AddLog($"验证异常：{ex.Message}");
-                UpdateStatus($"验证异常：{ex.Message}");
-                MessageBox.Show($"验证时发生异常：\n{ex.Message}", "错误",
+                AddLog($"链接状态检查异常：{ex.Message}");
+                UpdateStatus($"检查异常：{ex.Message}");
+                MessageBox.Show($"检查链接状态时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -517,6 +524,71 @@ namespace CacheMax.GUI
             }
         }
 
+        private async void CheckIntegrityButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                CheckIntegrityButton.IsEnabled = false;
+                UpdateStatus("正在检查缓存完整性...");
+
+                var progress = new Progress<string>(msg => AddLog(msg));
+                await CheckCacheIntegrityAsync(progress);
+
+                UpdateStatus("缓存完整性检查完成");
+                UpdateUI();
+            }
+            catch (Exception ex)
+            {
+                AddLog($"检查缓存完整性异常：{ex.Message}");
+                UpdateStatus($"检查异常：{ex.Message}");
+                MessageBox.Show($"检查缓存完整性时发生异常：\n{ex.Message}", "错误",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                CheckIntegrityButton.IsEnabled = true;
+            }
+        }
+
+        private async void SyncAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            var unsyncedItems = _acceleratedFolders.Where(f => f.Status == "未同步").ToList();
+            if (!unsyncedItems.Any())
+            {
+                MessageBox.Show("没有未同步的项目", "信息",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var result = MessageBox.Show($"发现 {unsyncedItems.Count} 个未同步项目，确定要全部同步吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                SyncAllButton.IsEnabled = false;
+                UpdateStatus("正在同步所有未同步项目...");
+
+                var progress = new Progress<string>(msg => AddLog(msg));
+                await SyncAllUnsyncedAsync(progress);
+
+                UpdateStatus("批量同步完成");
+                UpdateUI();
+            }
+            catch (Exception ex)
+            {
+                AddLog($"批量同步异常：{ex.Message}");
+                UpdateStatus($"同步异常：{ex.Message}");
+                MessageBox.Show($"批量同步时发生异常：\n{ex.Message}", "错误",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                SyncAllButton.IsEnabled = true;
+            }
+        }
 
         private void UpdateUI()
         {
@@ -526,68 +598,20 @@ namespace CacheMax.GUI
 
             // 控制按钮状态
             ValidateButton.IsEnabled = selected != null;
-            RecoveryButton.IsEnabled = selected != null;
+
+            // 检查缓存完整性按钮：有已加速项目时启用
+            var hasAcceleratedItems = _acceleratedFolders.Any(f => f.Status == "已加速" || f.Status == "已完成");
+            CheckIntegrityButton.IsEnabled = hasAcceleratedItems;
+
+            // 同步所有未同步项按钮：有未同步项目时启用
+            var hasUnsyncedItems = _acceleratedFolders.Any(f => f.Status == "未同步");
+            SyncAllButton.IsEnabled = hasUnsyncedItems;
 
             var runningCount = _acceleratedFolders.Count(f => f.Status == "已完成");
             RunningCountText.Text = $"Running: {runningCount}";
         }
 
 
-        private async void RecoveryButton_Click(object sender, RoutedEventArgs e)
-        {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
-            if (selected == null)
-            {
-                MessageBox.Show("请选择要恢复的文件夹", "信息",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            var result = MessageBox.Show($"确定要对 {selected.MountPoint} 执行手动恢复吗？\n\n" +
-                "这将尝试修复任何检测到的问题。", "确认恢复",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            try
-            {
-                RecoveryButton.IsEnabled = false;
-                UpdateStatus($"正在恢复：{selected.MountPoint}");
-
-                var progress = new Progress<string>(msg => AddLog(msg));
-
-                if (await _cacheManager.TriggerRecovery(selected.MountPoint, progress))
-                {
-                    AddLog($"恢复成功：{selected.MountPoint}");
-                    UpdateStatus("恢复成功");
-                    MessageBox.Show($"恢复成功！\n\n{selected.MountPoint} 已修复。", "恢复成功",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // 刷新状态
-                    LoadExistingAccelerations();
-                }
-                else
-                {
-                    AddLog($"恢复失败：{selected.MountPoint}");
-                    UpdateStatus("恢复失败");
-                    MessageBox.Show("恢复失败，请查看日志了解详情", "恢复失败",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"恢复异常：{ex.Message}");
-                UpdateStatus($"恢复异常：{ex.Message}");
-                MessageBox.Show($"恢复时发生异常：\n{ex.Message}", "错误",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                RecoveryButton.IsEnabled = true;
-                UpdateUI();
-            }
-        }
 
         private void UpdateStatus(string message)
         {
@@ -1099,6 +1123,354 @@ namespace CacheMax.GUI
             }
 
             return true;
+        }
+
+        private async void UnsyncedStatus_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var item = button?.DataContext as AcceleratedFolder;
+
+            if (item == null || item.Status != "未同步")
+                return;
+
+            var result = MessageBox.Show($"确定要同步项目 '{item.MountPoint}' 吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            try
+            {
+                button.IsEnabled = false;
+                button.Content = "🔄 同步中...";
+
+                UpdateStatus($"正在同步: {item.MountPoint}");
+                var progress = new Progress<string>(msg => AddLog(msg));
+
+                var success = await SyncSingleItemAsync(item.CachePath, item.OriginalPath, progress);
+
+                if (success)
+                {
+                    item.Status = "已加速";
+                    UpdateStatus($"同步成功: {item.MountPoint}");
+                    AddLog($"单项目同步成功: {item.MountPoint}");
+                }
+                else
+                {
+                    item.Status = "同步失败";
+                    UpdateStatus($"同步失败: {item.MountPoint}");
+                    AddLog($"单项目同步失败: {item.MountPoint}");
+                }
+
+                UpdateUI();
+            }
+            catch (Exception ex)
+            {
+                item.Status = "同步失败";
+                AddLog($"同步 {item.MountPoint} 时出错: {ex.Message}");
+                UpdateStatus($"同步异常: {ex.Message}");
+                MessageBox.Show($"同步时发生异常：\n{ex.Message}", "错误",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                button.IsEnabled = true;
+                if (item.Status == "未同步")
+                {
+                    button.Content = "🔄 未同步";
+                }
+            }
+        }
+
+        private async Task CheckCacheIntegrityAsync(IProgress<string> progress)
+        {
+            progress?.Report("开始检查缓存完整性...");
+
+            var acceleratedItems = _acceleratedFolders.Where(f =>
+                f.Status == "已加速" ||
+                f.Status == "已完成" ||
+                f.Status == "未同步" ||
+                f.Status == "同步失败").ToList();
+            if (!acceleratedItems.Any())
+            {
+                progress?.Report("没有已加速的项目需要检查");
+                return;
+            }
+
+            int checkedCount = 0;
+            int unsyncedCount = 0;
+
+            foreach (var item in acceleratedItems)
+            {
+                progress?.Report($"检查项目: {item.MountPoint}");
+
+                try
+                {
+                    var hasUnsyncedChanges = await CheckSingleItemIntegrityAsync(item.CachePath, item.OriginalPath, progress);
+
+                    if (hasUnsyncedChanges)
+                    {
+                        item.Status = "未同步";
+                        unsyncedCount++;
+                        progress?.Report($"发现未同步项目: {item.MountPoint}");
+                    }
+                    else
+                    {
+                        // 没有差异，保持原状态不变
+                        progress?.Report($"项目无需同步: {item.MountPoint}");
+                    }
+
+                    checkedCount++;
+                }
+                catch (Exception ex)
+                {
+                    progress?.Report($"检查项目 {item.MountPoint} 时出错: {ex.Message}");
+                    item.Status = "检查失败";
+                }
+            }
+
+            progress?.Report($"完整性检查完成。检查了 {checkedCount} 个项目，发现 {unsyncedCount} 个未同步项目");
+
+            // 更新SyncAllButton状态
+            Dispatcher.BeginInvoke(() =>
+            {
+                SyncAllButton.IsEnabled = unsyncedCount > 0;
+            });
+        }
+
+        private async Task<bool> CheckSingleItemIntegrityAsync(string cachePath, string originalPath, IProgress<string> progress)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    // 使用RoboCopy的/L参数检查差异
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = "robocopy",
+                        Arguments = $"\"{cachePath}\" \"{originalPath}\" /L /S /E",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
+
+                    using var process = Process.Start(startInfo);
+                    if (process == null)
+                    {
+                        progress?.Report("无法启动RoboCopy进程");
+                        // 记录到后台日志
+                        AsyncLogger.Instance.LogInfo($"缓存完整性检查失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                        return false;
+                    }
+
+                    var output = process.StandardOutput.ReadToEnd();
+                    var error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    // 记录完整输出到后台日志（不显示在前台）
+                    AsyncLogger.Instance.LogInfo($"缓存完整性检查 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {process.ExitCode}", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({output.Length} 字符):", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo(output, "RoboCopy");
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        AsyncLogger.Instance.LogInfo($"RoboCopy错误输出: {error}", "RoboCopy");
+                    }
+
+                    // 解析RoboCopy输出判断是否有差异
+                    return ParseRoboCopyOutput(output, progress);
+                }
+                catch (Exception ex)
+                {
+                    progress?.Report($"检查差异时出错: {ex.Message}");
+                    AsyncLogger.Instance.LogInfo($"缓存完整性检查异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                    return false;
+                }
+            });
+        }
+
+        private bool ParseRoboCopyOutput(string output, IProgress<string> progress)
+        {
+            try
+            {
+                // 查找统计行：目录: 总数 复制 跳过 不匹配 失败 其他
+                // 和：文件: 总数 复制 跳过 不匹配 失败 其他
+                var lines = output.Split('\n');
+                int fileChanges = 0;
+                int dirChanges = 0;
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var trimmedLine = lines[i].Trim();
+
+                    // 查找文件统计行：文件:         3         2         1         0         0         0
+                    if (trimmedLine.StartsWith("文件:"))
+                    {
+                        var parts = trimmedLine.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (parts.Length >= 3)
+                        {
+                            // parts[0]="文件:", parts[1]="总数", parts[2]="复制数"
+                            if (int.TryParse(parts[2], out int copyCount))
+                            {
+                                fileChanges = copyCount;
+                            }
+                        }
+                    }
+
+                    // 查找目录统计行：目录:         2         1         1         0         0         0
+                    if (trimmedLine.StartsWith("目录:"))
+                    {
+                        var parts = trimmedLine.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (parts.Length >= 3)
+                        {
+                            // parts[0]="目录:", parts[1]="总数", parts[2]="复制数"
+                            if (int.TryParse(parts[2], out int copyCount))
+                            {
+                                dirChanges = copyCount;
+                            }
+                        }
+                    }
+
+                    // 另外检查是否有"新文件"行，这也表示有差异
+                    if (trimmedLine.Contains("新文件"))
+                    {
+                        return true;
+                    }
+
+                    // 检查是否有"新目录"行
+                    if (trimmedLine.Contains("新目录"))
+                    {
+                        return true;
+                    }
+                }
+
+                // 检查是否有需要同步的变更
+                bool hasChanges = fileChanges > 0 || dirChanges > 0;
+
+                if (hasChanges)
+                {
+                    progress?.Report($"发现差异：{fileChanges} 个文件，{dirChanges} 个目录需要同步");
+                }
+
+                return hasChanges;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"解析RoboCopy输出时出错: {ex.Message}");
+                AsyncLogger.Instance.LogInfo($"解析RoboCopy输出异常: {ex.Message}", "RoboCopy");
+                return false;
+            }
+        }
+
+        private async Task SyncAllUnsyncedAsync(IProgress<string> progress)
+        {
+            var unsyncedItems = _acceleratedFolders.Where(f => f.Status == "未同步").ToList();
+
+            progress?.Report($"开始同步 {unsyncedItems.Count} 个未同步项目...");
+
+            int successCount = 0;
+            int failureCount = 0;
+
+            foreach (var item in unsyncedItems)
+            {
+                progress?.Report($"同步项目: {item.MountPoint}");
+
+                try
+                {
+                    var success = await SyncSingleItemAsync(item.CachePath, item.OriginalPath, progress);
+
+                    if (success)
+                    {
+                        item.Status = "已加速";
+                        successCount++;
+                        progress?.Report($"同步成功: {item.MountPoint}");
+                    }
+                    else
+                    {
+                        item.Status = "同步失败";
+                        failureCount++;
+                        progress?.Report($"同步失败: {item.MountPoint}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    item.Status = "同步失败";
+                    failureCount++;
+                    progress?.Report($"同步 {item.MountPoint} 时出错: {ex.Message}");
+                }
+            }
+
+            progress?.Report($"批量同步完成。成功: {successCount}，失败: {failureCount}");
+
+            // 更新SyncAllButton状态
+            Dispatcher.BeginInvoke(() =>
+            {
+                var remainingUnsynced = _acceleratedFolders.Count(f => f.Status == "未同步");
+                SyncAllButton.IsEnabled = remainingUnsynced > 0;
+            });
+        }
+
+        private async Task<bool> SyncSingleItemAsync(string cachePath, string originalPath, IProgress<string> progress)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    // 使用RoboCopy进行实际同步
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = "robocopy",
+                        Arguments = $"\"{cachePath}\" \"{originalPath}\" /S /E /PURGE",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        CreateNoWindow = true
+                    };
+
+                    using var process = Process.Start(startInfo);
+                    if (process == null)
+                    {
+                        progress?.Report("无法启动RoboCopy进程");
+                        AsyncLogger.Instance.LogInfo($"同步失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                        return false;
+                    }
+
+                    var output = process.StandardOutput.ReadToEnd();
+                    var error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    // 记录完整输出到后台日志（不显示在前台）
+                    AsyncLogger.Instance.LogInfo($"同步操作 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {process.ExitCode}", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({output.Length} 字符):", "RoboCopy");
+                    AsyncLogger.Instance.LogInfo(output, "RoboCopy");
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        AsyncLogger.Instance.LogInfo($"RoboCopy错误输出: {error}", "RoboCopy");
+                    }
+
+                    // RoboCopy的退出代码: 0-3 表示成功，>=4 表示错误
+                    bool success = process.ExitCode <= 3;
+
+                    if (!success)
+                    {
+                        progress?.Report($"RoboCopy同步失败，退出代码: {process.ExitCode}");
+                    }
+
+                    return success;
+                }
+                catch (Exception ex)
+                {
+                    progress?.Report($"同步时出错: {ex.Message}");
+                    AsyncLogger.Instance.LogInfo($"同步异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                    return false;
+                }
+            });
         }
     }
 

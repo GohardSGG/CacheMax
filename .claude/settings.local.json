@@ -32,7 +32,8 @@
       "Bash(taskkill:*)",
       "Bash(Remove-Item \"C:\\Code\\CacheMax\\CacheMax.GUI\\Services\\PerformanceMonitoringService.cs\" -Force)",
       "Bash(fsutil reparsepoint query:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
