@@ -173,7 +173,7 @@ namespace CacheMax.GUI
 
                         if (initSuccess)
                         {
-                            folder.Status = "已完成";
+                            folder.Status = "已加速";
                             folder.ProgressPercentage = 100;
 
                             // 正确计算缓存路径（与CacheManagerService逻辑一致）
@@ -212,7 +212,7 @@ namespace CacheMax.GUI
                 // 保存配置
                 _config.SaveConfig();
 
-                var successCount = targetFolders.Count(f => f.Status == "已完成");
+                var successCount = targetFolders.Count(f => f.Status == "已加速");
                 var failedCount = targetFolders.Count(f => f.Status == "失败");
 
                 UpdateStatus($"批量加速完成：成功 {successCount} 个，失败 {failedCount} 个");
@@ -242,8 +242,8 @@ namespace CacheMax.GUI
         {
             var selectedItems = AcceleratedFoldersGrid.SelectedItems.Cast<AcceleratedFolder>().ToList();
             var targetItems = selectedItems.Any()
-                ? selectedItems.Where(f => f.Status == "已完成" || f.Status == "已加速").ToList()
-                : _acceleratedFolders.Where(f => f.Status == "已完成" || f.Status == "已加速").ToList();
+                ? selectedItems.Where(f => f.Status == "已加速").ToList()
+                : _acceleratedFolders.Where(f => f.Status == "已加速").ToList();
 
             if (targetItems.Count == 0)
             {
@@ -667,8 +667,8 @@ namespace CacheMax.GUI
 
             // 暂停按钮：有选中的可暂停项目 OR 无选择但有可暂停的项目
             var hasStoppableItems = hasSelection
-                ? selectedItems.Any(f => f.Status == "已完成" || f.Status == "已加速")
-                : _acceleratedFolders.Any(f => f.Status == "已完成" || f.Status == "已加速");
+                ? selectedItems.Any(f => f.Status == "已加速")
+                : _acceleratedFolders.Any(f => f.Status == "已加速");
             StopButton.IsEnabled = hasStoppableItems;
 
             // 移除按钮：有选中项目 OR 无选择但有项目可移除
@@ -679,14 +679,14 @@ namespace CacheMax.GUI
             ValidateButton.IsEnabled = hasSelection;
 
             // 检查缓存完整性按钮：有已加速项目时启用
-            var hasAcceleratedItems = _acceleratedFolders.Any(f => f.Status == "已加速" || f.Status == "已完成");
+            var hasAcceleratedItems = _acceleratedFolders.Any(f => f.Status == "已加速");
             CheckIntegrityButton.IsEnabled = hasAcceleratedItems;
 
             // 同步所有未同步项按钮：有未同步项目时启用
             var hasUnsyncedItems = _acceleratedFolders.Any(f => f.Status == "未同步");
             SyncAllButton.IsEnabled = hasUnsyncedItems;
 
-            var runningCount = _acceleratedFolders.Count(f => f.Status == "已完成");
+            var runningCount = _acceleratedFolders.Count(f => f.Status == "已加速");
             RunningCountText.Text = $"Running: {runningCount}";
         }
 
@@ -788,7 +788,7 @@ namespace CacheMax.GUI
             }
 
             // 检查是否有已加速的项目
-            var acceleratedItems = targetItems.Where(f => f.Status == "已完成" || f.Status == "已加速" || _cacheManager.IsAccelerated(f.MountPoint)).ToList();
+            var acceleratedItems = targetItems.Where(f => f.Status == "已加速" || _cacheManager.IsAccelerated(f.MountPoint)).ToList();
             var normalItems = targetItems.Except(acceleratedItems).ToList();
 
             string message;
@@ -1287,7 +1287,6 @@ namespace CacheMax.GUI
 
             var acceleratedItems = _acceleratedFolders.Where(f =>
                 f.Status == "已加速" ||
-                f.Status == "已完成" ||
                 f.Status == "未同步" ||
                 f.Status == "同步失败").ToList();
             if (!acceleratedItems.Any())
@@ -1637,7 +1636,7 @@ namespace CacheMax.GUI
                 {
                     Text = "CacheMax - 缓存加速工具",
                     Visible = false,  // 默认不显示，只有最小化到托盘时才显示
-                    Icon = SystemIcons.Application  // 使用默认系统图标
+                    Icon = LoadIconFromResource()  // 使用自定义图标
                 };
 
                 // 双击托盘图标时显示窗口
@@ -1655,6 +1654,30 @@ namespace CacheMax.GUI
             {
                 AddLog($"初始化系统托盘失败: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 从资源加载图标
+        /// </summary>
+        private System.Drawing.Icon LoadIconFromResource()
+        {
+            try
+            {
+                // 尝试从资源流加载图标
+                var resourceUri = new Uri("pack://application:,,,/CacheMax.ico");
+                var streamInfo = System.Windows.Application.GetResourceStream(resourceUri);
+                if (streamInfo != null)
+                {
+                    return new System.Drawing.Icon(streamInfo.Stream);
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"加载图标资源失败: {ex.Message}");
+            }
+
+            // 回退到默认图标
+            return SystemIcons.Application;
         }
 
         /// <summary>

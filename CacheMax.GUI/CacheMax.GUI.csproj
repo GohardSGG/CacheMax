@@ -9,6 +9,7 @@
     <AssemblyName>CacheMax</AssemblyName>
     <RootNamespace>CacheMax.GUI</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>CacheMax.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
     <None Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="CacheMax.ico" />
   </ItemGroup>
 
 </Project>

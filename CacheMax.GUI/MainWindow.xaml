@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="CacheMax - File System Accelerator"
         Height="700" Width="1200"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Icon="CacheMax.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -180,10 +181,6 @@
                                                     <Setter TargetName="StatusIcon" Property="Text" Value="⚡"/>
                                                     <Setter TargetName="StatusIcon" Property="Foreground" Value="Orange"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status}" Value="已完成">
-                                                    <Setter TargetName="StatusIcon" Property="Text" Value="✅"/>
-                                                    <Setter TargetName="StatusIcon" Property="Foreground" Value="Green"/>
-                                                </DataTrigger>
                                                 <DataTrigger Binding="{Binding Status}" Value="已加速">
                                                     <Setter TargetName="StatusIcon" Property="Text" Value="✅"/>
                                                     <Setter TargetName="StatusIcon" Property="Foreground" Value="Green"/>
@@ -225,9 +222,6 @@
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Status}" Value="同步中">
                                                     <Setter TargetName="ProgressBar" Property="Foreground" Value="Orange"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status}" Value="已完成">
-                                                    <Setter TargetName="ProgressBar" Property="Foreground" Value="Green"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Status}" Value="失败">
                                                     <Setter TargetName="ProgressBar" Property="Foreground" Value="Red"/>
