@@ -532,52 +532,6 @@ namespace CacheMax.GUI
             RunningCountText.Text = $"Running: {runningCount}";
         }
 
-        private async void HealthCheckButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                HealthCheckButton.IsEnabled = false;
-                UpdateStatus("执行系统健康检查...");
-
-                var progress = new Progress<string>(msg => AddLog(msg));
-
-                var hasProblems = await _cacheManager.PerformHealthCheck(progress);
-
-                var stats = _cacheManager.GetErrorStatistics();
-                var message = $"健康检查完成！\n\n" +
-                             $"活跃加速: {(stats.TryGetValue("ActiveAccelerations", out var active) ? active : 0)}\n" +
-                             $"总加速数: {(stats.TryGetValue("TotalAccelerations", out var total) ? total : 0)}\n" +
-                             $"总错误数: {(stats.TryGetValue("TotalErrors", out var errors) ? errors : 0)}\n" +
-                             $"恢复尝试: {(stats.TryGetValue("TotalRecoveryAttempts", out var attempts) ? attempts : 0)}";
-
-                if (hasProblems)
-                {
-                    AddLog("系统健康检查发现问题");
-                    UpdateStatus("健康检查发现问题");
-                    message += "\n\n⚠️ 发现问题，已尝试自动修复";
-                    MessageBox.Show(message, "健康检查结果", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    AddLog("系统健康检查完成，一切正常");
-                    UpdateStatus("健康检查完成");
-                    message += "\n\n✅ 系统状态良好";
-                    MessageBox.Show(message, "健康检查结果", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"健康检查异常：{ex.Message}");
-                UpdateStatus($"健康检查异常：{ex.Message}");
-                MessageBox.Show($"健康检查时发生异常：\n{ex.Message}", "错误",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                HealthCheckButton.IsEnabled = true;
-                UpdateUI();
-            }
-        }
 
         private async void RecoveryButton_Click(object sender, RoutedEventArgs e)
         {

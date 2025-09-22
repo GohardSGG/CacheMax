@@ -82,7 +82,6 @@
                         <Label Grid.Row="1" Grid.Column="0" Content="操作:" VerticalAlignment="Center"/>
                         <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
                             <Button Name="ValidateButton" Content="验证完整性" Click="ValidateButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
-                            <Button Name="HealthCheckButton" Content="健康检查" Click="HealthCheckButton_Click" Margin="0,0,10,0"/>
                             <Button Name="RecoveryButton" Content="手动恢复" Click="RecoveryButton_Click" Margin="0,0,10,0" IsEnabled="False"/>
                         </StackPanel>
                     </Grid>

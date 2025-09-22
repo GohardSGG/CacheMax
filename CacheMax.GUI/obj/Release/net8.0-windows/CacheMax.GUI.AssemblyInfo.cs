@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CacheMax")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd65d5ddaab2c384f845d42aebc2467c07ed948d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3c50073adb9c02c7a99fc95b0f5cb261c3a6303")]
 [assembly: System.Reflection.AssemblyProductAttribute("CacheMax")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CacheMax")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

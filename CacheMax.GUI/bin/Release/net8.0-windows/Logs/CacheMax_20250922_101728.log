@@ -1,5 +1,0 @@
-﻿[2025-09-22 10:17:28.100] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
-[2025-09-22 10:17:28.105] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
-[2025-09-22 10:17:28.105] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
-[2025-09-22 10:17:28.193] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
-[2025-09-22 10:17:28.193] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
