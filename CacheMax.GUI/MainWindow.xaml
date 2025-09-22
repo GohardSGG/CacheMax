@@ -17,28 +17,28 @@
             <Button Name="AccelerateButton" Click="AccelerateButton_Click" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="🚀" FontSize="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="批量加速" VerticalAlignment="Center"/>
+                    <TextBlock Text="加速" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Separator/>
             <Button Name="StopButton" Click="StopButton_Click" Padding="10,5" IsEnabled="False">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="⏹" FontSize="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="Stop Acceleration" VerticalAlignment="Center"/>
+                    <TextBlock Text="⏸" FontSize="16" Margin="0,0,5,0"/>
+                    <TextBlock Text="暂停" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Separator/>
             <Button Name="RefreshButton" Click="RefreshButton_Click" Padding="10,5">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="🔄" FontSize="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                    <TextBlock Text="刷新" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Separator/>
             <Button Name="DeleteButton" Click="DeleteButton_Click" Padding="10,5" IsEnabled="False">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="🗑" FontSize="16" Margin="0,0,5,0"/>
-                    <TextBlock Text="Delete Entry" VerticalAlignment="Center"/>
+                    <TextBlock Text="移除" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
         </ToolBar>
@@ -100,10 +100,16 @@
                         <DataGrid Name="AcceleratedFoldersGrid" Grid.Row="0"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
-                                  SelectionMode="Single"
+                                  CanUserDeleteRows="False"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeRows="False"
+                                  CanUserSortColumns="False"
+                                  SelectionMode="Extended"
                                   SelectionChanged="AcceleratedFoldersGrid_SelectionChanged"
+                                  MouseDown="AcceleratedFoldersGrid_MouseDown"
                                   GridLinesVisibility="Horizontal"
-                                  AlternatingRowBackground="LightGray">
+                                  AlternatingRowBackground="LightGray"
+                                  IsReadOnly="True">
                             <DataGrid.Columns>
                                 <!-- Status Column with Icons -->
                                 <DataGridTemplateColumn Header="状态" Width="100">

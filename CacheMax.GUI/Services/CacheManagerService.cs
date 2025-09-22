@@ -267,6 +267,10 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
+                // 步骤3.5：设置原始目录隐藏属性
+                progress?.Report("设置原始目录隐藏属性...");
+                SetDirectoryHidden(originalPath, progress);
+
                 // 步骤4：创建Junction
                 progress?.Report($"创建Junction：{sourcePath} -> {cachePath}");
                 if (!_junctionService.CreateDirectoryJunction(sourcePath, cachePath, progress))
@@ -316,6 +320,70 @@ namespace CacheMax.GUI.Services
         /// <summary>
         /// 停止缓存加速
         /// </summary>
+        /// <summary>
+        /// 暂停缓存加速，只移除Junction链接但保留配置和缓存文件
+        /// </summary>
+        public async Task<bool> PauseCacheAcceleration(
+            string mountPoint,
+            string originalPath,
+            string cachePath,
+            IProgress<string>? progress = null)
+        {
+            try
+            {
+                progress?.Report("开始暂停缓存加速...");
+
+                // 步骤1：执行最后一次同步
+                progress?.Report("执行最后一次同步...");
+                await _fileSyncService.ForceSync(cachePath, progress);
+
+                // 步骤2：停止文件同步监控
+                progress?.Report("停止文件同步监控...");
+                _fileSyncService.StopMonitoring(cachePath, progress);
+
+                // 步骤3：删除Junction
+                progress?.Report($"删除Junction：{mountPoint}");
+                if (_junctionService.IsJunction(mountPoint))
+                {
+                    if (!_junctionService.RemoveJunction(mountPoint, progress))
+                    {
+                        progress?.Report("删除Junction失败");
+                        return false;
+                    }
+                }
+
+                // 步骤4：恢复原始目录
+                var actualOriginalPath = originalPath;
+                var expectedOriginalPath = mountPoint + ".original";
+
+                // 优先查找 mountPoint + ".original" 目录
+                if (Directory.Exists(expectedOriginalPath))
+                {
+                    actualOriginalPath = expectedOriginalPath;
+                    progress?.Report($"找到备份目录：{expectedOriginalPath}");
+                }
+
+                if (Directory.Exists(actualOriginalPath))
+                {
+                    progress?.Report($"恢复原始目录：{actualOriginalPath} -> {mountPoint}");
+                    Directory.Move(actualOriginalPath, mountPoint);
+                }
+                else
+                {
+                    progress?.Report($"警告：未找到原始目录 {actualOriginalPath}");
+                    return false;
+                }
+
+                progress?.Report("暂停完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"暂停缓存加速时出错: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task<bool> StopCacheAcceleration(
             string mountPoint,
             string originalPath,
@@ -459,6 +527,18 @@ namespace CacheMax.GUI.Services
                 {
                     progress?.Report($"原始目录不存在：{originalPath}");
                     return false;
+                }
+
+                // 检查原始目录是否具有隐藏属性
+                if (!IsDirectoryHidden(originalPath))
+                {
+                    progress?.Report($"警告：原始目录缺少隐藏属性：{originalPath}");
+                    progress?.Report("正在设置隐藏属性...");
+                    SetDirectoryHidden(originalPath, progress);
+                }
+                else
+                {
+                    progress?.Report($"原始目录隐藏属性正常：{originalPath}");
                 }
 
                 // 检查缓存目录
@@ -739,6 +819,7 @@ namespace CacheMax.GUI.Services
             catch (Exception ex)
             {
                 // 出错时回退到传统复制方法
+                LogMessage?.Invoke(this, $"FastCopy失败，回退到传统复制: {ex.Message}");
                 var fileName = Path.GetFileName(sourceFile);
                 var targetFile = Path.Combine(targetPath, fileName);
                 await FallbackCopyLargeFileAsync(sourceFile, targetFile, progressReporter, cancellationToken);
@@ -1217,6 +1298,61 @@ namespace CacheMax.GUI.Services
                 ShowProgress = true,
                 ShowETA = true
             };
+        }
+
+        /// <summary>
+        /// 设置目录隐藏属性
+        /// </summary>
+        private bool SetDirectoryHidden(string directoryPath, IProgress<string>? progress = null)
+        {
+            try
+            {
+                if (!Directory.Exists(directoryPath))
+                {
+                    progress?.Report($"目录不存在，无法设置隐藏属性：{directoryPath}");
+                    return false;
+                }
+
+                var directoryInfo = new DirectoryInfo(directoryPath);
+
+                // 检查是否已经有隐藏属性
+                if ((directoryInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                {
+                    progress?.Report($"目录已具有隐藏属性：{directoryPath}");
+                    return true;
+                }
+
+                // 添加隐藏属性
+                directoryInfo.Attributes |= FileAttributes.Hidden;
+                progress?.Report($"已设置目录隐藏属性：{directoryPath}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"设置目录隐藏属性失败：{directoryPath}, 错误：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 检查目录是否具有隐藏属性
+        /// </summary>
+        public bool IsDirectoryHidden(string directoryPath)
+        {
+            try
+            {
+                if (!Directory.Exists(directoryPath))
+                {
+                    return false;
+                }
+
+                var directoryInfo = new DirectoryInfo(directoryPath);
+                return (directoryInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public void Dispose()

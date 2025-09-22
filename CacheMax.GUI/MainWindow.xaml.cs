@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,6 +16,9 @@ using System.Windows.Input;
 using CacheMax.GUI.Services;
 using CacheMax.GUI.ViewModels;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
+using WinForms = System.Windows.Forms;
+using System.Drawing;
 
 namespace CacheMax.GUI
 {
@@ -26,6 +30,7 @@ namespace CacheMax.GUI
         private readonly ObservableCollection<AcceleratedFolder> _acceleratedFolders;
         private readonly ObservableCollection<SyncQueueItemViewModel> _syncQueueItems;
         private readonly ObservableCollection<SyncQueueItemViewModel> _completedItems;
+        private WinForms.NotifyIcon? _notifyIcon;
 
         public MainWindow()
         {
@@ -81,6 +86,9 @@ namespace CacheMax.GUI
 
                 _acceleratedFolders.Add(folder);
             }
+
+            // 初始化系统托盘
+            InitializeSystemTray();
         }
 
         private async void AccelerateButton_Click(object sender, RoutedEventArgs e)
@@ -93,17 +101,26 @@ namespace CacheMax.GUI
                 return;
             }
 
-            // 查找所有未加速的文件夹
-            var unacceleratedFolders = _acceleratedFolders.Where(f => f.Status == "未加速").ToList();
+            // 获取选中的项目或所有未加速的文件夹
+            var selectedItems = AcceleratedFoldersGrid.SelectedItems.Cast<AcceleratedFolder>().ToList();
+            var targetFolders = selectedItems.Any()
+                ? selectedItems.Where(f => f.Status == "未加速").ToList()
+                : _acceleratedFolders.Where(f => f.Status == "未加速").ToList();
 
-            if (unacceleratedFolders.Count == 0)
+            if (targetFolders.Count == 0)
             {
-                MessageBox.Show("没有需要加速的文件夹。请先添加路径。", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                var message = selectedItems.Any()
+                    ? "选中的项目中没有需要加速的文件夹。"
+                    : "没有需要加速的文件夹。请先添加路径。";
+                MessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show($"检测到 {unacceleratedFolders.Count} 个未加速的文件夹。\n\n是否开始批量加速？",
-                "确认批量加速", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var confirmMessage = selectedItems.Any()
+                ? $"将对选中的 {targetFolders.Count} 个文件夹进行加速。\n\n是否开始加速？"
+                : $"检测到 {targetFolders.Count} 个未加速的文件夹。\n\n是否开始批量加速？";
+
+            var result = MessageBox.Show(confirmMessage, "确认加速", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -113,7 +130,7 @@ namespace CacheMax.GUI
                 AccelerateButton.IsEnabled = false;
                 UpdateStatus("开始批量加速...");
 
-                foreach (var folder in unacceleratedFolders)
+                foreach (var folder in targetFolders)
                 {
                     try
                     {
@@ -195,8 +212,8 @@ namespace CacheMax.GUI
                 // 保存配置
                 _config.SaveConfig();
 
-                var successCount = unacceleratedFolders.Count(f => f.Status == "已完成");
-                var failedCount = unacceleratedFolders.Count(f => f.Status == "失败");
+                var successCount = targetFolders.Count(f => f.Status == "已完成");
+                var failedCount = targetFolders.Count(f => f.Status == "失败");
 
                 UpdateStatus($"批量加速完成：成功 {successCount} 个，失败 {failedCount} 个");
 
@@ -223,16 +240,40 @@ namespace CacheMax.GUI
 
         private async void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
-            if (selected == null)
+            var selectedItems = AcceleratedFoldersGrid.SelectedItems.Cast<AcceleratedFolder>().ToList();
+            var targetItems = selectedItems.Any()
+                ? selectedItems.Where(f => f.Status == "已完成" || f.Status == "已加速").ToList()
+                : _acceleratedFolders.Where(f => f.Status == "已完成" || f.Status == "已加速").ToList();
+
+            if (targetItems.Count == 0)
             {
-                MessageBox.Show("请选择要停止加速的文件夹", "信息",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                var message = selectedItems.Any()
+                    ? "选中的项目中没有可以暂停的加速项目。"
+                    : "没有可以暂停的加速项目。";
+                MessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show($"停止 {selected.MountPoint} 的加速？\n\n这将恢复原始文件夹。",
-                "确认", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            // 重要警告：文件句柄风险
+            var warningMessage = targetItems.Count == 1
+                ? $"⚠️ 警告：即将暂停 {targetItems[0].MountPoint} 的加速\n\n" +
+                  "暂停操作将：\n" +
+                  "• 移除目录连接点\n" +
+                  "• 恢复原始文件夹\n" +
+                  "• 保留所有配置和缓存文件\n\n" +
+                  "⚠️ 重要：如果有程序正在使用该目录中的文件，突然中断可能导致数据丢失！\n" +
+                  "请确保没有程序正在访问该目录。\n\n" +
+                  "确定要继续吗？"
+                : $"⚠️ 警告：即将暂停 {targetItems.Count} 个项目的加速\n\n" +
+                  "暂停操作将：\n" +
+                  "• 移除目录连接点\n" +
+                  "• 恢复原始文件夹\n" +
+                  "• 保留所有配置和缓存文件\n\n" +
+                  "⚠️ 重要：如果有程序正在使用这些目录中的文件，突然中断可能导致数据丢失！\n" +
+                  "请确保没有程序正在访问这些目录。\n\n" +
+                  "确定要继续吗？";
+
+            var result = MessageBox.Show(warningMessage, "暂停确认", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -240,42 +281,55 @@ namespace CacheMax.GUI
             try
             {
                 StopButton.IsEnabled = false;
-                UpdateStatus($"正在停止 {selected.MountPoint} 的加速...");
+                UpdateStatus($"正在暂停 {targetItems.Count} 个项目的加速...");
 
                 var progress = new Progress<string>(msg => AddLog(msg));
+                int successCount = 0;
+                int failCount = 0;
 
-                // 询问是否删除缓存文件
-                var deleteCache = MessageBox.Show($"是否删除缓存文件？\n\n缓存位置：{selected.CachePath}\n\n" +
-                    "选择\"是\"将删除缓存文件（节省空间）\n选择\"否\"将保留缓存文件（便于重新加速）",
-                    "删除缓存", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-                if (deleteCache == MessageBoxResult.Cancel)
+                foreach (var item in targetItems)
                 {
-                    return;
+                    try
+                    {
+                        AddLog($"暂停加速：{item.MountPoint}");
+                        item.Status = "暂停中";
+                        item.ProgressPercentage = 0;
+
+                        // 使用新的暂停方法（不删除配置，不删除缓存）
+                        if (await _cacheManager.PauseCacheAcceleration(
+                            item.MountPoint,
+                            item.OriginalPath,
+                            item.CachePath,
+                            progress))
+                        {
+                            // 暂停成功，状态变为未加速（这样可以重新开始加速）
+                            item.Status = "未加速";
+                            item.ProgressPercentage = 0;
+                            successCount++;
+                            AddLog($"✅ 暂停成功：{item.MountPoint}");
+                        }
+                        else
+                        {
+                            item.Status = "暂停失败";
+                            failCount++;
+                            AddLog($"❌ 暂停失败：{item.MountPoint}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        item.Status = "暂停失败";
+                        failCount++;
+                        AddLog($"❌ 暂停异常：{item.MountPoint} - {ex.Message}");
+                    }
                 }
 
-                bool deleteCacheFiles = deleteCache == MessageBoxResult.Yes;
+                UpdateStatus($"暂停完成：成功 {successCount} 个，失败 {failCount} 个");
 
-                AddLog($"停止加速：{selected.MountPoint}");
-                if (!await _cacheManager.StopCacheAcceleration(
-                    selected.MountPoint,
-                    selected.OriginalPath,
-                    selected.CachePath,
-                    deleteCacheFiles,
-                    progress))
-                {
-                    throw new Exception("停止缓存加速失败");
-                }
+                var message = failCount == 0
+                    ? $"暂停完成！\n\n成功暂停 {successCount} 个项目。\n这些项目已恢复为普通文件夹，可以重新加速。"
+                    : $"暂停完成！\n\n成功：{successCount} 个\n失败：{failCount} 个\n\n暂停成功的项目已恢复为普通文件夹，可以重新加速。";
 
-                // 更新配置
-                _config.RemoveAcceleratedFolder(selected.MountPoint);
-                _acceleratedFolders.Remove(selected);
-
-                UpdateStatus($"成功停止 {selected.MountPoint} 的加速");
-                AddLog($"加速已停止，文件夹已恢复");
-
-                MessageBox.Show($"加速已停止！\n\n{selected.MountPoint} 已恢复为普通文件夹。",
-                    "停止成功", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(message, "暂停完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -590,14 +644,39 @@ namespace CacheMax.GUI
             }
         }
 
+        private void AcceleratedFoldersGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // 检查是否点击了空白区域
+            var element = e.OriginalSource as FrameworkElement;
+
+            // 如果点击的不是DataGridRow或其子元素，则取消选择
+            if (element != null)
+            {
+                var row = element.FindParent<DataGridRow>();
+                if (row == null)
+                {
+                    AcceleratedFoldersGrid.UnselectAll();
+                }
+            }
+        }
+
         private void UpdateUI()
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
-            StopButton.IsEnabled = selected != null && selected.Status == "✅";
-            DeleteButton.IsEnabled = selected != null;
+            var selectedItems = AcceleratedFoldersGrid.SelectedItems.Cast<AcceleratedFolder>().ToList();
+            var hasSelection = selectedItems.Any();
+
+            // 暂停按钮：有选中的可暂停项目 OR 无选择但有可暂停的项目
+            var hasStoppableItems = hasSelection
+                ? selectedItems.Any(f => f.Status == "已完成" || f.Status == "已加速")
+                : _acceleratedFolders.Any(f => f.Status == "已完成" || f.Status == "已加速");
+            StopButton.IsEnabled = hasStoppableItems;
+
+            // 移除按钮：有选中项目 OR 无选择但有项目可移除
+            var hasDeletableItems = hasSelection || _acceleratedFolders.Any();
+            DeleteButton.IsEnabled = hasDeletableItems;
 
             // 控制按钮状态
-            ValidateButton.IsEnabled = selected != null;
+            ValidateButton.IsEnabled = hasSelection;
 
             // 检查缓存完整性按钮：有已加速项目时启用
             var hasAcceleratedItems = _acceleratedFolders.Any(f => f.Status == "已加速" || f.Status == "已完成");
@@ -697,85 +776,116 @@ namespace CacheMax.GUI
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
-            if (selected == null)
+            var selectedItems = AcceleratedFoldersGrid.SelectedItems.Cast<AcceleratedFolder>().ToList();
+            var targetItems = selectedItems.Any()
+                ? selectedItems
+                : _acceleratedFolders.ToList();
+
+            if (targetItems.Count == 0)
             {
-                MessageBox.Show("请选择要删除的路径", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("没有可以删除的项目。", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            // 检查是否已经加速，需要不同的处理方式
-            bool isAccelerated = selected.Status == "已完成" || _cacheManager.IsAccelerated(selected.MountPoint);
+            // 检查是否有已加速的项目
+            var acceleratedItems = targetItems.Where(f => f.Status == "已完成" || f.Status == "已加速" || _cacheManager.IsAccelerated(f.MountPoint)).ToList();
+            var normalItems = targetItems.Except(acceleratedItems).ToList();
 
             string message;
-            if (isAccelerated)
+            if (targetItems.Count == 1)
             {
-                message = $"路径 '{selected.OriginalPath}' 已被加速。\n\n" +
-                         "删除将会：\n" +
-                         "• 停止加速并恢复原始文件夹\n" +
-                         "• 移除Junction链接\n" +
-                         "• 清理缓存文件\n\n" +
-                         "确定要继续吗？";
+                var item = targetItems[0];
+                var isAccelerated = acceleratedItems.Contains(item);
+                if (isAccelerated)
+                {
+                    message = $"路径 '{item.OriginalPath}' 已被加速。\n\n" +
+                             "删除将会：\n" +
+                             "• 停止加速并恢复原始文件夹\n" +
+                             "• 移除Junction链接\n" +
+                             "• 清理缓存文件\n\n" +
+                             "确定要继续吗？";
+                }
+                else
+                {
+                    message = $"确定要删除路径 '{item.OriginalPath}' 吗？";
+                }
             }
             else
             {
-                message = $"确定要删除路径 '{selected.OriginalPath}' 吗？";
+                message = $"将删除选中的 {targetItems.Count} 个项目";
+                if (acceleratedItems.Any())
+                {
+                    message += $"\n\n其中 {acceleratedItems.Count} 个已加速项目将被停止并恢复";
+                }
+                if (normalItems.Any())
+                {
+                    message += $"\n{normalItems.Count} 个未加速项目将被直接移除";
+                }
+                message += "\n\n确定要继续吗？";
             }
 
-            var result = MessageBox.Show(message, "确认删除", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show(message, "确认移除", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     DeleteButton.IsEnabled = false;
+                    UpdateStatus($"正在移除 {targetItems.Count} 个项目...");
 
-                    if (isAccelerated)
+                    var progress = new Progress<string>(msg => AddLog(msg));
+                    int successCount = 0;
+                    int failCount = 0;
+
+                    foreach (var item in targetItems)
                     {
-                        // 执行完整的停止加速流程
-                        AddLog($"正在停止加速：{selected.OriginalPath}");
-                        UpdateStatus($"正在停止加速：{selected.MountPoint}");
-
-                        selected.Status = "停止中";
-                        selected.ProgressPercentage = 0;
-
-                        var progress = new Progress<string>(msg => AddLog(msg));
-
-                        bool stopSuccess = await _cacheManager.StopCacheAcceleration(
-                            selected.MountPoint,
-                            selected.OriginalPath,
-                            selected.CachePath,
-                            true, // 删除缓存文件
-                            progress);
-
-                        if (stopSuccess)
+                        try
                         {
-                            AddLog($"✅ 加速停止成功：{selected.OriginalPath}");
-                            UpdateStatus($"成功停止加速：{selected.MountPoint}");
-                        }
-                        else
-                        {
-                            AddLog($"⚠️ 加速停止过程中出现问题：{selected.OriginalPath}");
-                            UpdateStatus($"停止加速时出现问题：{selected.MountPoint}");
+                            var isAccelerated = acceleratedItems.Contains(item);
 
-                            // 即使停止失败，也询问是否强制删除记录
-                            var forceResult = MessageBox.Show(
-                                "停止加速过程中出现问题，但可能部分操作已完成。\n\n是否强制删除此记录？\n\n注意：您可能需要手动清理残留的文件链接。",
-                                "强制删除", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                            if (forceResult != MessageBoxResult.Yes)
+                            if (isAccelerated)
                             {
-                                selected.Status = "失败";
-                                return;
+                                // 执行完整的停止加速流程
+                                AddLog($"正在停止加速：{item.OriginalPath}");
+                                item.Status = "停止中";
+                                item.ProgressPercentage = 0;
+
+                                bool stopSuccess = await _cacheManager.StopCacheAcceleration(
+                                    item.MountPoint,
+                                    item.OriginalPath,
+                                    item.CachePath,
+                                    true, // 删除缓存文件
+                                    progress);
+
+                                if (!stopSuccess)
+                                {
+                                    AddLog($"⚠️ 停止加速失败：{item.OriginalPath}");
+                                    failCount++;
+                                    continue;
+                                }
+                                AddLog($"✅ 加速停止成功：{item.OriginalPath}");
                             }
+
+                            // 从列表和配置中删除
+                            _acceleratedFolders.Remove(item);
+                            _config.RemoveAcceleratedFolder(item.MountPoint);
+                            successCount++;
+                            AddLog($"✅ 移除成功：{item.OriginalPath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            failCount++;
+                            AddLog($"❌ 移除失败：{item.OriginalPath} - {ex.Message}");
                         }
                     }
 
-                    // 从列表和配置中删除
-                    _acceleratedFolders.Remove(selected);
-                    _config.RemoveAcceleratedFolder(selected.MountPoint);
-                    AddLog($"已删除路径记录：{selected.OriginalPath}");
-                    UpdateStatus("删除完成");
+                    UpdateStatus($"移除完成：成功 {successCount} 个，失败 {failCount} 个");
+
+                    var resultMessage = failCount == 0
+                        ? $"移除完成！\n\n成功移除 {successCount} 个项目。"
+                        : $"移除完成！\n\n成功：{successCount} 个\n失败：{failCount} 个";
+
+                    MessageBox.Show(resultMessage, "移除完成", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
@@ -849,7 +959,7 @@ namespace CacheMax.GUI
             {
                 // 在状态栏显示错误信息
                 StatusText.Text = $"同步失败: {Path.GetFileName(e.FilePath)} - {e.Message}";
-                StatusText.Foreground = Brushes.Red;
+                StatusText.Foreground = System.Windows.Media.Brushes.Red;
 
                 // 5秒后恢复状态栏
                 var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
@@ -857,7 +967,7 @@ namespace CacheMax.GUI
                 {
                     timer.Stop();
                     StatusText.Text = "Ready";
-                    StatusText.Foreground = Brushes.Black;
+                    StatusText.Foreground = System.Windows.Media.Brushes.Black;
                 };
                 timer.Start();
 
@@ -982,17 +1092,19 @@ namespace CacheMax.GUI
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            try
+            // 点击关闭按钮时最小化到托盘，而不是退出程序
+            e.Cancel = true;
+            MinimizeToTray();
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
             {
-                // 清理缓存管理器资源
-                _cacheManager?.Dispose();
-                AddLog("应用程序正在关闭，已清理所有资源");
+                MinimizeToTray();
             }
-            catch (Exception ex)
-            {
-                AddLog($"关闭时清理资源出错：{ex.Message}");
-            }
-            base.OnClosing(e);
+
+            base.OnStateChanged(e);
         }
 
         // 新的UI事件处理程序
@@ -1035,7 +1147,7 @@ namespace CacheMax.GUI
         }
 
 
-        private void NewPathTextBox_KeyDown(object sender, KeyEventArgs e)
+        private void NewPathTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -1072,30 +1184,14 @@ namespace CacheMax.GUI
                     return false;
                 }
 
-                // 检查是否为禁止目录
-                var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-                var forbiddenDirs = new[]
-                {
-                    @"C:\Windows",
-                    @"C:\Program Files",
-                    @"C:\Program Files (x86)",
-                    @"C:\System Volume Information",
-                    @"C:\$Recycle.Bin",
-                    @"C:\Recovery",
-                    @"C:\Boot",
-                    @"C:\EFI",
-                    @"C:\Users\All Users",
-                    @"C:\Users\Default",
-                    @"C:\Users\Public",
-                    @"C:\ProgramData",
-                    @"C:\Documents and Settings"
-                };
+                // 检查是否为禁止目录（从appsettings.json读取）
+                var forbiddenDirs = LoadForbiddenDirectories();
 
                 foreach (var forbiddenDir in forbiddenDirs)
                 {
-                    if (fullPath.StartsWith(forbiddenDir, StringComparison.OrdinalIgnoreCase))
+                    if (IsForbiddenPath(fullPath, forbiddenDir))
                     {
-                        errorMessage = $"禁止加速系统目录：{forbiddenDir}";
+                        errorMessage = $"禁止加速的目录：{forbiddenDir}";
                         return false;
                     }
                 }
@@ -1130,7 +1226,7 @@ namespace CacheMax.GUI
             var button = sender as Button;
             var item = button?.DataContext as AcceleratedFolder;
 
-            if (item == null || item.Status != "未同步")
+            if (button == null || item == null || item.Status != "未同步")
                 return;
 
             var result = MessageBox.Show($"确定要同步项目 '{item.MountPoint}' 吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
@@ -1174,10 +1270,13 @@ namespace CacheMax.GUI
             }
             finally
             {
-                button.IsEnabled = true;
-                if (item.Status == "未同步")
+                if (button != null)
                 {
-                    button.Content = "🔄 未同步";
+                    button.IsEnabled = true;
+                    if (item.Status == "未同步")
+                    {
+                        button.Content = "🔄 未同步";
+                    }
                 }
             }
         }
@@ -1232,13 +1331,13 @@ namespace CacheMax.GUI
             progress?.Report($"完整性检查完成。检查了 {checkedCount} 个项目，发现 {unsyncedCount} 个未同步项目");
 
             // 更新SyncAllButton状态
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 SyncAllButton.IsEnabled = unsyncedCount > 0;
             });
         }
 
-        private async Task<bool> CheckSingleItemIntegrityAsync(string cachePath, string originalPath, IProgress<string> progress)
+        private async Task<bool> CheckSingleItemIntegrityAsync(string cachePath, string originalPath, IProgress<string>? progress)
         {
             return await Task.Run(() =>
             {
@@ -1291,7 +1390,7 @@ namespace CacheMax.GUI
             });
         }
 
-        private bool ParseRoboCopyOutput(string output, IProgress<string> progress)
+        private bool ParseRoboCopyOutput(string output, IProgress<string>? progress)
         {
             try
             {
@@ -1407,14 +1506,14 @@ namespace CacheMax.GUI
             progress?.Report($"批量同步完成。成功: {successCount}，失败: {failureCount}");
 
             // 更新SyncAllButton状态
-            Dispatcher.BeginInvoke(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 var remainingUnsynced = _acceleratedFolders.Count(f => f.Status == "未同步");
                 SyncAllButton.IsEnabled = remainingUnsynced > 0;
             });
         }
 
-        private async Task<bool> SyncSingleItemAsync(string cachePath, string originalPath, IProgress<string> progress)
+        private async Task<bool> SyncSingleItemAsync(string cachePath, string originalPath, IProgress<string>? progress)
         {
             return await Task.Run(() =>
             {
@@ -1472,6 +1571,190 @@ namespace CacheMax.GUI
                 }
             });
         }
+
+        private List<string> LoadForbiddenDirectories()
+        {
+            try
+            {
+                var configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                if (File.Exists(configPath))
+                {
+                    var json = File.ReadAllText(configPath);
+                    var config = JObject.Parse(json);
+                    return config["ForbiddenDirectories"]?.ToObject<List<string>>() ?? new List<string>();
+                }
+            }
+            catch (Exception ex)
+            {
+                AsyncLogger.Instance.LogError($"加载禁止目录配置失败: {ex.Message}", ex, "Config");
+            }
+
+            // 如果配置文件不存在或读取失败，返回默认的禁止目录列表
+            return new List<string>
+            {
+                "C:\\Windows\\*",
+                "C:\\Program Files",
+                "C:\\Program Files (x86)",
+                "C:\\System Volume Information",
+                "C:\\$Recycle.Bin",
+                "C:\\Recovery",
+                "C:\\Boot",
+                "C:\\EFI",
+                "C:\\Users\\All Users",
+                "C:\\Users\\Default",
+                "C:\\Users\\Public",
+                "C:\\ProgramData",
+                "C:\\Documents and Settings"
+            };
+        }
+
+        private bool IsForbiddenPath(string targetPath, string forbiddenPattern)
+        {
+            // 标准化路径，确保使用统一的路径分隔符
+            var normalizedTarget = Path.GetFullPath(targetPath).TrimEnd('\\');
+            var normalizedPattern = Path.GetFullPath(forbiddenPattern.TrimEnd('*')).TrimEnd('\\');
+
+            // 如果模式以*结尾，表示通配符模式，禁止该目录及所有子目录
+            if (forbiddenPattern.EndsWith("*"))
+            {
+                return normalizedTarget.StartsWith(normalizedPattern, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                // 精确匹配模式，只禁止完全相同的路径
+                return string.Equals(normalizedTarget, normalizedPattern, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        /// <summary>
+        /// 初始化系统托盘
+        /// </summary>
+        private void InitializeSystemTray()
+        {
+            try
+            {
+                _notifyIcon = new WinForms.NotifyIcon
+                {
+                    Text = "CacheMax - 缓存加速工具",
+                    Visible = false,  // 默认不显示，只有最小化到托盘时才显示
+                    Icon = SystemIcons.Application  // 使用默认系统图标
+                };
+
+                // 双击托盘图标时显示窗口
+                _notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+
+                // 创建右键菜单
+                var contextMenu = new WinForms.ContextMenuStrip();
+                contextMenu.Items.Add("显示主窗口", null, (s, e) => ShowMainWindow());
+                contextMenu.Items.Add(new WinForms.ToolStripSeparator());
+                contextMenu.Items.Add("退出程序", null, (s, e) => ExitApplication());
+
+                _notifyIcon.ContextMenuStrip = contextMenu;
+            }
+            catch (Exception ex)
+            {
+                AddLog($"初始化系统托盘失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 托盘图标双击事件
+        /// </summary>
+        private void NotifyIcon_DoubleClick(object? sender, EventArgs e)
+        {
+            ShowMainWindow();
+        }
+
+        /// <summary>
+        /// 显示主窗口
+        /// </summary>
+        private void ShowMainWindow()
+        {
+            try
+            {
+                this.Show();
+                this.WindowState = WindowState.Normal;
+                this.Activate();
+                this.Topmost = true;  // 暂时置顶
+                this.Topmost = false; // 立即取消置顶
+                this.Focus();
+
+                // 隐藏托盘图标
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"显示主窗口失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 最小化到托盘
+        /// </summary>
+        private void MinimizeToTray()
+        {
+            try
+            {
+                this.Hide();
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = true;
+                    _notifyIcon.ShowBalloonTip(2000, "CacheMax", "程序已最小化到系统托盘", WinForms.ToolTipIcon.Info);
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"最小化到托盘失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 彻底退出应用程序
+        /// </summary>
+        private void ExitApplication()
+        {
+            try
+            {
+                // 清理缓存管理器资源
+                _cacheManager?.Dispose();
+                AddLog("应用程序正在关闭，已清理所有资源");
+
+                // 清理系统托盘
+                if (_notifyIcon != null)
+                {
+                    _notifyIcon.Visible = false;
+                    _notifyIcon.Dispose();
+                    _notifyIcon = null;
+                }
+
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                AddLog($"退出应用程序失败: {ex.Message}");
+                // 强制退出
+                Environment.Exit(0);
+            }
+        }
+
     }
 
+    // 扩展方法用于查找父元素
+    public static class VisualTreeHelperExtensions
+    {
+        public static T? FindParent<T>(this DependencyObject child) where T : DependencyObject
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+
+            if (parent == null) return null;
+
+            if (parent is T parentT)
+                return parentT;
+
+            return FindParent<T>(parent);
+        }
+    }
 }
