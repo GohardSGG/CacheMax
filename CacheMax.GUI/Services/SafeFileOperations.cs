@@ -337,7 +337,7 @@ namespace CacheMax.GUI.Services
                     }
 
                     // 使用FastCopy进行高效文件复制，支持90GB+大文件
-                    var fastCopyService = new FastCopyService();
+                    var fastCopyService = FastCopyService.Instance;
 
                     // 创建进度报告转换器
                     var fastCopyProgress = progress != null ? new Progress<string>(msg =>

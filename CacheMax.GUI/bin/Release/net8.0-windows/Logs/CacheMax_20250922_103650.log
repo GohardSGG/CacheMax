@@ -1,0 +1,102 @@
+﻿[2025-09-22 10:36:50.662] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 10:36:50.666] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 10:36:50.666] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 10:36:50.750] [INFO ] [T001] [MainWindow] 开始恢复 1 个加速项目的状态...
+[2025-09-22 10:36:50.750] [INFO ] [T001] [MainWindow] 正在检查加速项目：A:\Test
+[2025-09-22 10:36:50.751] [INFO ] [T001] [MainWindow] Junction状态检查：A:\Test - 是Junction
+[2025-09-22 10:36:50.752] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 10:36:50.752] [INFO ] [T001] [MainWindow] 检查目录存在性：缓存(True) 原始(True)
+[2025-09-22 10:36:50.752] [INFO ] [T001] [MainWindow] 准备启动文件同步监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:36:50.755] [INFO ] [T004] [MainWindow] StartMonitoring调用：S:\Cache\A\Test -> A:\Test, 模式:Immediate
+[2025-09-22 10:36:50.755] [INFO ] [T006] [MainWindow] 开始监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:36:50.758] [INFO ] [T001] [MainWindow] ✓ 成功恢复文件同步监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:36:50.758] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-22 10:36:50.758] [INFO ] [T001] [MainWindow] 加速状态恢复完成！
+[2025-09-22 10:36:50.758] [INFO ] [T006] [MainWindow] 开始监控：S:\Cache\A\Test (模式：Immediate，延迟：3秒)
+[2025-09-22 10:37:01.211] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: FcHash.exe
+[2025-09-22 10:37:01.216] [INFO ] [T004] [FileSyncService] 检测到文件变化，等待写入完成: fcp.exe
+[2025-09-22 10:37:01.225] [INFO ] [T004] [FileSyncService] 检测到文件变化，等待写入完成: setup.exe
+[2025-09-22 10:37:02.213] [INFO ] [T004] [FileSyncService] 文件准备就绪，开始同步: FcHash.exe
+[2025-09-22 10:37:02.215] [INFO ] [T009] [MainWindow] 开始同步文件：FcHash.exe
+[2025-09-22 10:37:02.217] [INFO ] [T006] [FileSyncService] 文件准备就绪，开始同步: fcp.exe
+[2025-09-22 10:37:02.217] [INFO ] [T004] [MainWindow] 开始同步文件：fcp.exe
+[2025-09-22 10:37:02.219] [INFO ] [T016] [MainWindow] 成功获取文件锁定 (尝试 1/8): fcp.exe
+[2025-09-22 10:37:02.219] [INFO ] [T017] [MainWindow] 成功获取文件锁定 (尝试 1/8): FcHash.exe
+[2025-09-22 10:37:02.219] [INFO ] [T004] [MainWindow] 已获取文件锁定，开始同步: FcHash.exe
+[2025-09-22 10:37:02.219] [INFO ] [T017] [MainWindow] 已获取文件锁定，开始同步: fcp.exe
+[2025-09-22 10:37:02.221] [INFO ] [T008] [FileSyncService] 获取FastCopy并发许可，开始复制: FcHash.exe
+[2025-09-22 10:37:02.221] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: fcp.exe
+[2025-09-22 10:37:02.225] [INFO ] [T009] [FileSyncService] 文件准备就绪，开始同步: setup.exe
+[2025-09-22 10:37:02.225] [INFO ] [T004] [MainWindow] 开始同步文件：setup.exe
+[2025-09-22 10:37:02.225] [INFO ] [T009] [FileSyncService] 获取FastCopy并发许可，开始复制: setup.exe
+[2025-09-22 10:37:02.225] [INFO ] [T004] [MainWindow] 成功获取文件锁定 (尝试 1/8): setup.exe
+[2025-09-22 10:37:02.225] [INFO ] [T018] [MainWindow] 已获取文件锁定，开始同步: setup.exe
+[2025-09-22 10:37:02.225] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test\fcp.exe
+[2025-09-22 10:37:02.225] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test\FcHash.exe
+[2025-09-22 10:37:02.226] [INFO ] [T009] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test\setup.exe
+[2025-09-22 10:37:02.226] [INFO ] [T017] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 10:37:02.226] [INFO ] [T004] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 10:37:02.226] [INFO ] [T019] [MainWindow] 正在复制: setup.exe
+[2025-09-22 10:37:02.238] [INFO ] [T008] [FastCopyService] 启动FastCopy进程 (PID: 69676): FcHash.exe
+[2025-09-22 10:37:02.247] [INFO ] [T009] [FastCopyService] 启动FastCopy进程 (PID: 80900): setup.exe
+[2025-09-22 10:37:02.256] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 6780): fcp.exe
+[2025-09-22 10:37:04.911] [ERROR] [T004] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:04.911] [INFO ] [T009] [MainWindow] 复制失败: FcHash.exe - 未知错误
+[2025-09-22 10:37:04.912] [INFO ] [T004] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test\FcHash.exe
+[2025-09-22 10:37:04.912] [INFO ] [T018] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 10:37:04.922] [INFO ] [T004] [FastCopyService] 启动FastCopy进程 (PID: 77872): FcHash.exe
+[2025-09-22 10:37:05.210] [ERROR] [T016] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:05.210] [INFO ] [T004] [MainWindow] 复制失败: fcp.exe - 未知错误
+[2025-09-22 10:37:05.210] [INFO ] [T016] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test\fcp.exe
+[2025-09-22 10:37:05.210] [INFO ] [T019] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 10:37:05.219] [INFO ] [T016] [FastCopyService] 启动FastCopy进程 (PID: 4656): fcp.exe
+[2025-09-22 10:37:05.973] [ERROR] [T020] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:05.974] [INFO ] [T016] [MainWindow] 复制失败: setup.exe - 未知错误
+[2025-09-22 10:37:05.974] [INFO ] [T020] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test\setup.exe
+[2025-09-22 10:37:05.974] [INFO ] [T008] [MainWindow] 正在复制: setup.exe
+[2025-09-22 10:37:05.984] [INFO ] [T020] [FastCopyService] 启动FastCopy进程 (PID: 79360): setup.exe
+[2025-09-22 10:37:08.255] [ERROR] [T004] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:08.255] [INFO ] [T019] [MainWindow] 复制失败: fcp.exe - 未知错误
+[2025-09-22 10:37:08.256] [INFO ] [T004] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test\fcp.exe
+[2025-09-22 10:37:08.256] [INFO ] [T020] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 10:37:08.265] [INFO ] [T004] [FastCopyService] 启动FastCopy进程 (PID: 64728): fcp.exe
+[2025-09-22 10:37:08.271] [ERROR] [T016] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:08.271] [INFO ] [T017] [MainWindow] 复制失败: setup.exe - 未知错误
+[2025-09-22 10:37:08.271] [INFO ] [T016] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test\setup.exe
+[2025-09-22 10:37:08.272] [INFO ] [T006] [MainWindow] 正在复制: setup.exe
+[2025-09-22 10:37:08.280] [INFO ] [T016] [FastCopyService] 启动FastCopy进程 (PID: 89484): setup.exe
+[2025-09-22 10:37:08.296] [ERROR] [T018] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:08.296] [INFO ] [T016] [MainWindow] 复制失败: FcHash.exe - 未知错误
+[2025-09-22 10:37:08.297] [INFO ] [T018] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test\FcHash.exe
+[2025-09-22 10:37:08.297] [INFO ] [T016] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 10:37:08.306] [INFO ] [T018] [FastCopyService] 启动FastCopy进程 (PID: 67204): FcHash.exe
+[2025-09-22 10:37:09.940] [ERROR] [T019] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:09.940] [INFO ] [T022] [MainWindow] 复制失败: FcHash.exe - 未知错误
+[2025-09-22 10:37:09.940] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test\FcHash.exe
+[2025-09-22 10:37:09.940] [INFO ] [T016] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 10:37:09.950] [INFO ] [T019] [FastCopyService] 启动FastCopy进程 (PID: 75012): FcHash.exe
+[2025-09-22 10:37:09.955] [ERROR] [T006] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:09.955] [INFO ] [T017] [MainWindow] 复制失败: setup.exe - 未知错误
+[2025-09-22 10:37:09.956] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test\setup.exe
+[2025-09-22 10:37:09.956] [INFO ] [T019] [MainWindow] 正在复制: setup.exe
+[2025-09-22 10:37:09.965] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 81648): setup.exe
+[2025-09-22 10:37:10.206] [ERROR] [T008] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:10.206] [INFO ] [T018] [MainWindow] 复制失败: fcp.exe - 未知错误
+[2025-09-22 10:37:10.207] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test\fcp.exe
+[2025-09-22 10:37:10.207] [INFO ] [T006] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 10:37:10.216] [INFO ] [T008] [FastCopyService] 启动FastCopy进程 (PID: 73204): fcp.exe
+[2025-09-22 10:37:12.557] [ERROR] [T004] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:12.557] [INFO ] [T019] [MainWindow] 复制失败: setup.exe - 未知错误
+[2025-09-22 10:37:12.558] [INFO ] [T004] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test\setup.exe
+[2025-09-22 10:37:12.558] [INFO ] [T020] [MainWindow] 正在复制: setup.exe
+[2025-09-22 10:37:12.567] [INFO ] [T004] [FastCopyService] 启动FastCopy进程 (PID: 82100): setup.exe
+[2025-09-22 10:37:12.588] [ERROR] [T006] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:12.588] [INFO ] [T008] [MainWindow] 复制失败: fcp.exe - 未知错误
+[2025-09-22 10:37:12.589] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test\fcp.exe
+[2025-09-22 10:37:12.589] [INFO ] [T020] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 10:37:12.599] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 70404): fcp.exe
+[2025-09-22 10:37:13.001] [ERROR] [T016] [FastCopyService] FastCopy复制失败: 退出码 -1, 错误: 未知错误
+[2025-09-22 10:37:13.001] [INFO ] [T006] [MainWindow] 复制失败: FcHash.exe - 未知错误
+[2025-09-22 10:37:13.001] [INFO ] [T016] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test\FcHash.exe
+[2025-09-22 10:37:13.001] [INFO ] [T023] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 10:37:13.011] [INFO ] [T016] [FastCopyService] 启动FastCopy进程 (PID: 39856): FcHash.exe

@@ -1,0 +1,73 @@
+﻿[2025-09-22 09:46:49.133] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 09:46:49.137] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 09:46:49.137] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 09:46:56.715] [INFO ] [T001] [MainWindow] 已添加路径：A:\Test
+[2025-09-22 09:47:00.037] [INFO ] [T001] [MainWindow] 开始加速：A:\Test
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 使用目录连接点，无需管理员权限
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 开始缓存加速初始化...
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 检测到缓存目录已存在：S:\Cache\A\Test
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 缓存目录已存在，可选择：
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 1. 同步模式：保留现有缓存，仅同步差异文件（推荐）
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 2. 取消操作
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 当前默认使用同步模式
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 用户选择同步模式：与现有缓存同步
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 开始创建缓存目录和备份路径...
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 复制数据到缓存：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 使用Robocopy同步模式：智能同步差异文件
+[2025-09-22 09:47:00.058] [INFO ] [T001] [MainWindow] 执行Robocopy同步: robocopy "A:\Test" "S:\Cache\A\Test" /E /COPYALL /MT:64 /R:3600 /W:1 /IM /J /BYTES /FP /ETA /NFL /NDL
+[2025-09-22 09:47:00.101] [INFO ] [T001] [MainWindow] Robocopy同步完成，退出码: 0
+[2025-09-22 09:47:00.177] [INFO ] [T004] [MainWindow] 开始监控：S:\Cache\A\Test (模式：Immediate，延迟：3秒)
+[2025-09-22 09:47:00.178] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:47:00.178] [INFO ] [T001] [MainWindow] 缓存加速已启用：A:\Test
+[2025-09-22 09:47:00.178] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 09:47:00.179] [INFO ] [T001] [MainWindow] 备份原始目录：A:\Test -> A:\Test.original
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test -> A:\Test.original
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] Junction创建成功
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] 启动文件同步监控...
+[2025-09-22 09:47:00.180] [INFO ] [T001] [MainWindow] 开始监控：S:\Cache\A\Test -> A:\Test.original
+[2025-09-22 09:47:00.181] [INFO ] [T001] [MainWindow] 文件监控启动成功
+[2025-09-22 09:47:00.181] [INFO ] [T001] [MainWindow] 启动性能监控...
+[2025-09-22 09:47:00.181] [INFO ] [T001] [MainWindow] 缓存加速初始化完成！
+[2025-09-22 09:47:00.182] [INFO ] [T001] [MainWindow] ✅ 加速完成：A:\Test
+[2025-09-22 09:47:05.355] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: A
+[2025-09-22 09:47:05.355] [INFO ] [T006] [FileSyncService] 文件已被删除，跳过同步: A
+[2025-09-22 09:48:38.335] [INFO ] [T009] [FileSyncService] 检测到文件变化，等待写入完成: A - 快捷方式.lnk
+[2025-09-22 09:48:39.336] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: A - 快捷方式.lnk
+[2025-09-22 09:48:39.337] [INFO ] [T021] [MainWindow] 开始同步文件：A - 快捷方式.lnk
+[2025-09-22 09:48:39.341] [INFO ] [T021] [MainWindow] 成功获取文件锁定 (尝试 1/8): A - 快捷方式.lnk
+[2025-09-22 09:48:39.341] [INFO ] [T021] [MainWindow] 已获取文件锁定，开始同步: A - 快捷方式.lnk
+[2025-09-22 09:48:39.342] [INFO ] [T009] [FileSyncService] 获取FastCopy并发许可，开始复制: A - 快捷方式.lnk
+[2025-09-22 09:48:39.346] [INFO ] [T009] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\A - 快捷方式.lnk -> A:\Test.original\A - 快捷方式.lnk
+[2025-09-22 09:48:39.347] [INFO ] [T020] [MainWindow] 正在复制: A - 快捷方式.lnk
+[2025-09-22 09:48:39.357] [INFO ] [T009] [FastCopyService] 启动FastCopy进程 (PID: 45076): A - 快捷方式.lnk
+[2025-09-22 09:48:40.425] [INFO ] [T011] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\A - 快捷方式.lnk -> A:\Test.original\A - 快捷方式.lnk
+[2025-09-22 09:48:40.425] [INFO ] [T018] [MainWindow] 复制完成: A - 快捷方式.lnk
+[2025-09-22 09:48:40.426] [INFO ] [T011] [FileSyncService] 释放FastCopy并发许可: A - 快捷方式.lnk
+[2025-09-22 09:48:40.426] [INFO ] [T020] [MainWindow] 同步完成，释放文件锁定: A - 快捷方式.lnk
+[2025-09-22 09:48:40.427] [INFO ] [T011] [FileSyncService] 文件处理完成，清理锁: A - 快捷方式.lnk
+[2025-09-22 09:48:47.131] [INFO ] [T018] [FileSyncService] 检测到Deleted事件: A - 快捷方式.lnk
+[2025-09-22 09:48:47.132] [INFO ] [T018] [FileSyncService] 开始处理Deleted事件: A - 快捷方式.lnk, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:48:47.132] [INFO ] [T018] [FileSyncService] 创建删除队列项: A - 快捷方式.lnk
+[2025-09-22 09:48:47.132] [INFO ] [T021] [MainWindow] 正在删除: A - 快捷方式.lnk
+[2025-09-22 09:48:47.132] [INFO ] [T009] [MainWindow] 开始同步文件：A - 快捷方式.lnk
+[2025-09-22 09:48:47.136] [INFO ] [T024] [MainWindow] 删除完成: A - 快捷方式.lnk
+[2025-09-22 09:49:33.462] [INFO ] [T001] [MainWindow] 正在停止加速：A:\Test
+[2025-09-22 09:49:33.464] [INFO ] [T001] [MainWindow] 停止性能监控: A:\Test
+[2025-09-22 09:49:33.533] [INFO ] [T001] [MainWindow] 缓存加速已停止：A:\Test
+[2025-09-22 09:49:33.533] [INFO ] [T001] [MainWindow] ✅ 加速停止成功：A:\Test
+[2025-09-22 09:49:33.537] [INFO ] [T001] [MainWindow] 已删除路径记录：A:\Test
+[2025-09-22 09:49:33.537] [INFO ] [T001] [MainWindow] 开始停止缓存加速...
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 停止文件同步监控...
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 没有找到对应的监控器：
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 停止性能监控...
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 执行最后一次同步...
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 未找到同步配置：
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] Junction删除成功
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 找到备份目录：A:\Test.original
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 恢复原始目录：A:\Test.original -> A:\Test
+[2025-09-22 09:49:33.538] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test.original -> A:\Test
+[2025-09-22 09:49:33.539] [INFO ] [T001] [MainWindow] 缓存加速停止完成！

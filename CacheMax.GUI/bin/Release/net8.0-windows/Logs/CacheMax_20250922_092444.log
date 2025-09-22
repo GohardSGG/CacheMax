@@ -1,0 +1,102 @@
+﻿[2025-09-22 09:24:44.551] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 09:24:44.555] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 09:24:44.555] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 09:24:53.942] [INFO ] [T001] [MainWindow] 已添加路径：A:\Test
+[2025-09-22 09:24:57.481] [INFO ] [T001] [MainWindow] 开始加速：A:\Test
+[2025-09-22 09:24:57.501] [INFO ] [T001] [MainWindow] 使用目录连接点，无需管理员权限
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 开始缓存加速初始化...
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 检测到缓存目录已存在：S:\Cache\A\Test
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 缓存目录已存在，可选择：
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 1. 同步模式：保留现有缓存，仅同步差异文件（推荐）
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 2. 取消操作
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 当前默认使用同步模式
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 用户选择同步模式：与现有缓存同步
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 开始创建缓存目录和备份路径...
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 复制数据到缓存：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 使用Robocopy同步模式：智能同步差异文件
+[2025-09-22 09:24:57.502] [INFO ] [T001] [MainWindow] 执行Robocopy同步: robocopy "A:\Test" "S:\Cache\A\Test" /E /COPYALL /MT:64 /R:3600 /W:1 /IM /J /BYTES /FP /ETA /NFL /NDL
+[2025-09-22 09:24:57.543] [INFO ] [T001] [MainWindow] Robocopy同步完成，退出码: 0
+[2025-09-22 09:24:57.618] [INFO ] [T006] [MainWindow] 开始监控：S:\Cache\A\Test (模式：Immediate，延迟：3秒)
+[2025-09-22 09:24:57.618] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:24:57.618] [INFO ] [T001] [MainWindow] 缓存加速已启用：A:\Test
+[2025-09-22 09:24:57.618] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 09:24:57.618] [INFO ] [T001] [MainWindow] 备份原始目录：A:\Test -> A:\Test.original
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test -> A:\Test.original
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] Junction创建成功
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 启动文件同步监控...
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 开始监控：S:\Cache\A\Test -> A:\Test.original
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 文件监控启动成功
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 启动性能监控...
+[2025-09-22 09:24:57.619] [INFO ] [T001] [MainWindow] 缓存加速初始化完成！
+[2025-09-22 09:24:57.620] [INFO ] [T001] [MainWindow] ✅ 加速完成：A:\Test
+[2025-09-22 09:25:02.241] [INFO ] [T008] [FileSyncService] 检测到文件变化，等待写入完成: FcHash.exe
+[2025-09-22 09:25:02.248] [INFO ] [T004] [FileSyncService] 检测到文件变化，等待写入完成: fcp.exe
+[2025-09-22 09:25:02.258] [INFO ] [T009] [FileSyncService] 检测到文件变化，等待写入完成: setup.exe
+[2025-09-22 09:25:03.244] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: FcHash.exe
+[2025-09-22 09:25:03.245] [INFO ] [T018] [MainWindow] 开始同步文件：FcHash.exe
+[2025-09-22 09:25:03.248] [INFO ] [T004] [FileSyncService] 文件写入已完成，准备同步: fcp.exe
+[2025-09-22 09:25:03.248] [INFO ] [T011] [MainWindow] 开始同步文件：fcp.exe
+[2025-09-22 09:25:03.249] [INFO ] [T018] [MainWindow] 成功获取文件锁定 (尝试 1/8): FcHash.exe
+[2025-09-22 09:25:03.249] [INFO ] [T006] [MainWindow] 成功获取文件锁定 (尝试 1/8): fcp.exe
+[2025-09-22 09:25:03.249] [INFO ] [T018] [MainWindow] 已获取文件锁定，开始同步: fcp.exe
+[2025-09-22 09:25:03.249] [INFO ] [T008] [MainWindow] 已获取文件锁定，开始同步: FcHash.exe
+[2025-09-22 09:25:03.250] [INFO ] [T004] [FileSyncService] 获取FastCopy并发许可，开始复制: fcp.exe
+[2025-09-22 09:25:03.250] [INFO ] [T009] [FileSyncService] 获取FastCopy并发许可，开始复制: FcHash.exe
+[2025-09-22 09:25:03.255] [INFO ] [T009] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\FcHash.exe -> A:\Test.original\FcHash.exe
+[2025-09-22 09:25:03.255] [INFO ] [T004] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\fcp.exe -> A:\Test.original\fcp.exe
+[2025-09-22 09:25:03.255] [INFO ] [T006] [MainWindow] 正在复制: FcHash.exe
+[2025-09-22 09:25:03.255] [INFO ] [T011] [MainWindow] 正在复制: fcp.exe
+[2025-09-22 09:25:03.259] [INFO ] [T011] [FileSyncService] 文件写入已完成，准备同步: setup.exe
+[2025-09-22 09:25:03.259] [INFO ] [T006] [MainWindow] 开始同步文件：setup.exe
+[2025-09-22 09:25:03.259] [INFO ] [T008] [FileSyncService] 获取FastCopy并发许可，开始复制: setup.exe
+[2025-09-22 09:25:03.260] [INFO ] [T020] [MainWindow] 已获取文件锁定，开始同步: setup.exe
+[2025-09-22 09:25:03.260] [INFO ] [T006] [MainWindow] 成功获取文件锁定 (尝试 1/8): setup.exe
+[2025-09-22 09:25:03.260] [INFO ] [T008] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\setup.exe -> A:\Test.original\setup.exe
+[2025-09-22 09:25:03.260] [INFO ] [T019] [MainWindow] 正在复制: setup.exe
+[2025-09-22 09:25:03.266] [INFO ] [T004] [FastCopyService] 启动FastCopy进程 (PID: 65892): fcp.exe
+[2025-09-22 09:25:03.275] [INFO ] [T009] [FastCopyService] 启动FastCopy进程 (PID: 86996): FcHash.exe
+[2025-09-22 09:25:03.284] [INFO ] [T008] [FastCopyService] 启动FastCopy进程 (PID: 32320): setup.exe
+[2025-09-22 09:25:05.791] [INFO ] [T009] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\setup.exe -> A:\Test.original\setup.exe
+[2025-09-22 09:25:05.791] [INFO ] [T008] [MainWindow] 复制完成: setup.exe
+[2025-09-22 09:25:05.792] [INFO ] [T009] [FileSyncService] 释放FastCopy并发许可: setup.exe
+[2025-09-22 09:25:05.792] [INFO ] [T019] [MainWindow] 同步完成，释放文件锁定: setup.exe
+[2025-09-22 09:25:05.793] [INFO ] [T009] [FileSyncService] 文件处理完成，清理锁: setup.exe
+[2025-09-22 09:25:06.052] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\FcHash.exe -> A:\Test.original\FcHash.exe
+[2025-09-22 09:25:06.052] [INFO ] [T018] [FileSyncService] 释放FastCopy并发许可: FcHash.exe
+[2025-09-22 09:25:06.052] [INFO ] [T008] [MainWindow] 复制完成: FcHash.exe
+[2025-09-22 09:25:06.052] [INFO ] [T009] [MainWindow] 同步完成，释放文件锁定: FcHash.exe
+[2025-09-22 09:25:06.054] [INFO ] [T018] [FileSyncService] 文件处理完成，清理锁: FcHash.exe
+[2025-09-22 09:25:06.414] [INFO ] [T006] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\fcp.exe -> A:\Test.original\fcp.exe
+[2025-09-22 09:25:06.414] [INFO ] [T006] [FileSyncService] 释放FastCopy并发许可: fcp.exe
+[2025-09-22 09:25:06.414] [INFO ] [T020] [MainWindow] 复制完成: fcp.exe
+[2025-09-22 09:25:06.414] [INFO ] [T008] [MainWindow] 同步完成，释放文件锁定: fcp.exe
+[2025-09-22 09:25:06.416] [INFO ] [T006] [FileSyncService] 文件处理完成，清理锁: fcp.exe
+[2025-09-22 09:25:10.258] [INFO ] [T008] [FileSyncService] 检测到Deleted事件: FcHash.exe
+[2025-09-22 09:25:10.260] [INFO ] [T009] [FileSyncService] 开始处理Deleted事件: FcHash.exe, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:25:10.260] [INFO ] [T009] [FileSyncService] 创建删除队列项: FcHash.exe
+[2025-09-22 09:25:10.261] [INFO ] [T008] [FileSyncService] 检测到Deleted事件: fcp.exe
+[2025-09-22 09:25:10.261] [INFO ] [T008] [FileSyncService] 开始处理Deleted事件: fcp.exe, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:25:10.261] [INFO ] [T008] [FileSyncService] 创建删除队列项: fcp.exe
+[2025-09-22 09:25:10.267] [INFO ] [T006] [FileSyncService] 检测到Deleted事件: setup.exe
+[2025-09-22 09:25:10.267] [INFO ] [T018] [FileSyncService] 开始处理Deleted事件: setup.exe, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:25:10.267] [INFO ] [T018] [FileSyncService] 创建删除队列项: setup.exe
+[2025-09-22 09:27:00.839] [INFO ] [T001] [MainWindow] 正在停止加速：A:\Test
+[2025-09-22 09:27:00.841] [INFO ] [T001] [MainWindow] 停止性能监控: A:\Test
+[2025-09-22 09:27:00.914] [INFO ] [T001] [MainWindow] 缓存加速已停止：A:\Test
+[2025-09-22 09:27:00.914] [INFO ] [T001] [MainWindow] ✅ 加速停止成功：A:\Test
+[2025-09-22 09:27:00.917] [INFO ] [T001] [MainWindow] 已删除路径记录：A:\Test
+[2025-09-22 09:27:00.917] [INFO ] [T001] [MainWindow] 开始停止缓存加速...
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 停止文件同步监控...
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 没有找到对应的监控器：
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 停止性能监控...
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 执行最后一次同步...
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 未找到同步配置：
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:27:00.918] [INFO ] [T001] [MainWindow] Junction删除成功
+[2025-09-22 09:27:00.919] [INFO ] [T001] [MainWindow] 找到备份目录：A:\Test.original
+[2025-09-22 09:27:00.919] [INFO ] [T001] [MainWindow] 恢复原始目录：A:\Test.original -> A:\Test
+[2025-09-22 09:27:00.919] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test.original -> A:\Test
+[2025-09-22 09:27:00.919] [INFO ] [T001] [MainWindow] 缓存加速停止完成！

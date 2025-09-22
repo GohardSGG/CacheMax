@@ -1,0 +1,11 @@
+﻿[2025-09-22 10:23:01.682] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 10:23:01.686] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 10:23:01.686] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 10:23:01.771] [INFO ] [T001] [MainWindow] 开始恢复 1 个加速项目的状态...
+[2025-09-22 10:23:01.771] [INFO ] [T001] [MainWindow] 正在检查加速项目：A:\Test
+[2025-09-22 10:23:01.772] [INFO ] [T001] [MainWindow] Junction状态检查：A:\Test - 是Junction
+[2025-09-22 10:23:01.773] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 10:23:01.773] [INFO ] [T001] [MainWindow] 检查目录存在性：缓存(False) 原始(True)
+[2025-09-22 10:23:01.773] [INFO ] [T001] [MainWindow] ✗ 目录不存在，跳过监控恢复：缓存() 原始(A:\Test)
+[2025-09-22 10:23:01.773] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-22 10:23:01.773] [INFO ] [T001] [MainWindow] 加速状态恢复完成！

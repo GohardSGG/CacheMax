@@ -12,6 +12,9 @@ namespace CacheMax.GUI.Services
 {
     public class FastCopyService : IDisposable
     {
+        private static readonly Lazy<FastCopyService> _instance = new Lazy<FastCopyService>(() => new FastCopyService());
+        public static FastCopyService Instance => _instance.Value;
+
         private readonly string _fastCopyPath;
         private readonly string _defaultArguments;
         private readonly AsyncLogger _logger;
@@ -32,7 +35,7 @@ namespace CacheMax.GUI.Services
             public CancellationTokenSource CancellationTokenSource { get; set; } = null!;
         }
 
-        public FastCopyService(AsyncLogger? logger = null)
+        private FastCopyService(AsyncLogger? logger = null)
         {
             _logger = logger ?? AsyncLogger.Instance;
 
@@ -71,58 +74,11 @@ namespace CacheMax.GUI.Services
 
             _logger.LogInfo($"FastCopy服务初始化: {_fastCopyPath}", "FastCopyService");
 
-            // 启动时清理可能存在的遗留FastCopy进程
-            CleanupOrphanedFastCopyProcesses();
-
             // 初始化进程监控定时器（每30秒检查一次）
             _processMonitorTimer = new Timer(MonitorProcesses, null,
                 TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
 
-        /// <summary>
-        /// 清理遗留的FastCopy进程（启动时调用）
-        /// 注意：不会清理其他应用启动的FastCopy进程，只清理我们自己可能遗留的
-        /// </summary>
-        private void CleanupOrphanedFastCopyProcesses()
-        {
-            try
-            {
-                // 更安全的方法：只记录发现的进程数量，不进行清理
-                // 因为无法可靠地区分是否是我们启动的进程
-                var fastCopyProcessName = Path.GetFileNameWithoutExtension(_fastCopyPath);
-                var allFastCopyProcesses = Process.GetProcessesByName(fastCopyProcessName);
-
-                if (allFastCopyProcesses.Length > 0)
-                {
-                    _logger.LogInfo($"检测到系统中有 {allFastCopyProcesses.Length} 个FastCopy进程正在运行", "FastCopyService");
-
-                    // 只记录，不清理，避免误杀其他应用的进程
-                    foreach (var process in allFastCopyProcesses)
-                    {
-                        try
-                        {
-                            _logger.LogDebug($"FastCopy进程: PID={process.Id}, 启动时间={process.StartTime:yyyy-MM-dd HH:mm:ss}", "FastCopyService");
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogDebug($"无法获取FastCopy进程信息 (PID: {process.Id}): {ex.Message}", "FastCopyService");
-                        }
-                        finally
-                        {
-                            process.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogInfo("系统中没有发现FastCopy进程", "FastCopyService");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"检查FastCopy进程时发生异常: {ex.Message}", ex, "FastCopyService");
-            }
-        }
 
         /// <summary>
         /// 进程监控方法，检查超时和异常进程
@@ -203,15 +159,42 @@ namespace CacheMax.GUI.Services
         }
 
         /// <summary>
-        /// 使用FastCopy复制文件或目录，自动校验
+        /// FastCopy操作结果
+        /// </summary>
+        public class FastCopyResult
+        {
+            public bool Success { get; set; }
+            public int ExitCode { get; set; }
+            public string ErrorMessage { get; set; } = string.Empty;
+            public List<string> StandardOutput { get; set; } = new();
+            public List<string> ErrorOutput { get; set; } = new();
+        }
+
+        /// <summary>
+        /// 使用FastCopy复制文件或目录，自动校验（保持向后兼容）
         /// </summary>
         public async Task<bool> CopyWithVerifyAsync(string source, string destination, IProgress<string>? progress = null)
+        {
+            var result = await CopyWithVerifyDetailedAsync(source, destination, progress);
+            return result.Success;
+        }
+
+        /// <summary>
+        /// 使用FastCopy复制文件或目录，返回详细结果
+        /// </summary>
+        public async Task<FastCopyResult> CopyWithVerifyDetailedAsync(string source, string destination, IProgress<string>? progress = null)
         {
             if (!File.Exists(_fastCopyPath))
             {
                 _logger.LogWarning($"FastCopy可执行文件未找到: {_fastCopyPath}，使用内置复制方法", "FastCopyService");
                 progress?.Report($"FastCopy未找到，使用内置复制方法");
-                return await CopyWithBuiltinMethod(source, destination, progress);
+                var builtinResult = await CopyWithBuiltinMethod(source, destination, progress);
+                return new FastCopyResult
+                {
+                    Success = builtinResult,
+                    ExitCode = builtinResult ? 0 : -1,
+                    ErrorMessage = builtinResult ? string.Empty : "内置复制方法失败"
+                };
             }
 
             var targetDir = Path.GetDirectoryName(destination);
@@ -230,7 +213,7 @@ namespace CacheMax.GUI.Services
                 CreateNoWindow = true
             };
 
-            return await ExecuteWithMonitoringAsync(processStartInfo, source, destination, progress);
+            return await ExecuteWithMonitoringDetailedAsync(processStartInfo, source, destination, progress);
         }
 
         /// <summary>
@@ -263,6 +246,123 @@ namespace CacheMax.GUI.Services
             };
 
             return await ExecuteWithMonitoringAsync(processStartInfo, source, destination, progress);
+        }
+
+        /// <summary>
+        /// 带监控的进程执行方法（返回详细结果）
+        /// </summary>
+        private async Task<FastCopyResult> ExecuteWithMonitoringDetailedAsync(ProcessStartInfo startInfo, string source, string destination, IProgress<string>? progress = null)
+        {
+            var cts = new CancellationTokenSource();
+            var tcs = new TaskCompletionSource<bool>();
+            var result = new FastCopyResult();
+
+            using var process = new Process { StartInfo = startInfo };
+
+            // 错误和输出缓冲
+            var errorOutput = new List<string>();
+            var standardOutput = new List<string>();
+
+            process.OutputDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    standardOutput.Add(e.Data);
+                    _logger.LogDebug($"FastCopy输出: {e.Data}", "FastCopyService");
+                }
+            };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    errorOutput.Add(e.Data);
+                    _logger.LogError($"FastCopy错误: {e.Data}", null, "FastCopyService");
+                }
+            };
+
+            try
+            {
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                var processId = process.Id;
+                _logger.LogInfo($"启动FastCopy进程 (PID: {processId}): {Path.GetFileName(source)}", "FastCopyService");
+
+                // 添加到监控列表
+                var monitorInfo = new ProcessMonitorInfo
+                {
+                    Process = process,
+                    SourcePath = source,
+                    DestinationPath = destination,
+                    StartTime = DateTime.Now,
+                    CompletionSource = tcs,
+                    CancellationTokenSource = cts
+                };
+
+                _runningProcesses.TryAdd(processId, monitorInfo);
+
+                // 等待进程完成或取消
+                var processTask = process.WaitForExitAsync(cts.Token);
+                await Task.WhenAny(processTask, tcs.Task);
+
+                // 清理监控
+                _runningProcesses.TryRemove(processId, out _);
+
+                // 设置详细结果
+                result.StandardOutput = standardOutput;
+                result.ErrorOutput = errorOutput;
+
+                if (process.HasExited)
+                {
+                    result.ExitCode = process.ExitCode;
+                    result.Success = process.ExitCode == 0;
+
+                    if (result.Success)
+                    {
+                        _logger.LogInfo($"FastCopy复制成功: {source} -> {destination}", "FastCopyService");
+                        progress?.Report($"复制完成: {Path.GetFileName(source)}");
+                        result.ErrorMessage = string.Empty;
+                    }
+                    else
+                    {
+                        var errorSummary = errorOutput.Count > 0 ? string.Join("; ", errorOutput.Take(3)) : "未知错误";
+                        result.ErrorMessage = errorSummary;
+                        _logger.LogError($"FastCopy复制失败: 退出码 {process.ExitCode}, 错误: {errorSummary}", null, "FastCopyService");
+                        progress?.Report($"复制失败: {Path.GetFileName(source)} - {errorSummary}");
+                    }
+                }
+                else
+                {
+                    result.ExitCode = -1;
+                    result.Success = false;
+                    result.ErrorMessage = "进程被终止或取消";
+                    _logger.LogWarning($"FastCopy进程被终止或取消: {Path.GetFileName(source)}", "FastCopyService");
+                    progress?.Report($"复制被中断: {Path.GetFileName(source)}");
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.ExitCode = -1;
+                result.ErrorMessage = ex.Message;
+                result.StandardOutput = standardOutput;
+                result.ErrorOutput = errorOutput;
+
+                _logger.LogError($"执行FastCopy时发生异常: {ex.Message}", ex, "FastCopyService");
+                progress?.Report($"复制异常: {Path.GetFileName(source)} - {ex.Message}");
+
+                // 清理监控
+                if (process.Id > 0)
+                {
+                    _runningProcesses.TryRemove(process.Id, out _);
+                }
+
+                return result;
+            }
         }
 
         /// <summary>

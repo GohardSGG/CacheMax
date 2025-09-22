@@ -30,14 +30,13 @@ namespace CacheMax.GUI
         {
             InitializeComponent();
 
-            _fastCopy = new FastCopyService();
+            _fastCopy = FastCopyService.Instance;
             _cacheManager = new CacheManagerService();
             _config = new ConfigService();
 
             // 订阅缓存管理器事件
             _cacheManager.LogMessage += (sender, message) => AddLog(message);
             _cacheManager.StatsUpdated += OnCacheStatsUpdated;
-            _cacheManager.PerformanceStatsUpdated += OnPerformanceStatsUpdated;
 
             // 初始化集合
             _acceleratedFolders = new ObservableCollection<AcceleratedFolder>();
@@ -146,19 +145,30 @@ namespace CacheMax.GUI
                         var syncDelay = 3;
 
                         bool initSuccess = await _cacheManager.InitializeCacheAcceleration(
-                            folder.OriginalPath, cacheRoot, syncMode, syncDelay, progress);
+                            folder.MountPoint, cacheRoot, syncMode, syncDelay, progress);
 
                         if (initSuccess)
                         {
                             folder.Status = "已完成";
                             folder.ProgressPercentage = 100;
 
-                            // 更新缓存大小
-                            var folderName = Path.GetFileName(folder.OriginalPath);
-                            var cachePath = Path.Combine(cacheRoot, folderName);
+                            // 正确计算缓存路径（与CacheManagerService逻辑一致）
+                            var folderName = Path.GetFileName(folder.MountPoint);
+                            var driveLetter = Path.GetPathRoot(folder.MountPoint)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
+                            var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
+                            var cachePath = Path.Combine(driveSpecificCacheRoot, folderName);
+
+                            // 正确设置所有路径
+                            folder.CachePath = cachePath;
+                            folder.OriginalPath = folder.MountPoint + ".original"; // 这是关键修复！
                             folder.CacheSize = GetDirectorySize(cachePath);
 
-                            AddLog($"✅ 加速完成：{folder.OriginalPath}");
+                            // 现在保存完整正确的配置到文件
+                            _config.AddAcceleratedFolder(folder);
+
+                            AddLog($"✅ 加速完成：{folder.MountPoint}");
+                            AddLog($"原始备份：{folder.OriginalPath}");
+                            AddLog($"缓存路径：{cachePath}");
                         }
                         else
                         {
@@ -507,55 +517,6 @@ namespace CacheMax.GUI
             }
         }
 
-        private void UpdateSyncModeButton_Click(object sender, RoutedEventArgs e)
-        {
-            var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
-            if (selected == null)
-            {
-                MessageBox.Show("请选择要更新同步模式的文件夹", "信息",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            try
-            {
-                UpdateSyncModeButton.IsEnabled = false;
-                UpdateStatus($"正在更新同步模式：{selected.MountPoint}");
-
-                var progress = new Progress<string>(msg => AddLog(msg));
-
-                // 使用默认同步模式和延迟
-                var newMode = SyncMode.Immediate;
-                var delaySeconds = 3;
-
-                if (_cacheManager.UpdateSyncMode(selected.CachePath, selected.OriginalPath, newMode, delaySeconds, progress))
-                {
-                    AddLog($"同步模式更新成功：{selected.MountPoint} -> {newMode}({delaySeconds}秒)");
-                    UpdateStatus("同步模式更新成功");
-                    MessageBox.Show($"同步模式已更新为：{newMode}\n延迟：{delaySeconds}秒", "更新成功",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    AddLog($"同步模式更新失败：{selected.MountPoint}");
-                    UpdateStatus("同步模式更新失败");
-                    MessageBox.Show("同步模式更新失败，请查看日志了解详情", "更新失败",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                AddLog($"更新同步模式异常：{ex.Message}");
-                UpdateStatus($"更新同步模式异常：{ex.Message}");
-                MessageBox.Show($"更新同步模式时发生异常：\n{ex.Message}", "错误",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                UpdateSyncModeButton.IsEnabled = true;
-                UpdateUI();
-            }
-        }
 
         private void UpdateUI()
         {
@@ -565,7 +526,6 @@ namespace CacheMax.GUI
 
             // 控制按钮状态
             ValidateButton.IsEnabled = selected != null;
-            UpdateSyncModeButton.IsEnabled = selected != null && selected.Status == "已完成";
             RecoveryButton.IsEnabled = selected != null;
 
             var runningCount = _acceleratedFolders.Count(f => f.Status == "已完成");
@@ -682,11 +642,6 @@ namespace CacheMax.GUI
 
         private void AddLog(string message)
         {
-            // Check if this is a cache stats message
-            if (message.Contains("[CACHE STATS]"))
-            {
-                ParseCacheStats(message);
-            }
 
             // 同时写入到文件日志（统一日志输出）
             AsyncLogger.Instance.LogInfo(message, "MainWindow");
@@ -747,53 +702,6 @@ namespace CacheMax.GUI
             });
         }
 
-        private void OnPerformanceStatsUpdated(object? sender, PerformanceMonitoringService.PerformanceStatsEventArgs e)
-        {
-            // 在UI线程更新性能统计信息
-            Dispatcher.BeginInvoke(() =>
-            {
-                try
-                {
-                    var snapshot = e.Snapshot;
-
-                    // 更新对应加速项目的性能数据
-                    var existingItem = _acceleratedFolders.FirstOrDefault(f => f.MountPoint == snapshot.MountPoint);
-                    if (existingItem != null)
-                    {
-                        // 这里可以添加性能指标到ViewModel中，如果需要在网格中显示
-                        // existingItem.ReadThroughput = snapshot.ReadThroughputMBps;
-                        // existingItem.WriteThroughput = snapshot.WriteThroughputMBps;
-                    }
-
-                    // 更新性能监控UI元素（如果存在）
-                    if (HitRateText != null && snapshot.TotalReadOps + snapshot.TotalWriteOps > 0)
-                    {
-                        // 模拟缓存命中率：基于符号链接重定向效率
-                        var totalOps = snapshot.TotalReadOps + snapshot.TotalWriteOps;
-                        var effectiveness = Math.Min(99.0, 85.0 + (snapshot.ReadThroughputMBps / 50.0)); // 基于吞吐量估算效率
-                        HitRateText.Text = $"加速效率: {effectiveness:F1}%";
-
-                        // 颜色编码
-                        if (effectiveness >= 90)
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Green;
-                        else if (effectiveness >= 70)
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Orange;
-                        else
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Red;
-                    }
-
-                    if (OperationsText != null)
-                    {
-                        OperationsText.Text = $"读写: R:{snapshot.TotalReadOps}({snapshot.ReadThroughputMBps:F1}MB/s) W:{snapshot.TotalWriteOps}({snapshot.WriteThroughputMBps:F1}MB/s)";
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    AddLog($"更新性能统计时出错：{ex.Message}");
-                }
-            });
-        }
 
         private static string FormatBytes(long bytes)
         {
@@ -808,45 +716,6 @@ namespace CacheMax.GUI
             return $"{len:0.##} {sizes[order]}";
         }
 
-        private void ParseCacheStats(string logMessage)
-        {
-            // Parse cache statistics from log message
-            // Format: [CACHE STATS] Hits: 1234, Misses: 56, Hit Rate: 95.7%, Read: 89 ops (125 MB), Write: 12 ops (8 MB)
-            var match = Regex.Match(logMessage, @"\[CACHE STATS\] Hits: (\d+), Misses: (\d+), Hit Rate: ([\d.]+)%, Read: (\d+) ops \((\d+) MB\), Write: (\d+) ops \((\d+) MB\)");
-
-            if (match.Success)
-            {
-                var hits = long.Parse(match.Groups[1].Value);
-                var misses = long.Parse(match.Groups[2].Value);
-                var hitRate = double.Parse(match.Groups[3].Value);
-                var readOps = long.Parse(match.Groups[4].Value);
-                var readMB = long.Parse(match.Groups[5].Value);
-                var writeOps = long.Parse(match.Groups[6].Value);
-                var writeMB = long.Parse(match.Groups[7].Value);
-
-                // Update UI on main thread
-                Dispatcher.BeginInvoke(() =>
-                {
-                    if (HitRateText != null)
-                    {
-                        HitRateText.Text = $"Hit Rate: {hitRate:F1}%";
-
-                        // Color coding based on hit rate
-                        if (hitRate >= 80)
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Green;
-                        else if (hitRate >= 50)
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Orange;
-                        else
-                            HitRateText.Foreground = System.Windows.Media.Brushes.Red;
-                    }
-
-                    if (OperationsText != null)
-                    {
-                        OperationsText.Text = $"Ops: R:{readOps}({readMB}MB) W:{writeOps}({writeMB}MB)";
-                    }
-                });
-            }
-        }
 
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1068,7 +937,7 @@ namespace CacheMax.GUI
             }
         }
 
-        private void RetryFailedButton_Click(object sender, RoutedEventArgs e)
+        private async void RetryFailedButton_Click(object sender, RoutedEventArgs e)
         {
             var failedItems = _syncQueueItems.Where(x => x.Status == "失败").ToList();
 
@@ -1098,8 +967,8 @@ namespace CacheMax.GUI
                             item.Progress = 0;
                             item.ErrorMessage = null;
 
-                            // 使用文件系统监视器重新触发同步
-                            _cacheManager.FileSyncService.TriggerManualSync(item.FilePath);
+                            // 直接重新处理现有队列项，不创建新的队列项
+                            await _cacheManager.FileSyncService.RetryExistingQueueItem(item);
                             successCount++;
                         }
                         else
@@ -1171,7 +1040,7 @@ namespace CacheMax.GUI
             // 创建新的AcceleratedFolder对象
             var newFolder = new AcceleratedFolder
             {
-                OriginalPath = pathText,
+                OriginalPath = "", // 将在加速成功后设置为 pathText + ".original"
                 CachePath = "", // 将在加速时设置
                 MountPoint = pathText,
                 CreatedAt = DateTime.Now,
@@ -1181,7 +1050,7 @@ namespace CacheMax.GUI
             };
 
             _acceleratedFolders.Add(newFolder);
-            _config.AddAcceleratedFolder(newFolder);
+            // 不立即保存配置，等加速成功后再保存完整的配置
 
             NewPathTextBox.Clear();
             AddLog($"已添加路径：{pathText}");

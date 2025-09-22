@@ -209,27 +209,42 @@ namespace CacheMax.GUI.Services
                         {
                             string output = process.StandardOutput.ReadToEnd();
                             // 解析fsutil输出来获取目标路径
-                            // 格式：Print Name:        S:\Cache\Test
+                            // 支持中英文系统：Print Name/打印名称，Substitute Name/替换名称
                             foreach (string line in output.Split('\n'))
                             {
-                                if (line.Contains("Print Name:") && line.Contains(":"))
+                                // 支持英文和中文的Print Name
+                                if ((line.Contains("Print Name:") || line.Contains("打印名称:")) && line.Contains(":"))
                                 {
-                                    var parts = line.Split(new[] { "Print Name:" }, StringSplitOptions.None);
-                                    if (parts.Length > 1)
+                                    string[] separators = { "Print Name:", "打印名称:" };
+                                    foreach (var separator in separators)
                                     {
-                                        return parts[1].Trim();
+                                        if (line.Contains(separator))
+                                        {
+                                            var parts = line.Split(new[] { separator }, StringSplitOptions.None);
+                                            if (parts.Length > 1)
+                                            {
+                                                return parts[1].Trim();
+                                            }
+                                        }
                                     }
                                 }
-                                // 备用：Substitute Name也包含目标路径
-                                else if (line.Contains("Substitute Name:") && line.Contains("\\??\\"))
+                                // 备用：Substitute Name也包含目标路径（支持中英文）
+                                else if ((line.Contains("Substitute Name:") || line.Contains("替换名称:")) && line.Contains("\\??\\"))
                                 {
-                                    var parts = line.Split(new[] { "Substitute Name:" }, StringSplitOptions.None);
-                                    if (parts.Length > 1)
+                                    string[] separators = { "Substitute Name:", "替换名称:" };
+                                    foreach (var separator in separators)
                                     {
-                                        string path = parts[1].Trim();
-                                        if (path.StartsWith("\\??\\"))
+                                        if (line.Contains(separator))
                                         {
-                                            return path.Substring(4); // 移除 \\??\\ 前缀
+                                            var parts = line.Split(new[] { separator }, StringSplitOptions.None);
+                                            if (parts.Length > 1)
+                                            {
+                                                string path = parts[1].Trim();
+                                                if (path.StartsWith("\\??\\"))
+                                                {
+                                                    return path.Substring(4); // 移除 \\??\\ 前缀
+                                                }
+                                            }
                                         }
                                     }
                                 }

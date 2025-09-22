@@ -1,0 +1,35 @@
+﻿[2025-09-22 10:38:30.863] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 10:38:30.867] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 10:38:30.867] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 10:38:30.955] [INFO ] [T001] [MainWindow] 开始恢复 1 个加速项目的状态...
+[2025-09-22 10:38:30.955] [INFO ] [T001] [MainWindow] 正在检查加速项目：A:\Test
+[2025-09-22 10:38:30.956] [INFO ] [T001] [MainWindow] Junction状态检查：A:\Test - 是Junction
+[2025-09-22 10:38:30.957] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 10:38:30.957] [INFO ] [T001] [MainWindow] 检查目录存在性：缓存(True) 原始(True)
+[2025-09-22 10:38:30.957] [INFO ] [T001] [MainWindow] 准备启动文件同步监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:38:30.960] [INFO ] [T004] [MainWindow] StartMonitoring调用：S:\Cache\A\Test -> A:\Test, 模式:Immediate
+[2025-09-22 10:38:30.960] [INFO ] [T008] [MainWindow] 开始监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:38:30.963] [INFO ] [T001] [MainWindow] ✓ 成功恢复文件同步监控：S:\Cache\A\Test -> A:\Test
+[2025-09-22 10:38:30.963] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-22 10:38:30.963] [INFO ] [T001] [MainWindow] 加速状态恢复完成！
+[2025-09-22 10:38:30.963] [INFO ] [T008] [MainWindow] 开始监控：S:\Cache\A\Test (模式：Immediate，延迟：3秒)
+[2025-09-22 10:38:34.047] [INFO ] [T001] [MainWindow] 正在停止加速：A:\Test
+[2025-09-22 10:38:34.049] [INFO ] [T009] [MainWindow] 停止监控：S:\Cache\A\Test
+[2025-09-22 10:38:34.126] [INFO ] [T001] [MainWindow] 缓存加速已停止：A:\Test
+[2025-09-22 10:38:34.127] [INFO ] [T001] [MainWindow] ✅ 加速停止成功：A:\Test
+[2025-09-22 10:38:34.146] [INFO ] [T001] [MainWindow] 已删除路径记录：A:\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 开始停止缓存加速...
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 停止文件同步监控...
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 停止监控：S:\Cache\A\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 文件监控停止成功
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 执行最后一次同步...
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 未找到同步配置：S:\Cache\A\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] Junction删除成功
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 找到备份目录：A:\Test.original
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 恢复原始目录：A:\Test.original -> A:\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test.original -> A:\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 删除缓存文件：S:\Cache\A\Test
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 缓存文件删除成功
+[2025-09-22 10:38:34.147] [INFO ] [T001] [MainWindow] 缓存加速停止完成！

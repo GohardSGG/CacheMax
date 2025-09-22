@@ -19,6 +19,38 @@ namespace CacheMax.GUI.ViewModels
         private DateTime _createdAt;
         private DateTime? _completedAt;
         private string? _errorMessage;
+        private string _operationType = ""; // 操作类型: "Created", "Changed", "Deleted"
+
+        public string OperationType
+        {
+            get => _operationType;
+            set
+            {
+                if (_operationType != value)
+                {
+                    _operationType = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FileSizeDisplay));
+                    OnPropertyChanged(nameof(OperationTypeDisplay));
+                }
+            }
+        }
+
+        public string FileSizeDisplay
+        {
+            get => _operationType == "Deleted" ? "删除" : _fileSizeFormatted;
+        }
+
+        public string OperationTypeDisplay
+        {
+            get => _operationType switch
+            {
+                "Created" => "创建",
+                "Changed" => "修改",
+                "Deleted" => "删除",
+                _ => "未知"
+            };
+        }
 
         public string Status
         {
@@ -83,6 +115,7 @@ namespace CacheMax.GUI.ViewModels
                 {
                     _fileSizeFormatted = value;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(FileSizeDisplay));
                 }
             }
         }

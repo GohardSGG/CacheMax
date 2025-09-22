@@ -28,7 +28,11 @@
       "Bash(dotnet run:*)",
       "Bash(del \"C:\\Code\\CacheMax\\CacheMax.GUI\\Services\\ParallelSyncEngine.cs\")",
       "WebFetch(domain:fastcopy.jp)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(Remove-Item \"C:\\Code\\CacheMax\\CacheMax.GUI\\Services\\PerformanceMonitoringService.cs\" -Force)",
+      "Bash(fsutil reparsepoint query:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": [],
     "ask": []

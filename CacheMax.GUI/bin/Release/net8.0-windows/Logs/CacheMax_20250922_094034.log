@@ -1,0 +1,1065 @@
+﻿[2025-09-22 09:40:34.647] [INFO ] [T001] [FastCopyService] FastCopy服务初始化: C:\Program Files\FastCopy64\fcp.exe
+[2025-09-22 09:40:34.651] [INFO ] [T001] [FileSyncService] FastCopy最大并发数设置为: 3
+[2025-09-22 09:40:34.651] [INFO ] [T001] [FileSyncService] FileSyncService 初始化完成
+[2025-09-22 09:40:34.738] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 09:40:34.738] [INFO ] [T001] [MainWindow] 恢复加速状态记录：A:\Test - 活跃
+[2025-09-22 09:40:40.448] [INFO ] [T001] [MainWindow] 正在停止加速：A:\Test
+[2025-09-22 09:40:40.525] [INFO ] [T001] [MainWindow] 缓存加速已停止：A:\Test
+[2025-09-22 09:40:40.525] [INFO ] [T001] [MainWindow] ✅ 加速停止成功：A:\Test
+[2025-09-22 09:40:40.543] [INFO ] [T001] [MainWindow] 已删除路径记录：A:\Test
+[2025-09-22 09:40:40.544] [INFO ] [T001] [MainWindow] 开始停止缓存加速...
+[2025-09-22 09:40:40.544] [INFO ] [T001] [MainWindow] 停止文件同步监控...
+[2025-09-22 09:40:40.544] [INFO ] [T001] [MainWindow] 没有找到对应的监控器：
+[2025-09-22 09:40:40.544] [INFO ] [T001] [MainWindow] 停止性能监控...
+[2025-09-22 09:40:40.545] [INFO ] [T001] [MainWindow] 执行最后一次同步...
+[2025-09-22 09:40:40.545] [INFO ] [T001] [MainWindow] 未找到同步配置：
+[2025-09-22 09:40:40.545] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:40:40.545] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:40:40.546] [INFO ] [T001] [MainWindow] Junction删除成功
+[2025-09-22 09:40:40.546] [INFO ] [T001] [MainWindow] 找到备份目录：A:\Test.original
+[2025-09-22 09:40:40.546] [INFO ] [T001] [MainWindow] 恢复原始目录：A:\Test.original -> A:\Test
+[2025-09-22 09:40:40.546] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test.original -> A:\Test
+[2025-09-22 09:40:40.546] [INFO ] [T001] [MainWindow] 缓存加速停止完成！
+[2025-09-22 09:40:48.101] [INFO ] [T001] [MainWindow] 已添加路径：A:\Test
+[2025-09-22 09:40:50.777] [INFO ] [T001] [MainWindow] 开始加速：A:\Test
+[2025-09-22 09:40:50.795] [INFO ] [T001] [MainWindow] 使用目录连接点，无需管理员权限
+[2025-09-22 09:40:50.795] [INFO ] [T001] [MainWindow] 开始缓存加速初始化...
+[2025-09-22 09:40:50.795] [INFO ] [T001] [MainWindow] 检测到缓存目录已存在：S:\Cache\A\Test
+[2025-09-22 09:40:50.795] [INFO ] [T001] [MainWindow] 缓存目录已存在，可选择：
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 1. 同步模式：保留现有缓存，仅同步差异文件（推荐）
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 2. 取消操作
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 当前默认使用同步模式
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 用户选择同步模式：与现有缓存同步
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 开始创建缓存目录和备份路径...
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 复制数据到缓存：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 使用Robocopy同步模式：智能同步差异文件
+[2025-09-22 09:40:50.796] [INFO ] [T001] [MainWindow] 执行Robocopy同步: robocopy "A:\Test" "S:\Cache\A\Test" /E /COPYALL /MT:64 /R:3600 /W:1 /IM /J /BYTES /FP /ETA /NFL /NDL
+[2025-09-22 09:40:50.843] [INFO ] [T001] [MainWindow] Robocopy同步完成，退出码: 1
+[2025-09-22 09:40:50.946] [INFO ] [T012] [MainWindow] 开始监控：S:\Cache\A\Test (模式：Immediate，延迟：3秒)
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 开始性能监控: A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 缓存加速已启用：A:\Test
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 记录加速状态：A:\Test -> 激活
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 备份原始目录：A:\Test -> A:\Test.original
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test -> A:\Test.original
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 创建Junction：A:\Test -> S:\Cache\A\Test
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] Junction创建成功
+[2025-09-22 09:40:50.946] [INFO ] [T001] [MainWindow] 启动文件同步监控...
+[2025-09-22 09:40:50.947] [INFO ] [T001] [MainWindow] 开始监控：S:\Cache\A\Test -> A:\Test.original
+[2025-09-22 09:40:50.947] [INFO ] [T001] [MainWindow] 文件监控启动成功
+[2025-09-22 09:40:50.947] [INFO ] [T001] [MainWindow] 启动性能监控...
+[2025-09-22 09:40:50.947] [INFO ] [T001] [MainWindow] 缓存加速初始化完成！
+[2025-09-22 09:40:50.948] [INFO ] [T001] [MainWindow] ✅ 加速完成：A:\Test
+[2025-09-22 09:41:09.757] [INFO ] [T012] [FileSyncService] 检测到Deleted事件: 2.exe
+[2025-09-22 09:41:09.758] [INFO ] [T004] [FileSyncService] 开始处理Deleted事件: 2.exe, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:41:09.759] [INFO ] [T004] [FileSyncService] 创建删除队列项: 2.exe
+[2025-09-22 09:41:09.760] [INFO ] [T008] [MainWindow] 正在删除: 2.exe
+[2025-09-22 09:41:09.760] [INFO ] [T009] [MainWindow] 开始同步文件：2.exe
+[2025-09-22 09:41:09.765] [INFO ] [T018] [MainWindow] 删除完成: 2.exe
+[2025-09-22 09:41:34.739] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: Ibanez A
+[2025-09-22 09:41:34.739] [INFO ] [T018] [FileSyncService] 文件已被删除，跳过同步: Ibanez A
+[2025-09-22 09:41:34.746] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: 主机位
+[2025-09-22 09:41:34.746] [INFO ] [T006] [FileSyncService] 文件已被删除，跳过同步: 主机位
+[2025-09-22 09:41:34.753] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C1712.MP4
+[2025-09-22 09:41:36.114] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1712.MP4
+[2025-09-22 09:41:36.121] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:36.124] [INFO ] [T018] [FileSyncService] 检测到文件变化，等待写入完成: C1713.MP4
+[2025-09-22 09:41:36.756] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C1712.MP4
+[2025-09-22 09:41:36.756] [INFO ] [T021] [MainWindow] 开始同步文件：C1712.MP4
+[2025-09-22 09:41:36.757] [INFO ] [T021] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1712.MP4
+[2025-09-22 09:41:36.758] [INFO ] [T020] [MainWindow] 已获取文件锁定，开始同步: C1712.MP4
+[2025-09-22 09:41:36.759] [INFO ] [T012] [FileSyncService] 获取FastCopy并发许可，开始复制: C1712.MP4
+[2025-09-22 09:41:36.764] [INFO ] [T012] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-22 09:41:36.765] [INFO ] [T021] [MainWindow] 正在复制: C1712.MP4
+[2025-09-22 09:41:36.775] [INFO ] [T012] [FastCopyService] 启动FastCopy进程 (PID: 65880): C1712.MP4
+[2025-09-22 09:41:37.326] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1713.MP4
+[2025-09-22 09:41:37.414] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:37.417] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C1714.MP4
+[2025-09-22 09:41:38.014] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:38.125] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C1713.MP4
+[2025-09-22 09:41:38.125] [INFO ] [T020] [MainWindow] 开始同步文件：C1713.MP4
+[2025-09-22 09:41:38.125] [INFO ] [T012] [MainWindow] 已获取文件锁定，开始同步: C1713.MP4
+[2025-09-22 09:41:38.125] [INFO ] [T023] [FileSyncService] 获取FastCopy并发许可，开始复制: C1713.MP4
+[2025-09-22 09:41:38.125] [INFO ] [T024] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1713.MP4
+[2025-09-22 09:41:38.126] [INFO ] [T023] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-22 09:41:38.126] [INFO ] [T025] [MainWindow] 正在复制: C1713.MP4
+[2025-09-22 09:41:38.136] [INFO ] [T023] [FastCopyService] 启动FastCopy进程 (PID: 60508): C1713.MP4
+[2025-09-22 09:41:38.712] [INFO ] [T023] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1714.MP4
+[2025-09-22 09:41:38.722] [INFO ] [T025] [FileSyncService] 检测到文件变化，等待写入完成: C1715.MP4
+[2025-09-22 09:41:39.228] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:39.418] [INFO ] [T023] [FileSyncService] 文件写入已完成，准备同步: C1714.MP4
+[2025-09-22 09:41:39.418] [INFO ] [T006] [MainWindow] 开始同步文件：C1714.MP4
+[2025-09-22 09:41:39.418] [INFO ] [T012] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1714.MP4
+[2025-09-22 09:41:39.418] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C1714.MP4
+[2025-09-22 09:41:39.418] [INFO ] [T026] [FileSyncService] 获取FastCopy并发许可，开始复制: C1714.MP4
+[2025-09-22 09:41:39.419] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-22 09:41:39.419] [INFO ] [T012] [MainWindow] 正在复制: C1714.MP4
+[2025-09-22 09:41:39.429] [INFO ] [T026] [FastCopyService] 启动FastCopy进程 (PID: 76564): C1714.MP4
+[2025-09-22 09:41:40.672] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1715.MP4
+[2025-09-22 09:41:40.682] [INFO ] [T025] [FileSyncService] 检测到文件变化，等待写入完成: C1716.MP4
+[2025-09-22 09:41:40.723] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1715.MP4
+[2025-09-22 09:41:40.723] [INFO ] [T023] [MainWindow] 开始同步文件：C1715.MP4
+[2025-09-22 09:41:40.723] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C1715.MP4
+[2025-09-22 09:41:40.723] [INFO ] [T020] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1715.MP4
+[2025-09-22 09:41:40.868] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1712.MP4 -> A:\Test.original\Ibanez A\主机位\C1712.MP4
+[2025-09-22 09:41:40.868] [INFO ] [T028] [MainWindow] 复制完成: C1712.MP4
+[2025-09-22 09:41:40.869] [INFO ] [T019] [FileSyncService] 释放FastCopy并发许可: C1712.MP4
+[2025-09-22 09:41:40.869] [INFO ] [T018] [MainWindow] 同步完成，释放文件锁定: C1712.MP4
+[2025-09-22 09:41:40.870] [INFO ] [T021] [FileSyncService] 获取FastCopy并发许可，开始复制: C1715.MP4
+[2025-09-22 09:41:40.870] [INFO ] [T019] [FileSyncService] 文件处理完成，清理锁: C1712.MP4
+[2025-09-22 09:41:40.870] [INFO ] [T021] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-22 09:41:40.870] [INFO ] [T029] [MainWindow] 正在复制: C1715.MP4
+[2025-09-22 09:41:40.880] [INFO ] [T021] [FastCopyService] 启动FastCopy进程 (PID: 88764): C1715.MP4
+[2025-09-22 09:41:41.638] [INFO ] [T024] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1713.MP4 -> A:\Test.original\Ibanez A\主机位\C1713.MP4
+[2025-09-22 09:41:41.638] [INFO ] [T027] [MainWindow] 复制完成: C1713.MP4
+[2025-09-22 09:41:41.638] [INFO ] [T024] [FileSyncService] 释放FastCopy并发许可: C1713.MP4
+[2025-09-22 09:41:41.638] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1713.MP4
+[2025-09-22 09:41:41.639] [INFO ] [T024] [FileSyncService] 文件处理完成，清理锁: C1713.MP4
+[2025-09-22 09:41:41.856] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:42.601] [INFO ] [T012] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1714.MP4 -> A:\Test.original\Ibanez A\主机位\C1714.MP4
+[2025-09-22 09:41:42.601] [INFO ] [T012] [FileSyncService] 释放FastCopy并发许可: C1714.MP4
+[2025-09-22 09:41:42.601] [INFO ] [T006] [MainWindow] 复制完成: C1714.MP4
+[2025-09-22 09:41:42.601] [INFO ] [T021] [MainWindow] 同步完成，释放文件锁定: C1714.MP4
+[2025-09-22 09:41:42.602] [INFO ] [T012] [FileSyncService] 文件处理完成，清理锁: C1714.MP4
+[2025-09-22 09:41:42.898] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1716.MP4
+[2025-09-22 09:41:42.909] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C1717.MP4
+[2025-09-22 09:41:43.684] [INFO ] [T012] [FileSyncService] 文件写入已完成，准备同步: C1716.MP4
+[2025-09-22 09:41:43.684] [INFO ] [T024] [MainWindow] 开始同步文件：C1716.MP4
+[2025-09-22 09:41:43.685] [INFO ] [T024] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1716.MP4
+[2025-09-22 09:41:43.685] [INFO ] [T028] [MainWindow] 已获取文件锁定，开始同步: C1716.MP4
+[2025-09-22 09:41:43.685] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1716.MP4
+[2025-09-22 09:41:43.685] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-22 09:41:43.685] [INFO ] [T021] [MainWindow] 正在复制: C1716.MP4
+[2025-09-22 09:41:43.695] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 74456): C1716.MP4
+[2025-09-22 09:41:44.582] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:45.113] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1715.MP4 -> A:\Test.original\Ibanez A\主机位\C1715.MP4
+[2025-09-22 09:41:45.113] [INFO ] [T029] [FileSyncService] 释放FastCopy并发许可: C1715.MP4
+[2025-09-22 09:41:45.113] [INFO ] [T019] [MainWindow] 复制完成: C1715.MP4
+[2025-09-22 09:41:45.113] [INFO ] [T018] [MainWindow] 同步完成，释放文件锁定: C1715.MP4
+[2025-09-22 09:41:45.114] [INFO ] [T029] [FileSyncService] 文件处理完成，清理锁: C1715.MP4
+[2025-09-22 09:41:45.551] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1717.MP4
+[2025-09-22 09:41:45.562] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C1718.MP4
+[2025-09-22 09:41:45.910] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C1717.MP4
+[2025-09-22 09:41:45.910] [INFO ] [T019] [MainWindow] 开始同步文件：C1717.MP4
+[2025-09-22 09:41:45.910] [INFO ] [T024] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1717.MP4
+[2025-09-22 09:41:45.910] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C1717.MP4
+[2025-09-22 09:41:45.910] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1717.MP4
+[2025-09-22 09:41:45.911] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1717.MP4 -> A:\Test.original\Ibanez A\主机位\C1717.MP4
+[2025-09-22 09:41:45.911] [INFO ] [T024] [MainWindow] 正在复制: C1717.MP4
+[2025-09-22 09:41:45.922] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 78644): C1717.MP4
+[2025-09-22 09:41:46.719] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:47.001] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1718.MP4
+[2025-09-22 09:41:47.013] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C1719.MP4
+[2025-09-22 09:41:47.562] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C1718.MP4
+[2025-09-22 09:41:47.562] [INFO ] [T024] [MainWindow] 开始同步文件：C1718.MP4
+[2025-09-22 09:41:47.563] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1718.MP4
+[2025-09-22 09:41:47.563] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C1718.MP4
+[2025-09-22 09:41:47.563] [INFO ] [T028] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1718.MP4
+[2025-09-22 09:41:47.563] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-22 09:41:47.563] [INFO ] [T028] [MainWindow] 正在复制: C1718.MP4
+[2025-09-22 09:41:47.574] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 73328): C1718.MP4
+[2025-09-22 09:41:48.447] [INFO ] [T021] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1716.MP4 -> A:\Test.original\Ibanez A\主机位\C1716.MP4
+[2025-09-22 09:41:48.447] [INFO ] [T021] [FileSyncService] 释放FastCopy并发许可: C1716.MP4
+[2025-09-22 09:41:48.447] [INFO ] [T027] [MainWindow] 复制完成: C1716.MP4
+[2025-09-22 09:41:48.447] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1716.MP4
+[2025-09-22 09:41:48.448] [INFO ] [T021] [FileSyncService] 文件处理完成，清理锁: C1716.MP4
+[2025-09-22 09:41:48.656] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:48.716] [INFO ] [T027] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1719.MP4
+[2025-09-22 09:41:48.725] [INFO ] [T027] [FileSyncService] 检测到文件变化，等待写入完成: C1720.MP4
+[2025-09-22 09:41:49.013] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1719.MP4
+[2025-09-22 09:41:49.013] [INFO ] [T027] [MainWindow] 开始同步文件：C1719.MP4
+[2025-09-22 09:41:49.014] [INFO ] [T021] [MainWindow] 已获取文件锁定，开始同步: C1719.MP4
+[2025-09-22 09:41:49.014] [INFO ] [T025] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1719.MP4
+[2025-09-22 09:41:49.014] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1719.MP4
+[2025-09-22 09:41:49.014] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-22 09:41:49.014] [INFO ] [T019] [MainWindow] 正在复制: C1719.MP4
+[2025-09-22 09:41:49.024] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 24280): C1719.MP4
+[2025-09-22 09:41:49.893] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:50.470] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1720.MP4
+[2025-09-22 09:41:50.482] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C1721.MP4
+[2025-09-22 09:41:50.880] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C1720.MP4
+[2025-09-22 09:41:50.880] [INFO ] [T006] [MainWindow] 开始同步文件：C1720.MP4
+[2025-09-22 09:41:50.880] [INFO ] [T026] [MainWindow] 已获取文件锁定，开始同步: C1720.MP4
+[2025-09-22 09:41:50.880] [INFO ] [T021] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1720.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T024] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1718.MP4 -> A:\Test.original\Ibanez A\主机位\C1718.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T021] [MainWindow] 复制完成: C1718.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T024] [FileSyncService] 释放FastCopy并发许可: C1718.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1718.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T026] [FileSyncService] 获取FastCopy并发许可，开始复制: C1720.MP4
+[2025-09-22 09:41:51.164] [INFO ] [T024] [FileSyncService] 文件处理完成，清理锁: C1718.MP4
+[2025-09-22 09:41:51.165] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-22 09:41:51.165] [INFO ] [T024] [MainWindow] 正在复制: C1720.MP4
+[2025-09-22 09:41:51.175] [INFO ] [T026] [FastCopyService] 启动FastCopy进程 (PID: 23060): C1720.MP4
+[2025-09-22 09:41:51.708] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1717.MP4 -> A:\Test.original\Ibanez A\主机位\C1717.MP4
+[2025-09-22 09:41:51.709] [INFO ] [T029] [FileSyncService] 释放FastCopy并发许可: C1717.MP4
+[2025-09-22 09:41:51.709] [INFO ] [T012] [MainWindow] 复制完成: C1717.MP4
+[2025-09-22 09:41:51.709] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C1717.MP4
+[2025-09-22 09:41:51.710] [INFO ] [T029] [FileSyncService] 文件处理完成，清理锁: C1717.MP4
+[2025-09-22 09:41:52.005] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1721.MP4
+[2025-09-22 09:41:52.011] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:52.016] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C1724.MP4
+[2025-09-22 09:41:52.244] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1719.MP4 -> A:\Test.original\Ibanez A\主机位\C1719.MP4
+[2025-09-22 09:41:52.244] [INFO ] [T029] [MainWindow] 复制完成: C1719.MP4
+[2025-09-22 09:41:52.244] [INFO ] [T019] [FileSyncService] 释放FastCopy并发许可: C1719.MP4
+[2025-09-22 09:41:52.244] [INFO ] [T019] [FileSyncService] 文件处理完成，清理锁: C1719.MP4
+[2025-09-22 09:41:52.244] [INFO ] [T025] [MainWindow] 同步完成，释放文件锁定: C1719.MP4
+[2025-09-22 09:41:52.483] [INFO ] [T025] [FileSyncService] 文件写入已完成，准备同步: C1721.MP4
+[2025-09-22 09:41:52.483] [INFO ] [T029] [MainWindow] 开始同步文件：C1721.MP4
+[2025-09-22 09:41:52.484] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C1721.MP4
+[2025-09-22 09:41:52.484] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1721.MP4
+[2025-09-22 09:41:52.484] [INFO ] [T012] [FileSyncService] 获取FastCopy并发许可，开始复制: C1721.MP4
+[2025-09-22 09:41:52.484] [INFO ] [T012] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-22 09:41:52.484] [INFO ] [T025] [MainWindow] 正在复制: C1721.MP4
+[2025-09-22 09:41:52.494] [INFO ] [T012] [FastCopyService] 启动FastCopy进程 (PID: 89484): C1721.MP4
+[2025-09-22 09:41:53.860] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1724.MP4
+[2025-09-22 09:41:53.872] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C1725.MP4
+[2025-09-22 09:41:54.018] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C1724.MP4
+[2025-09-22 09:41:54.018] [INFO ] [T012] [MainWindow] 开始同步文件：C1724.MP4
+[2025-09-22 09:41:54.018] [INFO ] [T019] [MainWindow] 已获取文件锁定，开始同步: C1724.MP4
+[2025-09-22 09:41:54.018] [INFO ] [T006] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1724.MP4
+[2025-09-22 09:41:54.018] [INFO ] [T029] [FileSyncService] 获取FastCopy并发许可，开始复制: C1724.MP4
+[2025-09-22 09:41:54.019] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1724.MP4 -> A:\Test.original\Ibanez A\主机位\C1724.MP4
+[2025-09-22 09:41:54.019] [INFO ] [T019] [MainWindow] 正在复制: C1724.MP4
+[2025-09-22 09:41:54.029] [INFO ] [T029] [FastCopyService] 启动FastCopy进程 (PID: 74528): C1724.MP4
+[2025-09-22 09:41:54.624] [INFO ] [T021] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1720.MP4 -> A:\Test.original\Ibanez A\主机位\C1720.MP4
+[2025-09-22 09:41:54.624] [INFO ] [T028] [MainWindow] 复制完成: C1720.MP4
+[2025-09-22 09:41:54.624] [INFO ] [T021] [FileSyncService] 释放FastCopy并发许可: C1720.MP4
+[2025-09-22 09:41:54.624] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C1720.MP4
+[2025-09-22 09:41:54.624] [INFO ] [T021] [FileSyncService] 文件处理完成，清理锁: C1720.MP4
+[2025-09-22 09:41:54.988] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:55.067] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1721.MP4 -> A:\Test.original\Ibanez A\主机位\C1721.MP4
+[2025-09-22 09:41:55.067] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C1721.MP4
+[2025-09-22 09:41:55.067] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1721.MP4
+[2025-09-22 09:41:55.067] [INFO ] [T028] [MainWindow] 复制完成: C1721.MP4
+[2025-09-22 09:41:55.067] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C1721.MP4
+[2025-09-22 09:41:55.258] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1725.MP4
+[2025-09-22 09:41:55.268] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C1726.MP4
+[2025-09-22 09:41:55.872] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1725.MP4
+[2025-09-22 09:41:55.872] [INFO ] [T012] [MainWindow] 开始同步文件：C1725.MP4
+[2025-09-22 09:41:55.873] [INFO ] [T012] [MainWindow] 已获取文件锁定，开始同步: C1725.MP4
+[2025-09-22 09:41:55.873] [INFO ] [T012] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1725.MP4
+[2025-09-22 09:41:55.873] [INFO ] [T025] [FileSyncService] 获取FastCopy并发许可，开始复制: C1725.MP4
+[2025-09-22 09:41:55.873] [INFO ] [T025] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-22 09:41:55.873] [INFO ] [T026] [MainWindow] 正在复制: C1725.MP4
+[2025-09-22 09:41:55.883] [INFO ] [T025] [FastCopyService] 启动FastCopy进程 (PID: 4212): C1725.MP4
+[2025-09-22 09:41:56.790] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:56.862] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1726.MP4
+[2025-09-22 09:41:56.872] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C1727.MP4
+[2025-09-22 09:41:56.945] [INFO ] [T006] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1724.MP4 -> A:\Test.original\Ibanez A\主机位\C1724.MP4
+[2025-09-22 09:41:56.945] [INFO ] [T029] [MainWindow] 复制完成: C1724.MP4
+[2025-09-22 09:41:56.945] [INFO ] [T006] [FileSyncService] 释放FastCopy并发许可: C1724.MP4
+[2025-09-22 09:41:56.945] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1724.MP4
+[2025-09-22 09:41:56.945] [INFO ] [T006] [FileSyncService] 文件处理完成，清理锁: C1724.MP4
+[2025-09-22 09:41:57.269] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C1726.MP4
+[2025-09-22 09:41:57.269] [INFO ] [T028] [MainWindow] 开始同步文件：C1726.MP4
+[2025-09-22 09:41:57.270] [INFO ] [T024] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1726.MP4
+[2025-09-22 09:41:57.270] [INFO ] [T029] [FileSyncService] 获取FastCopy并发许可，开始复制: C1726.MP4
+[2025-09-22 09:41:57.270] [INFO ] [T020] [MainWindow] 已获取文件锁定，开始同步: C1726.MP4
+[2025-09-22 09:41:57.270] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-22 09:41:57.270] [INFO ] [T025] [MainWindow] 正在复制: C1726.MP4
+[2025-09-22 09:41:57.305] [INFO ] [T029] [FastCopyService] 启动FastCopy进程 (PID: 80676): C1726.MP4
+[2025-09-22 09:41:57.978] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:41:58.506] [INFO ] [T012] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1725.MP4 -> A:\Test.original\Ibanez A\主机位\C1725.MP4
+[2025-09-22 09:41:58.506] [INFO ] [T012] [FileSyncService] 释放FastCopy并发许可: C1725.MP4
+[2025-09-22 09:41:58.506] [INFO ] [T012] [FileSyncService] 文件处理完成，清理锁: C1725.MP4
+[2025-09-22 09:41:58.506] [INFO ] [T012] [MainWindow] 同步完成，释放文件锁定: C1725.MP4
+[2025-09-22 09:41:58.506] [INFO ] [T029] [MainWindow] 复制完成: C1725.MP4
+[2025-09-22 09:41:58.589] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1727.MP4
+[2025-09-22 09:41:58.599] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C1728.MP4
+[2025-09-22 09:41:59.054] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C1727.MP4
+[2025-09-22 09:41:59.054] [INFO ] [T012] [MainWindow] 开始同步文件：C1727.MP4
+[2025-09-22 09:41:59.055] [INFO ] [T028] [MainWindow] 已获取文件锁定，开始同步: C1727.MP4
+[2025-09-22 09:41:59.055] [INFO ] [T012] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1727.MP4
+[2025-09-22 09:41:59.055] [INFO ] [T029] [FileSyncService] 获取FastCopy并发许可，开始复制: C1727.MP4
+[2025-09-22 09:41:59.055] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-22 09:41:59.055] [INFO ] [T024] [MainWindow] 正在复制: C1727.MP4
+[2025-09-22 09:41:59.065] [INFO ] [T029] [FastCopyService] 启动FastCopy进程 (PID: 80420): C1727.MP4
+[2025-09-22 09:41:59.924] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:00.065] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1726.MP4 -> A:\Test.original\Ibanez A\主机位\C1726.MP4
+[2025-09-22 09:42:00.065] [INFO ] [T020] [MainWindow] 复制完成: C1726.MP4
+[2025-09-22 09:42:00.065] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C1726.MP4
+[2025-09-22 09:42:00.065] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C1726.MP4
+[2025-09-22 09:42:00.065] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C1726.MP4
+[2025-09-22 09:42:00.157] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1728.MP4
+[2025-09-22 09:42:00.168] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C1729.MP4
+[2025-09-22 09:42:00.600] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C1728.MP4
+[2025-09-22 09:42:00.600] [INFO ] [T020] [MainWindow] 开始同步文件：C1728.MP4
+[2025-09-22 09:42:00.600] [INFO ] [T020] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1728.MP4
+[2025-09-22 09:42:00.600] [INFO ] [T012] [MainWindow] 已获取文件锁定，开始同步: C1728.MP4
+[2025-09-22 09:42:00.600] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1728.MP4
+[2025-09-22 09:42:00.601] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-22 09:42:00.601] [INFO ] [T012] [MainWindow] 正在复制: C1728.MP4
+[2025-09-22 09:42:00.611] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 4284): C1728.MP4
+[2025-09-22 09:42:01.414] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:01.808] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1727.MP4 -> A:\Test.original\Ibanez A\主机位\C1727.MP4
+[2025-09-22 09:42:01.808] [INFO ] [T006] [MainWindow] 复制完成: C1727.MP4
+[2025-09-22 09:42:01.808] [INFO ] [T028] [FileSyncService] 释放FastCopy并发许可: C1727.MP4
+[2025-09-22 09:42:01.808] [INFO ] [T024] [MainWindow] 同步完成，释放文件锁定: C1727.MP4
+[2025-09-22 09:42:01.808] [INFO ] [T028] [FileSyncService] 文件处理完成，清理锁: C1727.MP4
+[2025-09-22 09:42:02.040] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1729.MP4
+[2025-09-22 09:42:02.052] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C1730.MP4
+[2025-09-22 09:42:02.169] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1729.MP4
+[2025-09-22 09:42:02.169] [INFO ] [T006] [MainWindow] 开始同步文件：C1729.MP4
+[2025-09-22 09:42:02.170] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1729.MP4
+[2025-09-22 09:42:02.170] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C1729.MP4
+[2025-09-22 09:42:02.170] [INFO ] [T028] [FileSyncService] 获取FastCopy并发许可，开始复制: C1729.MP4
+[2025-09-22 09:42:02.170] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-22 09:42:02.170] [INFO ] [T025] [MainWindow] 正在复制: C1729.MP4
+[2025-09-22 09:42:02.181] [INFO ] [T028] [FastCopyService] 启动FastCopy进程 (PID: 14632): C1729.MP4
+[2025-09-22 09:42:03.009] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:03.327] [INFO ] [T020] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1728.MP4 -> A:\Test.original\Ibanez A\主机位\C1728.MP4
+[2025-09-22 09:42:03.327] [INFO ] [T024] [MainWindow] 复制完成: C1728.MP4
+[2025-09-22 09:42:03.327] [INFO ] [T020] [FileSyncService] 释放FastCopy并发许可: C1728.MP4
+[2025-09-22 09:42:03.327] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C1728.MP4
+[2025-09-22 09:42:03.327] [INFO ] [T020] [FileSyncService] 文件处理完成，清理锁: C1728.MP4
+[2025-09-22 09:42:03.864] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1730.MP4
+[2025-09-22 09:42:03.873] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: C1731.MP4
+[2025-09-22 09:42:04.553] [INFO ] [T024] [FileSyncService] 文件写入已完成，准备同步: C1730.MP4
+[2025-09-22 09:42:04.553] [INFO ] [T006] [MainWindow] 开始同步文件：C1730.MP4
+[2025-09-22 09:42:04.553] [INFO ] [T028] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1730.MP4
+[2025-09-22 09:42:04.553] [INFO ] [T012] [MainWindow] 已获取文件锁定，开始同步: C1730.MP4
+[2025-09-22 09:42:04.553] [INFO ] [T024] [FileSyncService] 获取FastCopy并发许可，开始复制: C1730.MP4
+[2025-09-22 09:42:04.554] [INFO ] [T024] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-22 09:42:04.554] [INFO ] [T012] [MainWindow] 正在复制: C1730.MP4
+[2025-09-22 09:42:04.564] [INFO ] [T024] [FastCopyService] 启动FastCopy进程 (PID: 20700): C1730.MP4
+[2025-09-22 09:42:04.673] [DEBUG] [T024] [FastCopyService] FastCopy进程监控 (PID: 14632): 运行时间 0.0分钟, 内存: 50MB
+[2025-09-22 09:42:04.688] [DEBUG] [T024] [FastCopyService] FastCopy进程监控 (PID: 20700): 运行时间 0.0分钟, 内存: 12MB
+[2025-09-22 09:42:05.432] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1729.MP4 -> A:\Test.original\Ibanez A\主机位\C1729.MP4
+[2025-09-22 09:42:05.432] [INFO ] [T021] [MainWindow] 复制完成: C1729.MP4
+[2025-09-22 09:42:05.432] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C1729.MP4
+[2025-09-22 09:42:05.432] [INFO ] [T024] [MainWindow] 同步完成，释放文件锁定: C1729.MP4
+[2025-09-22 09:42:05.432] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C1729.MP4
+[2025-09-22 09:42:05.616] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:05.740] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1731.MP4
+[2025-09-22 09:42:05.912] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C1732.MP4
+[2025-09-22 09:42:06.875] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C1731.MP4
+[2025-09-22 09:42:06.875] [INFO ] [T028] [MainWindow] 开始同步文件：C1731.MP4
+[2025-09-22 09:42:06.875] [INFO ] [T021] [MainWindow] 已获取文件锁定，开始同步: C1731.MP4
+[2025-09-22 09:42:06.875] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1731.MP4
+[2025-09-22 09:42:06.876] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1731.MP4
+[2025-09-22 09:42:06.876] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-22 09:42:06.876] [INFO ] [T028] [MainWindow] 正在复制: C1731.MP4
+[2025-09-22 09:42:06.887] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 73296): C1731.MP4
+[2025-09-22 09:42:07.461] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1732.MP4
+[2025-09-22 09:42:07.469] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:07.471] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C1733.MP4
+[2025-09-22 09:42:07.897] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1730.MP4 -> A:\Test.original\Ibanez A\主机位\C1730.MP4
+[2025-09-22 09:42:07.898] [INFO ] [T024] [MainWindow] 复制完成: C1730.MP4
+[2025-09-22 09:42:07.898] [INFO ] [T019] [FileSyncService] 释放FastCopy并发许可: C1730.MP4
+[2025-09-22 09:42:07.898] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C1730.MP4
+[2025-09-22 09:42:07.898] [INFO ] [T019] [FileSyncService] 文件处理完成，清理锁: C1730.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T012] [FileSyncService] 文件写入已完成，准备同步: C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T024] [MainWindow] 开始同步文件：C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T012] [MainWindow] 已获取文件锁定，开始同步: C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T012] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-22 09:42:07.914] [INFO ] [T012] [MainWindow] 正在复制: C1732.MP4
+[2025-09-22 09:42:07.924] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 23796): C1732.MP4
+[2025-09-22 09:42:08.198] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:42:09.548] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位\C1733.MP4
+[2025-09-22 09:42:09.557] [INFO ] [T024] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A
+[2025-09-22 09:42:09.559] [INFO ] [T024] [FileSyncService] 检测到文件变化，等待写入完成: 右边机位
+[2025-09-22 09:42:09.559] [INFO ] [T024] [FileSyncService] 文件已被删除，跳过同步: 右边机位
+[2025-09-22 09:42:09.568] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C0009.MP4
+[2025-09-22 09:42:10.472] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C1733.MP4
+[2025-09-22 09:42:10.472] [INFO ] [T006] [MainWindow] 开始同步文件：C1733.MP4
+[2025-09-22 09:42:10.472] [INFO ] [T020] [MainWindow] 已获取文件锁定，开始同步: C1733.MP4
+[2025-09-22 09:42:10.472] [INFO ] [T018] [MainWindow] 成功获取文件锁定 (尝试 1/8): C1733.MP4
+[2025-09-22 09:42:10.472] [INFO ] [T028] [FileSyncService] 获取FastCopy并发许可，开始复制: C1733.MP4
+[2025-09-22 09:42:10.473] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-22 09:42:10.473] [INFO ] [T020] [MainWindow] 正在复制: C1733.MP4
+[2025-09-22 09:42:10.484] [INFO ] [T028] [FastCopyService] 启动FastCopy进程 (PID: 82564): C1733.MP4
+[2025-09-22 09:42:10.874] [INFO ] [T021] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1731.MP4 -> A:\Test.original\Ibanez A\主机位\C1731.MP4
+[2025-09-22 09:42:10.874] [INFO ] [T026] [MainWindow] 复制完成: C1731.MP4
+[2025-09-22 09:42:10.874] [INFO ] [T021] [FileSyncService] 释放FastCopy并发许可: C1731.MP4
+[2025-09-22 09:42:10.874] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1731.MP4
+[2025-09-22 09:42:10.874] [INFO ] [T021] [FileSyncService] 文件处理完成，清理锁: C1731.MP4
+[2025-09-22 09:42:11.162] [INFO ] [T012] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1732.MP4 -> A:\Test.original\Ibanez A\主机位\C1732.MP4
+[2025-09-22 09:42:11.162] [INFO ] [T029] [MainWindow] 复制完成: C1732.MP4
+[2025-09-22 09:42:11.162] [INFO ] [T012] [FileSyncService] 释放FastCopy并发许可: C1732.MP4
+[2025-09-22 09:42:11.162] [INFO ] [T025] [MainWindow] 同步完成，释放文件锁定: C1732.MP4
+[2025-09-22 09:42:11.170] [INFO ] [T012] [FileSyncService] 文件处理完成，清理锁: C1732.MP4
+[2025-09-22 09:42:11.227] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0009.MP4
+[2025-09-22 09:42:11.324] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:11.327] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C0010.MP4
+[2025-09-22 09:42:11.568] [INFO ] [T025] [FileSyncService] 文件写入已完成，准备同步: C0009.MP4
+[2025-09-22 09:42:11.568] [INFO ] [T012] [MainWindow] 开始同步文件：C0009.MP4
+[2025-09-22 09:42:11.568] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0009.MP4
+[2025-09-22 09:42:11.568] [INFO ] [T028] [MainWindow] 已获取文件锁定，开始同步: C0009.MP4
+[2025-09-22 09:42:11.568] [INFO ] [T025] [FileSyncService] 获取FastCopy并发许可，开始复制: C0009.MP4
+[2025-09-22 09:42:11.570] [INFO ] [T025] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-22 09:42:11.570] [INFO ] [T026] [MainWindow] 正在复制: C0009.MP4
+[2025-09-22 09:42:11.580] [INFO ] [T025] [FastCopyService] 启动FastCopy进程 (PID: 18008): C0009.MP4
+[2025-09-22 09:42:12.310] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:13.123] [INFO ] [T018] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0010.MP4
+[2025-09-22 09:42:13.133] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C0011.MP4
+[2025-09-22 09:42:13.327] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C0010.MP4
+[2025-09-22 09:42:13.327] [INFO ] [T025] [MainWindow] 开始同步文件：C0010.MP4
+[2025-09-22 09:42:13.327] [INFO ] [T025] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0010.MP4
+[2025-09-22 09:42:13.327] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C0010.MP4
+[2025-09-22 09:42:13.327] [INFO ] [T028] [FileSyncService] 获取FastCopy并发许可，开始复制: C0010.MP4
+[2025-09-22 09:42:13.328] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-22 09:42:13.328] [INFO ] [T012] [MainWindow] 正在复制: C0010.MP4
+[2025-09-22 09:42:13.338] [INFO ] [T028] [FastCopyService] 启动FastCopy进程 (PID: 82856): C0010.MP4
+[2025-09-22 09:42:14.080] [INFO ] [T020] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\主机位\C1733.MP4 -> A:\Test.original\Ibanez A\主机位\C1733.MP4
+[2025-09-22 09:42:14.081] [INFO ] [T006] [MainWindow] 复制完成: C1733.MP4
+[2025-09-22 09:42:14.081] [INFO ] [T020] [FileSyncService] 释放FastCopy并发许可: C1733.MP4
+[2025-09-22 09:42:14.081] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C1733.MP4
+[2025-09-22 09:42:14.081] [INFO ] [T020] [FileSyncService] 文件处理完成，清理锁: C1733.MP4
+[2025-09-22 09:42:14.332] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0011.MP4
+[2025-09-22 09:42:14.339] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:14.342] [INFO ] [T012] [FileSyncService] 检测到文件变化，等待写入完成: C0013.MP4
+[2025-09-22 09:42:14.366] [INFO ] [T021] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0009.MP4 -> A:\Test.original\Ibanez A\右边机位\C0009.MP4
+[2025-09-22 09:42:14.366] [INFO ] [T012] [MainWindow] 复制完成: C0009.MP4
+[2025-09-22 09:42:14.366] [INFO ] [T021] [FileSyncService] 释放FastCopy并发许可: C0009.MP4
+[2025-09-22 09:42:14.366] [INFO ] [T028] [MainWindow] 同步完成，释放文件锁定: C0009.MP4
+[2025-09-22 09:42:14.366] [INFO ] [T021] [FileSyncService] 文件处理完成，清理锁: C0009.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T026] [MainWindow] 开始同步文件：C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T028] [FileSyncService] 获取FastCopy并发许可，开始复制: C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T028] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-22 09:42:15.135] [INFO ] [T029] [MainWindow] 正在复制: C0011.MP4
+[2025-09-22 09:42:15.145] [INFO ] [T028] [FastCopyService] 启动FastCopy进程 (PID: 69664): C0011.MP4
+[2025-09-22 09:42:16.114] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0010.MP4 -> A:\Test.original\Ibanez A\右边机位\C0010.MP4
+[2025-09-22 09:42:16.114] [INFO ] [T018] [MainWindow] 复制完成: C0010.MP4
+[2025-09-22 09:42:16.114] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C0010.MP4
+[2025-09-22 09:42:16.114] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C0010.MP4
+[2025-09-22 09:42:16.114] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C0010.MP4
+[2025-09-22 09:42:16.420] [INFO ] [T018] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0013.MP4
+[2025-09-22 09:42:16.430] [INFO ] [T026] [FileSyncService] 检测到文件变化，等待写入完成: C0014.MP4
+[2025-09-22 09:42:17.345] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C0013.MP4
+[2025-09-22 09:42:17.345] [INFO ] [T028] [MainWindow] 开始同步文件：C0013.MP4
+[2025-09-22 09:42:17.345] [INFO ] [T026] [MainWindow] 已获取文件锁定，开始同步: C0013.MP4
+[2025-09-22 09:42:17.345] [INFO ] [T028] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0013.MP4
+[2025-09-22 09:42:17.345] [INFO ] [T029] [FileSyncService] 获取FastCopy并发许可，开始复制: C0013.MP4
+[2025-09-22 09:42:17.346] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-22 09:42:17.346] [INFO ] [T028] [MainWindow] 正在复制: C0013.MP4
+[2025-09-22 09:42:17.356] [INFO ] [T029] [FastCopyService] 启动FastCopy进程 (PID: 11332): C0013.MP4
+[2025-09-22 09:42:17.763] [INFO ] [T012] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0011.MP4 -> A:\Test.original\Ibanez A\右边机位\C0011.MP4
+[2025-09-22 09:42:17.763] [INFO ] [T019] [MainWindow] 复制完成: C0011.MP4
+[2025-09-22 09:42:17.763] [INFO ] [T012] [FileSyncService] 释放FastCopy并发许可: C0011.MP4
+[2025-09-22 09:42:17.763] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C0011.MP4
+[2025-09-22 09:42:17.763] [INFO ] [T012] [FileSyncService] 文件处理完成，清理锁: C0011.MP4
+[2025-09-22 09:42:18.302] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:19.166] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0014.MP4
+[2025-09-22 09:42:19.176] [INFO ] [T029] [FileSyncService] 检测到文件变化，等待写入完成: C0015.MP4
+[2025-09-22 09:42:19.436] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C0014.MP4
+[2025-09-22 09:42:19.436] [INFO ] [T029] [MainWindow] 开始同步文件：C0014.MP4
+[2025-09-22 09:42:19.436] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C0014.MP4
+[2025-09-22 09:42:19.436] [INFO ] [T018] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0014.MP4
+[2025-09-22 09:42:19.436] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C0014.MP4
+[2025-09-22 09:42:19.437] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-22 09:42:19.437] [INFO ] [T025] [MainWindow] 正在复制: C0014.MP4
+[2025-09-22 09:42:19.447] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 18160): C0014.MP4
+[2025-09-22 09:42:20.175] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:20.650] [INFO ] [T026] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0013.MP4 -> A:\Test.original\Ibanez A\右边机位\C0013.MP4
+[2025-09-22 09:42:20.650] [INFO ] [T028] [MainWindow] 复制完成: C0013.MP4
+[2025-09-22 09:42:20.650] [INFO ] [T026] [FileSyncService] 释放FastCopy并发许可: C0013.MP4
+[2025-09-22 09:42:20.650] [INFO ] [T019] [MainWindow] 同步完成，释放文件锁定: C0013.MP4
+[2025-09-22 09:42:20.707] [INFO ] [T026] [FileSyncService] 文件处理完成，清理锁: C0013.MP4
+[2025-09-22 09:42:22.602] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0015.MP4
+[2025-09-22 09:42:22.611] [INFO ] [T026] [FileSyncService] 检测到文件变化，等待写入完成: C0016.MP4
+[2025-09-22 09:42:22.826] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0014.MP4 -> A:\Test.original\Ibanez A\右边机位\C0014.MP4
+[2025-09-22 09:42:22.826] [INFO ] [T025] [MainWindow] 复制完成: C0014.MP4
+[2025-09-22 09:42:22.826] [INFO ] [T018] [FileSyncService] 释放FastCopy并发许可: C0014.MP4
+[2025-09-22 09:42:22.826] [INFO ] [T019] [MainWindow] 同步完成，释放文件锁定: C0014.MP4
+[2025-09-22 09:42:22.826] [INFO ] [T018] [FileSyncService] 文件处理完成，清理锁: C0014.MP4
+[2025-09-22 09:42:23.178] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C0015.MP4
+[2025-09-22 09:42:23.178] [INFO ] [T019] [MainWindow] 开始同步文件：C0015.MP4
+[2025-09-22 09:42:23.178] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C0015.MP4
+[2025-09-22 09:42:23.178] [INFO ] [T019] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0015.MP4
+[2025-09-22 09:42:23.178] [INFO ] [T025] [FileSyncService] 获取FastCopy并发许可，开始复制: C0015.MP4
+[2025-09-22 09:42:23.179] [INFO ] [T025] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-22 09:42:23.179] [INFO ] [T006] [MainWindow] 正在复制: C0015.MP4
+[2025-09-22 09:42:23.189] [INFO ] [T025] [FastCopyService] 启动FastCopy进程 (PID: 31348): C0015.MP4
+[2025-09-22 09:42:24.317] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0016.MP4
+[2025-09-22 09:42:24.324] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:24.327] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C0017.MP4
+[2025-09-22 09:42:24.611] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C0016.MP4
+[2025-09-22 09:42:24.611] [INFO ] [T028] [MainWindow] 开始同步文件：C0016.MP4
+[2025-09-22 09:42:24.611] [INFO ] [T025] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0016.MP4
+[2025-09-22 09:42:24.611] [INFO ] [T019] [FileSyncService] 获取FastCopy并发许可，开始复制: C0016.MP4
+[2025-09-22 09:42:24.611] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C0016.MP4
+[2025-09-22 09:42:24.612] [INFO ] [T019] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-22 09:42:24.612] [INFO ] [T020] [MainWindow] 正在复制: C0016.MP4
+[2025-09-22 09:42:24.622] [INFO ] [T019] [FastCopyService] 启动FastCopy进程 (PID: 84532): C0016.MP4
+[2025-09-22 09:42:27.583] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0017.MP4
+[2025-09-22 09:42:27.626] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C0018.MP4
+[2025-09-22 09:42:27.740] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0016.MP4 -> A:\Test.original\Ibanez A\右边机位\C0016.MP4
+[2025-09-22 09:42:27.740] [INFO ] [T029] [MainWindow] 复制完成: C0016.MP4
+[2025-09-22 09:42:27.740] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C0016.MP4
+[2025-09-22 09:42:27.740] [INFO ] [T020] [MainWindow] 同步完成，释放文件锁定: C0016.MP4
+[2025-09-22 09:42:27.741] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C0016.MP4
+[2025-09-22 09:42:28.301] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0015.MP4 -> A:\Test.original\Ibanez A\右边机位\C0015.MP4
+[2025-09-22 09:42:28.301] [INFO ] [T006] [MainWindow] 复制完成: C0015.MP4
+[2025-09-22 09:42:28.301] [INFO ] [T018] [FileSyncService] 释放FastCopy并发许可: C0015.MP4
+[2025-09-22 09:42:28.301] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C0015.MP4
+[2025-09-22 09:42:28.301] [INFO ] [T018] [FileSyncService] 文件处理完成，清理锁: C0015.MP4
+[2025-09-22 09:42:28.329] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C0017.MP4
+[2025-09-22 09:42:28.329] [INFO ] [T029] [MainWindow] 开始同步文件：C0017.MP4
+[2025-09-22 09:42:28.329] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C0017.MP4
+[2025-09-22 09:42:28.329] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0017.MP4
+[2025-09-22 09:42:28.329] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C0017.MP4
+[2025-09-22 09:42:28.330] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-22 09:42:28.330] [INFO ] [T029] [MainWindow] 正在复制: C0017.MP4
+[2025-09-22 09:42:28.339] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 8796): C0017.MP4
+[2025-09-22 09:42:29.386] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:42:30.686] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位\C0018.MP4
+[2025-09-22 09:42:30.693] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A
+[2025-09-22 09:42:30.695] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: 左边机位
+[2025-09-22 09:42:30.695] [INFO ] [T006] [FileSyncService] 文件已被删除，跳过同步: 左边机位
+[2025-09-22 09:42:30.704] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C4539.MP4
+[2025-09-22 09:42:31.627] [INFO ] [T018] [FileSyncService] 文件写入已完成，准备同步: C0018.MP4
+[2025-09-22 09:42:31.627] [INFO ] [T019] [MainWindow] 开始同步文件：C0018.MP4
+[2025-09-22 09:42:31.627] [INFO ] [T020] [MainWindow] 成功获取文件锁定 (尝试 1/8): C0018.MP4
+[2025-09-22 09:42:31.627] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C0018.MP4
+[2025-09-22 09:42:31.627] [INFO ] [T018] [FileSyncService] 获取FastCopy并发许可，开始复制: C0018.MP4
+[2025-09-22 09:42:31.628] [INFO ] [T018] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-22 09:42:31.628] [INFO ] [T019] [MainWindow] 正在复制: C0018.MP4
+[2025-09-22 09:42:31.638] [INFO ] [T018] [FastCopyService] 启动FastCopy进程 (PID: 76612): C0018.MP4
+[2025-09-22 09:42:32.695] [INFO ] [T025] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0017.MP4 -> A:\Test.original\Ibanez A\右边机位\C0017.MP4
+[2025-09-22 09:42:32.695] [INFO ] [T029] [MainWindow] 复制完成: C0017.MP4
+[2025-09-22 09:42:32.695] [INFO ] [T025] [FileSyncService] 释放FastCopy并发许可: C0017.MP4
+[2025-09-22 09:42:32.695] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C0017.MP4
+[2025-09-22 09:42:32.695] [INFO ] [T025] [FileSyncService] 文件处理完成，清理锁: C0017.MP4
+[2025-09-22 09:42:33.682] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4539.MP4
+[2025-09-22 09:42:33.689] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:33.692] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C4540.MP4
+[2025-09-22 09:42:33.704] [INFO ] [T019] [FileSyncService] 文件写入已完成，准备同步: C4539.MP4
+[2025-09-22 09:42:33.704] [INFO ] [T029] [MainWindow] 开始同步文件：C4539.MP4
+[2025-09-22 09:42:33.705] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C4539.MP4
+[2025-09-22 09:42:33.705] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4539.MP4
+[2025-09-22 09:42:33.705] [INFO ] [T020] [FileSyncService] 获取FastCopy并发许可，开始复制: C4539.MP4
+[2025-09-22 09:42:33.706] [INFO ] [T020] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-22 09:42:33.706] [INFO ] [T029] [MainWindow] 正在复制: C4539.MP4
+[2025-09-22 09:42:33.717] [INFO ] [T020] [FastCopyService] 启动FastCopy进程 (PID: 66084): C4539.MP4
+[2025-09-22 09:42:34.664] [DEBUG] [T020] [FastCopyService] FastCopy进程监控 (PID: 66084): 运行时间 0.0分钟, 内存: 17MB
+[2025-09-22 09:42:34.681] [DEBUG] [T020] [FastCopyService] FastCopy进程监控 (PID: 76612): 运行时间 0.1分钟, 内存: 540MB
+[2025-09-22 09:42:34.774] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:35.591] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4540.MP4
+[2025-09-22 09:42:35.601] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: C4541.MP4
+[2025-09-22 09:42:35.873] [INFO ] [T026] [FileSyncService] 文件写入已完成，准备同步: C4540.MP4
+[2025-09-22 09:42:35.873] [INFO ] [T021] [MainWindow] 开始同步文件：C4540.MP4
+[2025-09-22 09:42:35.873] [INFO ] [T020] [MainWindow] 已获取文件锁定，开始同步: C4540.MP4
+[2025-09-22 09:42:35.873] [INFO ] [T021] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4540.MP4
+[2025-09-22 09:42:35.873] [INFO ] [T026] [FileSyncService] 获取FastCopy并发许可，开始复制: C4540.MP4
+[2025-09-22 09:42:35.874] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-22 09:42:35.874] [INFO ] [T021] [MainWindow] 正在复制: C4540.MP4
+[2025-09-22 09:42:35.884] [INFO ] [T026] [FastCopyService] 启动FastCopy进程 (PID: 75592): C4540.MP4
+[2025-09-22 09:42:36.489] [INFO ] [T018] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\右边机位\C0018.MP4 -> A:\Test.original\Ibanez A\右边机位\C0018.MP4
+[2025-09-22 09:42:36.489] [INFO ] [T018] [FileSyncService] 释放FastCopy并发许可: C0018.MP4
+[2025-09-22 09:42:36.489] [INFO ] [T006] [MainWindow] 复制完成: C0018.MP4
+[2025-09-22 09:42:36.489] [INFO ] [T026] [MainWindow] 同步完成，释放文件锁定: C0018.MP4
+[2025-09-22 09:42:36.489] [INFO ] [T018] [FileSyncService] 文件处理完成，清理锁: C0018.MP4
+[2025-09-22 09:42:36.881] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:37.684] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4541.MP4
+[2025-09-22 09:42:37.694] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C4542.MP4
+[2025-09-22 09:42:37.779] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4539.MP4 -> A:\Test.original\Ibanez A\左边机位\C4539.MP4
+[2025-09-22 09:42:37.779] [INFO ] [T029] [FileSyncService] 释放FastCopy并发许可: C4539.MP4
+[2025-09-22 09:42:37.779] [INFO ] [T025] [MainWindow] 复制完成: C4539.MP4
+[2025-09-22 09:42:37.779] [INFO ] [T026] [MainWindow] 同步完成，释放文件锁定: C4539.MP4
+[2025-09-22 09:42:37.779] [INFO ] [T029] [FileSyncService] 文件处理完成，清理锁: C4539.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T026] [FileSyncService] 文件写入已完成，准备同步: C4541.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T025] [MainWindow] 开始同步文件：C4541.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4541.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T026] [FileSyncService] 获取FastCopy并发许可，开始复制: C4541.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T021] [MainWindow] 已获取文件锁定，开始同步: C4541.MP4
+[2025-09-22 09:42:38.604] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-22 09:42:38.605] [INFO ] [T029] [MainWindow] 正在复制: C4541.MP4
+[2025-09-22 09:42:38.615] [INFO ] [T026] [FastCopyService] 启动FastCopy进程 (PID: 73964): C4541.MP4
+[2025-09-22 09:42:39.335] [INFO ] [T020] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4540.MP4 -> A:\Test.original\Ibanez A\左边机位\C4540.MP4
+[2025-09-22 09:42:39.335] [INFO ] [T020] [FileSyncService] 释放FastCopy并发许可: C4540.MP4
+[2025-09-22 09:42:39.335] [INFO ] [T026] [MainWindow] 复制完成: C4540.MP4
+[2025-09-22 09:42:39.335] [INFO ] [T019] [MainWindow] 同步完成，释放文件锁定: C4540.MP4
+[2025-09-22 09:42:39.335] [INFO ] [T020] [FileSyncService] 文件处理完成，清理锁: C4540.MP4
+[2025-09-22 09:42:39.495] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:40.129] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4542.MP4
+[2025-09-22 09:42:40.139] [INFO ] [T026] [FileSyncService] 检测到文件变化，等待写入完成: C4543.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T026] [FileSyncService] 文件写入已完成，准备同步: C4542.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T028] [MainWindow] 开始同步文件：C4542.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T028] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4542.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T026] [FileSyncService] 获取FastCopy并发许可，开始复制: C4542.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T028] [MainWindow] 已获取文件锁定，开始同步: C4542.MP4
+[2025-09-22 09:42:40.695] [INFO ] [T026] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-22 09:42:40.696] [INFO ] [T028] [MainWindow] 正在复制: C4542.MP4
+[2025-09-22 09:42:40.705] [INFO ] [T026] [FastCopyService] 启动FastCopy进程 (PID: 34696): C4542.MP4
+[2025-09-22 09:42:41.619] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:41.768] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4541.MP4 -> A:\Test.original\Ibanez A\左边机位\C4541.MP4
+[2025-09-22 09:42:41.768] [INFO ] [T029] [FileSyncService] 释放FastCopy并发许可: C4541.MP4
+[2025-09-22 09:42:41.768] [INFO ] [T025] [MainWindow] 复制完成: C4541.MP4
+[2025-09-22 09:42:41.768] [INFO ] [T026] [MainWindow] 同步完成，释放文件锁定: C4541.MP4
+[2025-09-22 09:42:41.768] [INFO ] [T029] [FileSyncService] 文件处理完成，清理锁: C4541.MP4
+[2025-09-22 09:42:43.643] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4543.MP4
+[2025-09-22 09:42:43.654] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C4545.MP4
+[2025-09-22 09:42:44.141] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C4543.MP4
+[2025-09-22 09:42:44.141] [INFO ] [T025] [MainWindow] 开始同步文件：C4543.MP4
+[2025-09-22 09:42:44.141] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C4543.MP4
+[2025-09-22 09:42:44.141] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C4543.MP4
+[2025-09-22 09:42:44.141] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4543.MP4
+[2025-09-22 09:42:44.142] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-22 09:42:44.142] [INFO ] [T019] [MainWindow] 正在复制: C4543.MP4
+[2025-09-22 09:42:44.152] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 74716): C4543.MP4
+[2025-09-22 09:42:44.165] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4542.MP4 -> A:\Test.original\Ibanez A\左边机位\C4542.MP4
+[2025-09-22 09:42:44.165] [INFO ] [T006] [MainWindow] 复制完成: C4542.MP4
+[2025-09-22 09:42:44.165] [INFO ] [T028] [FileSyncService] 释放FastCopy并发许可: C4542.MP4
+[2025-09-22 09:42:44.165] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C4542.MP4
+[2025-09-22 09:42:44.165] [INFO ] [T028] [FileSyncService] 文件处理完成，清理锁: C4542.MP4
+[2025-09-22 09:42:44.950] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:45.504] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4545.MP4
+[2025-09-22 09:42:45.514] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C4546.MP4
+[2025-09-22 09:42:45.655] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C4545.MP4
+[2025-09-22 09:42:45.655] [INFO ] [T020] [MainWindow] 开始同步文件：C4545.MP4
+[2025-09-22 09:42:45.655] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C4545.MP4
+[2025-09-22 09:42:45.655] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C4545.MP4
+[2025-09-22 09:42:45.655] [INFO ] [T012] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4545.MP4
+[2025-09-22 09:42:45.656] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-22 09:42:45.656] [INFO ] [T029] [MainWindow] 正在复制: C4545.MP4
+[2025-09-22 09:42:45.666] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 90376): C4545.MP4
+[2025-09-22 09:42:46.521] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:48.264] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4546.MP4
+[2025-09-22 09:42:48.274] [INFO ] [T028] [FileSyncService] 检测到文件变化，等待写入完成: C4547.MP4
+[2025-09-22 09:42:48.399] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:48.402] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C4548.MP4
+[2025-09-22 09:42:48.515] [INFO ] [T028] [FileSyncService] 文件写入已完成，准备同步: C4546.MP4
+[2025-09-22 09:42:48.515] [INFO ] [T006] [MainWindow] 开始同步文件：C4546.MP4
+[2025-09-22 09:42:48.515] [INFO ] [T028] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4546.MP4
+[2025-09-22 09:42:48.515] [INFO ] [T006] [MainWindow] 已获取文件锁定，开始同步: C4546.MP4
+[2025-09-22 09:42:48.515] [INFO ] [T020] [FileSyncService] 获取FastCopy并发许可，开始复制: C4546.MP4
+[2025-09-22 09:42:48.516] [INFO ] [T020] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-22 09:42:48.516] [INFO ] [T006] [MainWindow] 正在复制: C4546.MP4
+[2025-09-22 09:42:48.527] [INFO ] [T020] [FastCopyService] 启动FastCopy进程 (PID: 88280): C4546.MP4
+[2025-09-22 09:42:48.915] [INFO ] [T012] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4545.MP4 -> A:\Test.original\Ibanez A\左边机位\C4545.MP4
+[2025-09-22 09:42:48.915] [INFO ] [T025] [MainWindow] 复制完成: C4545.MP4
+[2025-09-22 09:42:48.915] [INFO ] [T012] [FileSyncService] 释放FastCopy并发许可: C4545.MP4
+[2025-09-22 09:42:48.915] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C4545.MP4
+[2025-09-22 09:42:48.917] [INFO ] [T012] [FileSyncService] 文件处理完成，清理锁: C4545.MP4
+[2025-09-22 09:42:49.121] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4543.MP4 -> A:\Test.original\Ibanez A\左边机位\C4543.MP4
+[2025-09-22 09:42:49.121] [INFO ] [T012] [MainWindow] 复制完成: C4543.MP4
+[2025-09-22 09:42:49.121] [INFO ] [T019] [FileSyncService] 释放FastCopy并发许可: C4543.MP4
+[2025-09-22 09:42:49.121] [INFO ] [T012] [MainWindow] 同步完成，释放文件锁定: C4543.MP4
+[2025-09-22 09:42:49.121] [INFO ] [T019] [FileSyncService] 文件处理完成，清理锁: C4543.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T006] [MainWindow] 开始同步文件：C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T019] [MainWindow] 已获取文件锁定，开始同步: C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T021] [FileSyncService] 获取FastCopy并发许可，开始复制: C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T021] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4547.MP4 -> A:\Test.original\Ibanez A\左边机位\C4547.MP4
+[2025-09-22 09:42:49.307] [INFO ] [T019] [MainWindow] 正在复制: C4547.MP4
+[2025-09-22 09:42:49.318] [INFO ] [T021] [FastCopyService] 启动FastCopy进程 (PID: 65880): C4547.MP4
+[2025-09-22 09:42:50.010] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:50.899] [INFO ] [T020] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4547.MP4 -> A:\Test.original\Ibanez A\左边机位\C4547.MP4
+[2025-09-22 09:42:50.899] [INFO ] [T029] [MainWindow] 复制完成: C4547.MP4
+[2025-09-22 09:42:50.899] [INFO ] [T020] [FileSyncService] 释放FastCopy并发许可: C4547.MP4
+[2025-09-22 09:42:50.899] [INFO ] [T019] [MainWindow] 同步完成，释放文件锁定: C4547.MP4
+[2025-09-22 09:42:50.899] [INFO ] [T020] [FileSyncService] 文件处理完成，清理锁: C4547.MP4
+[2025-09-22 09:42:50.990] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4548.MP4
+[2025-09-22 09:42:50.999] [INFO ] [T021] [FileSyncService] 检测到文件变化，等待写入完成: C4549.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T019] [MainWindow] 开始同步文件：C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T029] [MainWindow] 已获取文件锁定，开始同步: C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T025] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-22 09:42:51.404] [INFO ] [T029] [MainWindow] 正在复制: C4548.MP4
+[2025-09-22 09:42:51.414] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 6244): C4548.MP4
+[2025-09-22 09:42:52.450] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:52.989] [INFO ] [T028] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4546.MP4 -> A:\Test.original\Ibanez A\左边机位\C4546.MP4
+[2025-09-22 09:42:52.989] [INFO ] [T028] [FileSyncService] 释放FastCopy并发许可: C4546.MP4
+[2025-09-22 09:42:52.989] [INFO ] [T006] [MainWindow] 复制完成: C4546.MP4
+[2025-09-22 09:42:52.989] [INFO ] [T021] [MainWindow] 同步完成，释放文件锁定: C4546.MP4
+[2025-09-22 09:42:52.990] [INFO ] [T028] [FileSyncService] 文件处理完成，清理锁: C4546.MP4
+[2025-09-22 09:42:54.875] [INFO ] [T028] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4549.MP4
+[2025-09-22 09:42:54.934] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: C4550.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T006] [FileSyncService] 文件写入已完成，准备同步: C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T028] [MainWindow] 开始同步文件：C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T021] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T006] [FileSyncService] 获取FastCopy并发许可，开始复制: C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T025] [MainWindow] 已获取文件锁定，开始同步: C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T006] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-22 09:42:55.001] [INFO ] [T025] [MainWindow] 正在复制: C4549.MP4
+[2025-09-22 09:42:55.012] [INFO ] [T006] [FastCopyService] 启动FastCopy进程 (PID: 90488): C4549.MP4
+[2025-09-22 09:42:55.142] [INFO ] [T029] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4548.MP4 -> A:\Test.original\Ibanez A\左边机位\C4548.MP4
+[2025-09-22 09:42:55.142] [INFO ] [T029] [FileSyncService] 释放FastCopy并发许可: C4548.MP4
+[2025-09-22 09:42:55.142] [INFO ] [T025] [MainWindow] 复制完成: C4548.MP4
+[2025-09-22 09:42:55.142] [INFO ] [T020] [MainWindow] 同步完成，释放文件锁定: C4548.MP4
+[2025-09-22 09:42:55.143] [INFO ] [T029] [FileSyncService] 文件处理完成，清理锁: C4548.MP4
+[2025-09-22 09:42:55.889] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:57.641] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4550.MP4
+[2025-09-22 09:42:57.652] [INFO ] [T020] [FileSyncService] 检测到文件变化，等待写入完成: C4551.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T029] [FileSyncService] 文件写入已完成，准备同步: C4550.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T020] [MainWindow] 开始同步文件：C4550.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T025] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4550.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T029] [FileSyncService] 获取FastCopy并发许可，开始复制: C4550.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T026] [MainWindow] 已获取文件锁定，开始同步: C4550.MP4
+[2025-09-22 09:42:57.936] [INFO ] [T029] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-22 09:42:57.937] [INFO ] [T020] [MainWindow] 正在复制: C4550.MP4
+[2025-09-22 09:42:57.947] [INFO ] [T029] [FastCopyService] 启动FastCopy进程 (PID: 77692): C4550.MP4
+[2025-09-22 09:42:58.719] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:42:59.759] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位\C4551.MP4
+[2025-09-22 09:42:59.796] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A
+[2025-09-22 09:43:00.138] [INFO ] [T006] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4549.MP4 -> A:\Test.original\Ibanez A\左边机位\C4549.MP4
+[2025-09-22 09:43:00.139] [INFO ] [T006] [FileSyncService] 释放FastCopy并发许可: C4549.MP4
+[2025-09-22 09:43:00.139] [INFO ] [T021] [MainWindow] 复制完成: C4549.MP4
+[2025-09-22 09:43:00.139] [INFO ] [T029] [MainWindow] 同步完成，释放文件锁定: C4549.MP4
+[2025-09-22 09:43:00.139] [INFO ] [T006] [FileSyncService] 文件处理完成，清理锁: C4549.MP4
+[2025-09-22 09:43:00.652] [INFO ] [T021] [FileSyncService] 文件写入已完成，准备同步: C4551.MP4
+[2025-09-22 09:43:00.652] [INFO ] [T029] [MainWindow] 开始同步文件：C4551.MP4
+[2025-09-22 09:43:00.652] [INFO ] [T021] [FileSyncService] 获取FastCopy并发许可，开始复制: C4551.MP4
+[2025-09-22 09:43:00.652] [INFO ] [T026] [MainWindow] 已获取文件锁定，开始同步: C4551.MP4
+[2025-09-22 09:43:00.652] [INFO ] [T029] [MainWindow] 成功获取文件锁定 (尝试 1/8): C4551.MP4
+[2025-09-22 09:43:00.653] [INFO ] [T021] [FastCopyService] 开始FastCopy复制: S:\Cache\A\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-22 09:43:00.653] [INFO ] [T006] [MainWindow] 正在复制: C4551.MP4
+[2025-09-22 09:43:00.663] [INFO ] [T021] [FastCopyService] 启动FastCopy进程 (PID: 78192): C4551.MP4
+[2025-09-22 09:43:01.597] [INFO ] [T019] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4550.MP4 -> A:\Test.original\Ibanez A\左边机位\C4550.MP4
+[2025-09-22 09:43:01.597] [INFO ] [T019] [FileSyncService] 释放FastCopy并发许可: C4550.MP4
+[2025-09-22 09:43:01.597] [INFO ] [T012] [MainWindow] 复制完成: C4550.MP4
+[2025-09-22 09:43:01.597] [INFO ] [T020] [MainWindow] 同步完成，释放文件锁定: C4550.MP4
+[2025-09-22 09:43:01.664] [INFO ] [T019] [FileSyncService] 文件处理完成，清理锁: C4550.MP4
+[2025-09-22 09:43:04.061] [INFO ] [T026] [FastCopyService] FastCopy复制成功: S:\Cache\A\Test\Ibanez A\左边机位\C4551.MP4 -> A:\Test.original\Ibanez A\左边机位\C4551.MP4
+[2025-09-22 09:43:04.061] [INFO ] [T019] [MainWindow] 复制完成: C4551.MP4
+[2025-09-22 09:43:04.061] [INFO ] [T026] [FileSyncService] 释放FastCopy并发许可: C4551.MP4
+[2025-09-22 09:43:04.061] [INFO ] [T006] [MainWindow] 同步完成，释放文件锁定: C4551.MP4
+[2025-09-22 09:43:04.062] [INFO ] [T026] [FileSyncService] 文件处理完成，清理锁: C4551.MP4
+[2025-09-22 09:43:19.691] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1712.MP4
+[2025-09-22 09:43:19.691] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1712.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:19.692] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1712.MP4
+[2025-09-22 09:43:19.692] [INFO ] [T019] [MainWindow] 正在删除: C1712.MP4
+[2025-09-22 09:43:19.692] [INFO ] [T012] [MainWindow] 开始同步文件：C1712.MP4
+[2025-09-22 09:43:19.693] [INFO ] [T020] [MainWindow] 删除完成: C1712.MP4
+[2025-09-22 09:43:19.695] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:20.503] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1713.MP4
+[2025-09-22 09:43:20.503] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C1713.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:20.503] [INFO ] [T025] [FileSyncService] 创建删除队列项: C1713.MP4
+[2025-09-22 09:43:20.503] [INFO ] [T020] [MainWindow] 开始同步文件：C1713.MP4
+[2025-09-22 09:43:20.503] [INFO ] [T019] [MainWindow] 正在删除: C1713.MP4
+[2025-09-22 09:43:20.505] [INFO ] [T025] [MainWindow] 删除完成: C1713.MP4
+[2025-09-22 09:43:20.505] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:21.527] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1714.MP4
+[2025-09-22 09:43:21.527] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1714.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:21.527] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1714.MP4
+[2025-09-22 09:43:21.528] [INFO ] [T006] [MainWindow] 正在删除: C1714.MP4
+[2025-09-22 09:43:21.528] [INFO ] [T021] [MainWindow] 开始同步文件：C1714.MP4
+[2025-09-22 09:43:21.529] [INFO ] [T021] [MainWindow] 删除完成: C1714.MP4
+[2025-09-22 09:43:21.531] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:22.496] [INFO ] [T021] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1715.MP4
+[2025-09-22 09:43:22.496] [INFO ] [T019] [FileSyncService] 开始处理Deleted事件: C1715.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:22.497] [INFO ] [T019] [FileSyncService] 创建删除队列项: C1715.MP4
+[2025-09-22 09:43:22.497] [INFO ] [T021] [MainWindow] 正在删除: C1715.MP4
+[2025-09-22 09:43:22.497] [INFO ] [T025] [MainWindow] 开始同步文件：C1715.MP4
+[2025-09-22 09:43:22.498] [INFO ] [T019] [MainWindow] 删除完成: C1715.MP4
+[2025-09-22 09:43:22.499] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:24.146] [INFO ] [T021] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1716.MP4
+[2025-09-22 09:43:24.147] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1716.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:24.147] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1716.MP4
+[2025-09-22 09:43:24.147] [INFO ] [T019] [MainWindow] 正在删除: C1716.MP4
+[2025-09-22 09:43:24.147] [INFO ] [T012] [MainWindow] 开始同步文件：C1716.MP4
+[2025-09-22 09:43:24.148] [INFO ] [T012] [MainWindow] 删除完成: C1716.MP4
+[2025-09-22 09:43:24.151] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:25.789] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1717.MP4
+[2025-09-22 09:43:25.789] [INFO ] [T006] [FileSyncService] 开始处理Deleted事件: C1717.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:25.789] [INFO ] [T006] [FileSyncService] 创建删除队列项: C1717.MP4
+[2025-09-22 09:43:25.789] [INFO ] [T012] [MainWindow] 正在删除: C1717.MP4
+[2025-09-22 09:43:25.789] [INFO ] [T026] [MainWindow] 开始同步文件：C1717.MP4
+[2025-09-22 09:43:25.790] [INFO ] [T019] [MainWindow] 删除完成: C1717.MP4
+[2025-09-22 09:43:25.792] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:26.720] [INFO ] [T006] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1718.MP4
+[2025-09-22 09:43:26.720] [INFO ] [T012] [FileSyncService] 开始处理Deleted事件: C1718.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:26.720] [INFO ] [T012] [FileSyncService] 创建删除队列项: C1718.MP4
+[2025-09-22 09:43:26.720] [INFO ] [T006] [MainWindow] 正在删除: C1718.MP4
+[2025-09-22 09:43:26.720] [INFO ] [T020] [MainWindow] 开始同步文件：C1718.MP4
+[2025-09-22 09:43:26.721] [INFO ] [T012] [MainWindow] 删除完成: C1718.MP4
+[2025-09-22 09:43:26.723] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:27.408] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1719.MP4
+[2025-09-22 09:43:27.408] [INFO ] [T019] [FileSyncService] 开始处理Deleted事件: C1719.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:27.408] [INFO ] [T019] [FileSyncService] 创建删除队列项: C1719.MP4
+[2025-09-22 09:43:27.408] [INFO ] [T006] [MainWindow] 正在删除: C1719.MP4
+[2025-09-22 09:43:27.408] [INFO ] [T026] [MainWindow] 开始同步文件：C1719.MP4
+[2025-09-22 09:43:27.409] [INFO ] [T021] [MainWindow] 删除完成: C1719.MP4
+[2025-09-22 09:43:27.413] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:28.281] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1720.MP4
+[2025-09-22 09:43:28.281] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: C1720.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:28.282] [INFO ] [T023] [FileSyncService] 创建删除队列项: C1720.MP4
+[2025-09-22 09:43:28.282] [INFO ] [T029] [MainWindow] 正在删除: C1720.MP4
+[2025-09-22 09:43:28.282] [INFO ] [T026] [MainWindow] 开始同步文件：C1720.MP4
+[2025-09-22 09:43:28.282] [INFO ] [T023] [MainWindow] 删除完成: C1720.MP4
+[2025-09-22 09:43:28.284] [INFO ] [T023] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:28.951] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1721.MP4
+[2025-09-22 09:43:28.951] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: C1721.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:28.951] [INFO ] [T029] [FileSyncService] 创建删除队列项: C1721.MP4
+[2025-09-22 09:43:28.951] [INFO ] [T019] [MainWindow] 开始同步文件：C1721.MP4
+[2025-09-22 09:43:28.951] [INFO ] [T021] [MainWindow] 正在删除: C1721.MP4
+[2025-09-22 09:43:28.952] [INFO ] [T021] [MainWindow] 删除完成: C1721.MP4
+[2025-09-22 09:43:28.954] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:29.547] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1724.MP4
+[2025-09-22 09:43:29.547] [INFO ] [T021] [FileSyncService] 开始处理Deleted事件: C1724.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:29.547] [INFO ] [T021] [FileSyncService] 创建删除队列项: C1724.MP4
+[2025-09-22 09:43:29.547] [INFO ] [T026] [MainWindow] 开始同步文件：C1724.MP4
+[2025-09-22 09:43:29.547] [INFO ] [T025] [MainWindow] 正在删除: C1724.MP4
+[2025-09-22 09:43:29.585] [INFO ] [T020] [MainWindow] 删除完成: C1724.MP4
+[2025-09-22 09:43:29.586] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:30.300] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1725.MP4
+[2025-09-22 09:43:30.300] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C1725.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:30.300] [INFO ] [T025] [FileSyncService] 创建删除队列项: C1725.MP4
+[2025-09-22 09:43:30.300] [INFO ] [T021] [MainWindow] 开始同步文件：C1725.MP4
+[2025-09-22 09:43:30.300] [INFO ] [T023] [MainWindow] 正在删除: C1725.MP4
+[2025-09-22 09:43:30.302] [INFO ] [T025] [MainWindow] 删除完成: C1725.MP4
+[2025-09-22 09:43:30.306] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:31.040] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1726.MP4
+[2025-09-22 09:43:31.040] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C1726.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:31.041] [INFO ] [T025] [FileSyncService] 创建删除队列项: C1726.MP4
+[2025-09-22 09:43:31.041] [INFO ] [T021] [MainWindow] 开始同步文件：C1726.MP4
+[2025-09-22 09:43:31.041] [INFO ] [T020] [MainWindow] 正在删除: C1726.MP4
+[2025-09-22 09:43:31.042] [INFO ] [T025] [MainWindow] 删除完成: C1726.MP4
+[2025-09-22 09:43:31.042] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:31.504] [INFO ] [T025] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1727.MP4
+[2025-09-22 09:43:31.504] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1727.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:31.504] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1727.MP4
+[2025-09-22 09:43:31.504] [INFO ] [T020] [MainWindow] 正在删除: C1727.MP4
+[2025-09-22 09:43:31.504] [INFO ] [T029] [MainWindow] 开始同步文件：C1727.MP4
+[2025-09-22 09:43:31.505] [INFO ] [T025] [MainWindow] 删除完成: C1727.MP4
+[2025-09-22 09:43:32.272] [INFO ] [T021] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1728.MP4
+[2025-09-22 09:43:32.310] [INFO ] [T021] [FileSyncService] 开始处理Deleted事件: C1728.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:32.310] [INFO ] [T021] [FileSyncService] 创建删除队列项: C1728.MP4
+[2025-09-22 09:43:32.310] [INFO ] [T019] [MainWindow] 开始同步文件：C1728.MP4
+[2025-09-22 09:43:32.310] [INFO ] [T020] [MainWindow] 正在删除: C1728.MP4
+[2025-09-22 09:43:32.311] [INFO ] [T023] [MainWindow] 删除完成: C1728.MP4
+[2025-09-22 09:43:32.314] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:33.068] [INFO ] [T021] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1729.MP4
+[2025-09-22 09:43:33.068] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1729.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:33.068] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1729.MP4
+[2025-09-22 09:43:33.068] [INFO ] [T021] [MainWindow] 开始同步文件：C1729.MP4
+[2025-09-22 09:43:33.068] [INFO ] [T029] [MainWindow] 正在删除: C1729.MP4
+[2025-09-22 09:43:33.069] [INFO ] [T023] [MainWindow] 删除完成: C1729.MP4
+[2025-09-22 09:43:33.070] [INFO ] [T023] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:33.455] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1730.MP4
+[2025-09-22 09:43:33.455] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C1730.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:33.455] [INFO ] [T025] [FileSyncService] 创建删除队列项: C1730.MP4
+[2025-09-22 09:43:33.455] [INFO ] [T020] [MainWindow] 正在删除: C1730.MP4
+[2025-09-22 09:43:33.455] [INFO ] [T021] [MainWindow] 开始同步文件：C1730.MP4
+[2025-09-22 09:43:33.456] [INFO ] [T021] [MainWindow] 删除完成: C1730.MP4
+[2025-09-22 09:43:34.321] [INFO ] [T021] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1731.MP4
+[2025-09-22 09:43:34.321] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: C1731.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:34.321] [INFO ] [T029] [FileSyncService] 创建删除队列项: C1731.MP4
+[2025-09-22 09:43:34.321] [INFO ] [T020] [MainWindow] 开始同步文件：C1731.MP4
+[2025-09-22 09:43:34.321] [INFO ] [T023] [MainWindow] 正在删除: C1731.MP4
+[2025-09-22 09:43:34.322] [INFO ] [T023] [MainWindow] 删除完成: C1731.MP4
+[2025-09-22 09:43:34.322] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:34.937] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1732.MP4
+[2025-09-22 09:43:34.937] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1732.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:34.937] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1732.MP4
+[2025-09-22 09:43:34.938] [INFO ] [T029] [MainWindow] 正在删除: C1732.MP4
+[2025-09-22 09:43:34.938] [INFO ] [T026] [MainWindow] 开始同步文件：C1732.MP4
+[2025-09-22 09:43:34.939] [INFO ] [T021] [MainWindow] 删除完成: C1732.MP4
+[2025-09-22 09:43:34.941] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\主机位
+[2025-09-22 09:43:35.478] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位\C1733.MP4
+[2025-09-22 09:43:35.478] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C1733.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:35.478] [INFO ] [T020] [FileSyncService] 创建删除队列项: C1733.MP4
+[2025-09-22 09:43:35.479] [INFO ] [T029] [MainWindow] 正在删除: C1733.MP4
+[2025-09-22 09:43:35.479] [INFO ] [T021] [MainWindow] 开始同步文件：C1733.MP4
+[2025-09-22 09:43:35.480] [INFO ] [T023] [MainWindow] 删除完成: C1733.MP4
+[2025-09-22 09:43:35.480] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\主机位
+[2025-09-22 09:43:35.480] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: 主机位, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:35.480] [INFO ] [T029] [FileSyncService] 创建删除队列项: 主机位
+[2025-09-22 09:43:35.480] [INFO ] [T021] [MainWindow] 正在删除: 主机位
+[2025-09-22 09:43:35.480] [INFO ] [T019] [MainWindow] 开始同步文件：主机位
+[2025-09-22 09:43:35.482] [INFO ] [T019] [MainWindow] 删除完成: 主机位
+[2025-09-22 09:43:35.489] [INFO ] [T019] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A
+[2025-09-22 09:43:36.352] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0009.MP4
+[2025-09-22 09:43:36.352] [INFO ] [T019] [FileSyncService] 开始处理Deleted事件: C0009.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:36.352] [INFO ] [T019] [FileSyncService] 创建删除队列项: C0009.MP4
+[2025-09-22 09:43:36.352] [INFO ] [T025] [MainWindow] 正在删除: C0009.MP4
+[2025-09-22 09:43:36.352] [INFO ] [T021] [MainWindow] 开始同步文件：C0009.MP4
+[2025-09-22 09:43:36.353] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:36.353] [INFO ] [T025] [MainWindow] 删除完成: C0009.MP4
+[2025-09-22 09:43:36.978] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0010.MP4
+[2025-09-22 09:43:36.978] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C0010.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:36.978] [INFO ] [T025] [FileSyncService] 创建删除队列项: C0010.MP4
+[2025-09-22 09:43:36.978] [INFO ] [T020] [MainWindow] 开始同步文件：C0010.MP4
+[2025-09-22 09:43:36.978] [INFO ] [T023] [MainWindow] 正在删除: C0010.MP4
+[2025-09-22 09:43:36.980] [INFO ] [T029] [MainWindow] 删除完成: C0010.MP4
+[2025-09-22 09:43:36.983] [INFO ] [T011] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:37.341] [INFO ] [T011] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0011.MP4
+[2025-09-22 09:43:37.341] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: C0011.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:37.342] [INFO ] [T023] [FileSyncService] 创建删除队列项: C0011.MP4
+[2025-09-22 09:43:37.342] [INFO ] [T011] [MainWindow] 开始同步文件：C0011.MP4
+[2025-09-22 09:43:37.342] [INFO ] [T029] [MainWindow] 正在删除: C0011.MP4
+[2025-09-22 09:43:37.343] [INFO ] [T023] [MainWindow] 删除完成: C0011.MP4
+[2025-09-22 09:43:38.152] [INFO ] [T025] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0013.MP4
+[2025-09-22 09:43:38.152] [INFO ] [T011] [FileSyncService] 开始处理Deleted事件: C0013.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:38.152] [INFO ] [T011] [FileSyncService] 创建删除队列项: C0013.MP4
+[2025-09-22 09:43:38.152] [INFO ] [T029] [MainWindow] 正在删除: C0013.MP4
+[2025-09-22 09:43:38.152] [INFO ] [T021] [MainWindow] 开始同步文件：C0013.MP4
+[2025-09-22 09:43:38.153] [INFO ] [T011] [MainWindow] 删除完成: C0013.MP4
+[2025-09-22 09:43:38.155] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:39.098] [INFO ] [T011] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0014.MP4
+[2025-09-22 09:43:39.098] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C0014.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:39.098] [INFO ] [T025] [FileSyncService] 创建删除队列项: C0014.MP4
+[2025-09-22 09:43:39.098] [INFO ] [T021] [MainWindow] 正在删除: C0014.MP4
+[2025-09-22 09:43:39.098] [INFO ] [T029] [MainWindow] 开始同步文件：C0014.MP4
+[2025-09-22 09:43:39.100] [INFO ] [T023] [MainWindow] 删除完成: C0014.MP4
+[2025-09-22 09:43:39.102] [INFO ] [T011] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:40.315] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0015.MP4
+[2025-09-22 09:43:40.315] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C0015.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:40.315] [INFO ] [T025] [FileSyncService] 创建删除队列项: C0015.MP4
+[2025-09-22 09:43:40.315] [INFO ] [T012] [MainWindow] 正在删除: C0015.MP4
+[2025-09-22 09:43:40.315] [INFO ] [T019] [MainWindow] 开始同步文件：C0015.MP4
+[2025-09-22 09:43:40.317] [INFO ] [T019] [MainWindow] 删除完成: C0015.MP4
+[2025-09-22 09:43:40.317] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:41.039] [INFO ] [T012] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0016.MP4
+[2025-09-22 09:43:41.039] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: C0016.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:41.039] [INFO ] [T023] [FileSyncService] 创建删除队列项: C0016.MP4
+[2025-09-22 09:43:41.039] [INFO ] [T012] [MainWindow] 正在删除: C0016.MP4
+[2025-09-22 09:43:41.039] [INFO ] [T020] [MainWindow] 开始同步文件：C0016.MP4
+[2025-09-22 09:43:41.040] [INFO ] [T012] [MainWindow] 删除完成: C0016.MP4
+[2025-09-22 09:43:41.042] [INFO ] [T012] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:41.907] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0017.MP4
+[2025-09-22 09:43:41.907] [INFO ] [T012] [FileSyncService] 开始处理Deleted事件: C0017.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:41.907] [INFO ] [T012] [FileSyncService] 创建删除队列项: C0017.MP4
+[2025-09-22 09:43:41.907] [INFO ] [T019] [MainWindow] 正在删除: C0017.MP4
+[2025-09-22 09:43:41.907] [INFO ] [T025] [MainWindow] 开始同步文件：C0017.MP4
+[2025-09-22 09:43:41.908] [INFO ] [T019] [MainWindow] 删除完成: C0017.MP4
+[2025-09-22 09:43:41.908] [INFO ] [T020] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\右边机位
+[2025-09-22 09:43:42.901] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位\C0018.MP4
+[2025-09-22 09:43:42.901] [INFO ] [T019] [FileSyncService] 开始处理Deleted事件: C0018.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:42.902] [INFO ] [T019] [FileSyncService] 创建删除队列项: C0018.MP4
+[2025-09-22 09:43:42.902] [INFO ] [T029] [MainWindow] 正在删除: C0018.MP4
+[2025-09-22 09:43:42.902] [INFO ] [T020] [MainWindow] 开始同步文件：C0018.MP4
+[2025-09-22 09:43:42.903] [INFO ] [T020] [MainWindow] 删除完成: C0018.MP4
+[2025-09-22 09:43:42.903] [INFO ] [T025] [FileSyncService] 检测到Deleted事件: Ibanez A\右边机位
+[2025-09-22 09:43:42.903] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: 右边机位, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:42.903] [INFO ] [T025] [FileSyncService] 创建删除队列项: 右边机位
+[2025-09-22 09:43:42.903] [INFO ] [T006] [MainWindow] 开始同步文件：右边机位
+[2025-09-22 09:43:42.903] [INFO ] [T021] [MainWindow] 正在删除: 右边机位
+[2025-09-22 09:43:42.904] [INFO ] [T025] [MainWindow] 删除完成: 右边机位
+[2025-09-22 09:43:42.919] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A
+[2025-09-22 09:43:43.853] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4539.MP4
+[2025-09-22 09:43:43.853] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: C4539.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:43.853] [INFO ] [T023] [FileSyncService] 创建删除队列项: C4539.MP4
+[2025-09-22 09:43:43.853] [INFO ] [T029] [MainWindow] 正在删除: C4539.MP4
+[2025-09-22 09:43:43.853] [INFO ] [T021] [MainWindow] 开始同步文件：C4539.MP4
+[2025-09-22 09:43:43.854] [INFO ] [T020] [MainWindow] 删除完成: C4539.MP4
+[2025-09-22 09:43:43.858] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:44.424] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4540.MP4
+[2025-09-22 09:43:44.425] [INFO ] [T021] [FileSyncService] 开始处理Deleted事件: C4540.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:44.425] [INFO ] [T021] [FileSyncService] 创建删除队列项: C4540.MP4
+[2025-09-22 09:43:44.425] [INFO ] [T025] [MainWindow] 正在删除: C4540.MP4
+[2025-09-22 09:43:44.425] [INFO ] [T029] [MainWindow] 开始同步文件：C4540.MP4
+[2025-09-22 09:43:44.426] [INFO ] [T021] [MainWindow] 删除完成: C4540.MP4
+[2025-09-22 09:43:44.428] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:45.287] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4541.MP4
+[2025-09-22 09:43:45.287] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C4541.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:45.287] [INFO ] [T020] [FileSyncService] 创建删除队列项: C4541.MP4
+[2025-09-22 09:43:45.287] [INFO ] [T026] [MainWindow] 正在删除: C4541.MP4
+[2025-09-22 09:43:45.287] [INFO ] [T029] [MainWindow] 开始同步文件：C4541.MP4
+[2025-09-22 09:43:45.288] [INFO ] [T023] [MainWindow] 删除完成: C4541.MP4
+[2025-09-22 09:43:45.290] [INFO ] [T026] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:46.230] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4542.MP4
+[2025-09-22 09:43:46.230] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: C4542.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:46.230] [INFO ] [T029] [FileSyncService] 创建删除队列项: C4542.MP4
+[2025-09-22 09:43:46.230] [INFO ] [T021] [MainWindow] 正在删除: C4542.MP4
+[2025-09-22 09:43:46.230] [INFO ] [T006] [MainWindow] 开始同步文件：C4542.MP4
+[2025-09-22 09:43:46.231] [INFO ] [T029] [MainWindow] 删除完成: C4542.MP4
+[2025-09-22 09:43:46.234] [INFO ] [T006] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:47.426] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4543.MP4
+[2025-09-22 09:43:47.426] [INFO ] [T006] [FileSyncService] 开始处理Deleted事件: C4543.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:47.426] [INFO ] [T006] [FileSyncService] 创建删除队列项: C4543.MP4
+[2025-09-22 09:43:47.426] [INFO ] [T025] [MainWindow] 正在删除: C4543.MP4
+[2025-09-22 09:43:47.426] [INFO ] [T020] [MainWindow] 开始同步文件：C4543.MP4
+[2025-09-22 09:43:47.427] [INFO ] [T020] [MainWindow] 删除完成: C4543.MP4
+[2025-09-22 09:43:47.427] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:48.184] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4545.MP4
+[2025-09-22 09:43:48.184] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C4545.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:48.184] [INFO ] [T020] [FileSyncService] 创建删除队列项: C4545.MP4
+[2025-09-22 09:43:48.184] [INFO ] [T025] [MainWindow] 开始同步文件：C4545.MP4
+[2025-09-22 09:43:48.184] [INFO ] [T021] [MainWindow] 正在删除: C4545.MP4
+[2025-09-22 09:43:48.185] [INFO ] [T020] [MainWindow] 删除完成: C4545.MP4
+[2025-09-22 09:43:48.186] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:48.933] [INFO ] [T025] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4546.MP4
+[2025-09-22 09:43:48.933] [INFO ] [T025] [FileSyncService] 开始处理Deleted事件: C4546.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:48.934] [INFO ] [T025] [FileSyncService] 创建删除队列项: C4546.MP4
+[2025-09-22 09:43:48.934] [INFO ] [T025] [MainWindow] 开始同步文件：C4546.MP4
+[2025-09-22 09:43:48.934] [INFO ] [T023] [MainWindow] 正在删除: C4546.MP4
+[2025-09-22 09:43:48.935] [INFO ] [T023] [MainWindow] 删除完成: C4546.MP4
+[2025-09-22 09:43:48.937] [INFO ] [T025] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:48.977] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4547.MP4
+[2025-09-22 09:43:48.977] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: C4547.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:48.977] [INFO ] [T023] [FileSyncService] 创建删除队列项: C4547.MP4
+[2025-09-22 09:43:48.977] [INFO ] [T006] [MainWindow] 正在删除: C4547.MP4
+[2025-09-22 09:43:48.977] [INFO ] [T006] [MainWindow] 开始同步文件：C4547.MP4
+[2025-09-22 09:43:48.978] [INFO ] [T020] [MainWindow] 删除完成: C4547.MP4
+[2025-09-22 09:43:49.723] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4548.MP4
+[2025-09-22 09:43:49.723] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: C4548.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:49.724] [INFO ] [T029] [FileSyncService] 创建删除队列项: C4548.MP4
+[2025-09-22 09:43:49.724] [INFO ] [T020] [MainWindow] 正在删除: C4548.MP4
+[2025-09-22 09:43:49.724] [INFO ] [T026] [MainWindow] 开始同步文件：C4548.MP4
+[2025-09-22 09:43:49.725] [INFO ] [T029] [MainWindow] 删除完成: C4548.MP4
+[2025-09-22 09:43:49.727] [INFO ] [T029] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:50.910] [INFO ] [T020] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4549.MP4
+[2025-09-22 09:43:50.910] [INFO ] [T020] [FileSyncService] 开始处理Deleted事件: C4549.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:50.910] [INFO ] [T020] [FileSyncService] 创建删除队列项: C4549.MP4
+[2025-09-22 09:43:50.910] [INFO ] [T021] [MainWindow] 正在删除: C4549.MP4
+[2025-09-22 09:43:50.910] [INFO ] [T006] [MainWindow] 开始同步文件：C4549.MP4
+[2025-09-22 09:43:50.911] [INFO ] [T020] [MainWindow] 删除完成: C4549.MP4
+[2025-09-22 09:43:50.913] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:51.578] [INFO ] [T006] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4550.MP4
+[2025-09-22 09:43:51.579] [INFO ] [T006] [FileSyncService] 开始处理Deleted事件: C4550.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:51.579] [INFO ] [T006] [FileSyncService] 创建删除队列项: C4550.MP4
+[2025-09-22 09:43:51.579] [INFO ] [T006] [MainWindow] 正在删除: C4550.MP4
+[2025-09-22 09:43:51.579] [INFO ] [T029] [MainWindow] 开始同步文件：C4550.MP4
+[2025-09-22 09:43:51.580] [INFO ] [T029] [MainWindow] 删除完成: C4550.MP4
+[2025-09-22 09:43:51.580] [INFO ] [T021] [FileSyncService] 文件已在处理队列中，跳过重复事件: Ibanez A\左边机位
+[2025-09-22 09:43:52.321] [INFO ] [T029] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位\C4551.MP4
+[2025-09-22 09:43:52.321] [INFO ] [T029] [FileSyncService] 开始处理Deleted事件: C4551.MP4, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:52.321] [INFO ] [T029] [FileSyncService] 创建删除队列项: C4551.MP4
+[2025-09-22 09:43:52.321] [INFO ] [T029] [MainWindow] 正在删除: C4551.MP4
+[2025-09-22 09:43:52.321] [INFO ] [T023] [MainWindow] 开始同步文件：C4551.MP4
+[2025-09-22 09:43:52.322] [INFO ] [T029] [MainWindow] 删除完成: C4551.MP4
+[2025-09-22 09:43:52.322] [INFO ] [T023] [FileSyncService] 检测到Deleted事件: Ibanez A\左边机位
+[2025-09-22 09:43:52.322] [INFO ] [T023] [FileSyncService] 开始处理Deleted事件: 左边机位, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:52.322] [INFO ] [T023] [FileSyncService] 创建删除队列项: 左边机位
+[2025-09-22 09:43:52.322] [INFO ] [T006] [MainWindow] 正在删除: 左边机位
+[2025-09-22 09:43:52.322] [INFO ] [T012] [MainWindow] 开始同步文件：左边机位
+[2025-09-22 09:43:52.323] [INFO ] [T023] [MainWindow] 删除完成: 左边机位
+[2025-09-22 09:43:52.329] [INFO ] [T019] [FileSyncService] 检测到Deleted事件: Ibanez A
+[2025-09-22 09:43:52.329] [INFO ] [T019] [FileSyncService] 开始处理Deleted事件: Ibanez A, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:43:52.329] [INFO ] [T019] [FileSyncService] 创建删除队列项: Ibanez A
+[2025-09-22 09:43:52.329] [INFO ] [T012] [MainWindow] 正在删除: Ibanez A
+[2025-09-22 09:43:52.329] [INFO ] [T012] [MainWindow] 开始同步文件：Ibanez A
+[2025-09-22 09:43:52.330] [INFO ] [T019] [MainWindow] 删除完成: Ibanez A
+[2025-09-22 09:44:09.400] [INFO ] [T019] [FileSyncService] 检测到文件变化，等待写入完成: 新建文件夹
+[2025-09-22 09:44:09.400] [INFO ] [T019] [FileSyncService] 文件已被删除，跳过同步: 新建文件夹
+[2025-09-22 09:44:55.725] [INFO ] [T006] [FileSyncService] 检测到Deleted事件: 新建文件夹
+[2025-09-22 09:44:55.725] [INFO ] [T006] [FileSyncService] 开始处理Deleted事件: 新建文件夹, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:44:55.725] [INFO ] [T006] [FileSyncService] 创建删除队列项: 新建文件夹
+[2025-09-22 09:44:55.725] [INFO ] [T019] [MainWindow] 正在删除: 新建文件夹
+[2025-09-22 09:44:55.725] [INFO ] [T019] [MainWindow] 开始同步文件：新建文件夹
+[2025-09-22 09:44:55.726] [INFO ] [T006] [MainWindow] 删除完成: 新建文件夹
+[2025-09-22 09:45:22.783] [INFO ] [T006] [FileSyncService] 检测到文件变化，等待写入完成: A
+[2025-09-22 09:45:22.783] [INFO ] [T006] [FileSyncService] 文件已被删除，跳过同步: A
+[2025-09-22 09:46:24.492] [INFO ] [T009] [FileSyncService] 检测到Deleted事件: A
+[2025-09-22 09:46:24.492] [INFO ] [T009] [FileSyncService] 开始处理Deleted事件: A, 缓存根目录: S:\Cache\A\Test
+[2025-09-22 09:46:24.492] [INFO ] [T009] [FileSyncService] 创建删除队列项: A
+[2025-09-22 09:46:24.492] [INFO ] [T006] [MainWindow] 正在删除: A
+[2025-09-22 09:46:24.492] [INFO ] [T006] [MainWindow] 开始同步文件：A
+[2025-09-22 09:46:24.492] [INFO ] [T009] [MainWindow] 删除完成: A
+[2025-09-22 09:46:33.306] [INFO ] [T001] [MainWindow] 正在停止加速：A:\Test
+[2025-09-22 09:46:33.307] [INFO ] [T001] [MainWindow] 停止性能监控: A:\Test
+[2025-09-22 09:46:33.378] [INFO ] [T001] [MainWindow] 缓存加速已停止：A:\Test
+[2025-09-22 09:46:33.378] [INFO ] [T001] [MainWindow] ✅ 加速停止成功：A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 已删除路径记录：A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 开始停止缓存加速...
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 停止文件同步监控...
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 没有找到对应的监控器：
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 停止性能监控...
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 执行最后一次同步...
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 未找到同步配置：
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 删除Junction：A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] Junction删除成功
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 找到备份目录：A:\Test.original
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 恢复原始目录：A:\Test.original -> A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 目录重命名成功：A:\Test.original -> A:\Test
+[2025-09-22 09:46:33.380] [INFO ] [T001] [MainWindow] 缓存加速停止完成！

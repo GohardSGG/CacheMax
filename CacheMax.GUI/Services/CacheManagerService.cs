@@ -14,7 +14,6 @@ namespace CacheMax.GUI.Services
         private readonly JunctionService _junctionService;
         private readonly FileSyncService _fileSyncService;
         private readonly ErrorRecoveryService _errorRecovery;
-        private readonly PerformanceMonitoringService _performanceMonitor;
         private readonly FastCopyService _fastCopyService;
 
         /// <summary>
@@ -27,8 +26,7 @@ namespace CacheMax.GUI.Services
             _junctionService = new JunctionService();
             _fileSyncService = new FileSyncService();
             _errorRecovery = new ErrorRecoveryService();
-            _performanceMonitor = new PerformanceMonitoringService();
-            _fastCopyService = new FastCopyService();
+            _fastCopyService = FastCopyService.Instance;
 
             // 订阅同步事件
             _fileSyncService.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
@@ -40,9 +38,6 @@ namespace CacheMax.GUI.Services
             _errorRecovery.RecoveryCompleted += (sender, args) => LogMessage?.Invoke(this, $"恢复成功：{args.MountPoint}");
             _errorRecovery.RecoveryFailed += (sender, args) => LogMessage?.Invoke(this, $"恢复失败：{args.MountPoint} - {args.Message}");
 
-            // 订阅性能监控事件
-            _performanceMonitor.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
-            _performanceMonitor.StatsUpdated += OnPerformanceStatsUpdated;
         }
 
         /// <summary>
@@ -50,10 +45,15 @@ namespace CacheMax.GUI.Services
         /// </summary>
         public void RestoreAccelerationStates(List<AcceleratedFolder> folders)
         {
+            LogMessage?.Invoke(this, $"开始恢复 {folders.Count} 个加速项目的状态...");
+
             foreach (var folder in folders)
             {
+                LogMessage?.Invoke(this, $"正在检查加速项目：{folder.MountPoint}");
+
                 // 检查是否仍然是Junction（即加速仍然活跃）
                 var isActive = IsAccelerated(folder.MountPoint);
+                LogMessage?.Invoke(this, $"Junction状态检查：{folder.MountPoint} - {(isActive ? "是Junction" : "不是Junction")}");
 
                 _errorRecovery.RecordAccelerationState(
                     folder.MountPoint,
@@ -61,25 +61,45 @@ namespace CacheMax.GUI.Services
                     folder.CachePath,
                     isActive);
 
-                // 如果加速仍然活跃，恢复文件同步监控和性能监控
-                if (isActive && Directory.Exists(folder.CachePath) && Directory.Exists(folder.OriginalPath))
+                // 如果加速仍然活跃，恢复文件同步监控
+                if (isActive)
                 {
-                    // 恢复文件同步监控（这是关键！）
-                    _fileSyncService.StartMonitoring(folder.CachePath, folder.OriginalPath, SyncMode.Immediate, 3);
-                    LogMessage?.Invoke(this, $"恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
+                    LogMessage?.Invoke(this, $"检查目录存在性：缓存({Directory.Exists(folder.CachePath)}) 原始({Directory.Exists(folder.OriginalPath)})");
 
-                    // 恢复性能监控
-                    _performanceMonitor.StartMonitoring(folder.MountPoint, folder.CachePath);
-                    LogMessage?.Invoke(this, $"恢复性能监控：{folder.MountPoint}");
+                    if (Directory.Exists(folder.CachePath) && Directory.Exists(folder.OriginalPath))
+                    {
+                        LogMessage?.Invoke(this, $"准备启动文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
+
+                        // 恢复文件同步监控（这是关键！）
+                        var monitoringStarted = _fileSyncService.StartMonitoring(folder.CachePath, folder.OriginalPath, SyncMode.Immediate, 3);
+
+                        if (monitoringStarted)
+                        {
+                            LogMessage?.Invoke(this, $"✓ 成功恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
+                        }
+                        else
+                        {
+                            LogMessage?.Invoke(this, $"✗ 恢复文件同步监控失败：{folder.CachePath} -> {folder.OriginalPath}");
+                        }
+                    }
+                    else
+                    {
+                        LogMessage?.Invoke(this, $"✗ 目录不存在，跳过监控恢复：缓存({folder.CachePath}) 原始({folder.OriginalPath})");
+                    }
+                }
+                else
+                {
+                    LogMessage?.Invoke(this, $"✗ Junction不活跃，跳过监控恢复：{folder.MountPoint}");
                 }
 
                 LogMessage?.Invoke(this, $"恢复加速状态记录：{folder.MountPoint} - {(isActive ? "活跃" : "非活跃")}");
             }
+
+            LogMessage?.Invoke(this, "加速状态恢复完成！");
         }
 
         public event EventHandler<string>? LogMessage;
         public event EventHandler<CacheStatsEventArgs>? StatsUpdated;
-        public event EventHandler<PerformanceMonitoringService.PerformanceStatsEventArgs>? PerformanceStatsUpdated;
 
         private void OnSyncFailed(object? sender, FileSyncService.SyncEventArgs e)
         {
@@ -96,11 +116,6 @@ namespace CacheMax.GUI.Services
             }
         }
 
-        private void OnPerformanceStatsUpdated(object? sender, PerformanceMonitoringService.PerformanceStatsEventArgs e)
-        {
-            // 转发性能统计事件到UI
-            PerformanceStatsUpdated?.Invoke(this, e);
-        }
 
         private string FindMountPointForPath(string filePath)
         {
@@ -252,13 +267,6 @@ namespace CacheMax.GUI.Services
                     // 可以继续，因为符号链接已经工作了
                 }
 
-                // 步骤6：启动性能监控
-                progress?.Report("启动性能监控...");
-                if (!_performanceMonitor.StartMonitoring(sourcePath, cachePath))
-                {
-                    progress?.Report("启动性能监控失败");
-                    // 可以继续，不影响核心功能
-                }
 
                 progress?.Report("缓存加速初始化完成！");
                 LogMessage?.Invoke(this, $"缓存加速已启用：{sourcePath}");
@@ -297,9 +305,6 @@ namespace CacheMax.GUI.Services
                 progress?.Report("停止文件同步监控...");
                 _fileSyncService.StopMonitoring(cachePath, progress);
 
-                // 步骤1.5：停止性能监控
-                progress?.Report("停止性能监控...");
-                _performanceMonitor.StopMonitoring(mountPoint);
 
                 // 步骤2：执行最后一次同步
                 progress?.Report("执行最后一次同步...");
@@ -316,14 +321,48 @@ namespace CacheMax.GUI.Services
                 }
 
                 // 步骤4：恢复原始目录
-                progress?.Report($"恢复原始目录：{originalPath} -> {mountPoint}");
-                if (Directory.Exists(originalPath))
+                // 智能查找.original目录（解决OriginalPath状态不同步问题）
+                var actualOriginalPath = originalPath;
+                var expectedOriginalPath = mountPoint + ".original";
+
+                // 优先查找 mountPoint + ".original" 目录（更可靠）
+                if (Directory.Exists(expectedOriginalPath))
                 {
-                    if (!_junctionService.SafeRenameDirectory(originalPath, mountPoint, progress))
+                    actualOriginalPath = expectedOriginalPath;
+                    progress?.Report($"找到备份目录：{expectedOriginalPath}");
+                }
+                else if (!Directory.Exists(originalPath))
+                {
+                    // 如果expected目录不存在，且original目录也不存在，尝试其他可能的备份位置
+                    progress?.Report($"警告：未找到预期的备份目录 {expectedOriginalPath}，也未找到 {originalPath}");
+                }
+                else if (originalPath == mountPoint)
+                {
+                    // 如果originalPath和mountPoint相同，说明状态不同步，强制查找.original目录
+                    progress?.Report($"检测到状态不同步（originalPath == mountPoint），强制查找备份目录");
+                    if (Directory.Exists(expectedOriginalPath))
+                    {
+                        actualOriginalPath = expectedOriginalPath;
+                        progress?.Report($"找到备份目录：{expectedOriginalPath}");
+                    }
+                    else
+                    {
+                        progress?.Report($"错误：无法找到备份目录 {expectedOriginalPath}");
+                    }
+                }
+
+                progress?.Report($"恢复原始目录：{actualOriginalPath} -> {mountPoint}");
+                if (Directory.Exists(actualOriginalPath))
+                {
+                    if (!_junctionService.SafeRenameDirectory(actualOriginalPath, mountPoint, progress))
                     {
                         progress?.Report("恢复原始目录失败");
                         return false;
                     }
+                }
+                else
+                {
+                    progress?.Report($"警告：未找到原始目录备份，跳过恢复步骤");
                 }
 
                 // 步骤5：可选删除缓存文件
@@ -823,21 +862,7 @@ namespace CacheMax.GUI.Services
             return _errorRecovery.GetErrorStatistics();
         }
 
-        /// <summary>
-        /// 获取性能统计信息
-        /// </summary>
-        public PerformanceMonitoringService.PerformanceSnapshot? GetPerformanceStats(string mountPoint)
-        {
-            return _performanceMonitor.GetCurrentStats(mountPoint);
-        }
 
-        /// <summary>
-        /// 获取所有加速项目的性能统计
-        /// </summary>
-        public List<PerformanceMonitoringService.PerformanceSnapshot> GetAllPerformanceStats()
-        {
-            return _performanceMonitor.GetAllStats();
-        }
 
         /// <summary>
         /// 显示缓存冲突对话框（目前简化实现，后续应该改为WPF对话框）
@@ -1265,7 +1290,6 @@ namespace CacheMax.GUI.Services
         {
             _fileSyncService?.Dispose();
             _errorRecovery?.Dispose();
-            _performanceMonitor?.Dispose();
             // FastCopyService 无需手动释放
         }
     }
