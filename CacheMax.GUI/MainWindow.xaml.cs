@@ -1099,11 +1099,8 @@ namespace CacheMax.GUI
 
         protected override void OnStateChanged(EventArgs e)
         {
-            if (WindowState == WindowState.Minimized)
-            {
-                MinimizeToTray();
-            }
-
+            // 最小化按钮应该最小化到任务栏，不是托盘
+            // 只有关闭按钮才缩小到托盘
             base.OnStateChanged(e);
         }
 
@@ -1635,7 +1632,7 @@ namespace CacheMax.GUI
                 _notifyIcon = new WinForms.NotifyIcon
                 {
                     Text = "CacheMax - 缓存加速工具",
-                    Visible = false,  // 默认不显示，只有最小化到托盘时才显示
+                    Visible = true,  // 程序启动时就显示托盘图标
                     Icon = LoadIconFromResource()  // 使用自定义图标
                 };
 
@@ -1702,11 +1699,8 @@ namespace CacheMax.GUI
                 this.Topmost = false; // 立即取消置顶
                 this.Focus();
 
-                // 隐藏托盘图标
-                if (_notifyIcon != null)
-                {
-                    _notifyIcon.Visible = false;
-                }
+                // 保持托盘图标可见，这样用户可以再次使用托盘功能
+                // 不隐藏托盘图标，避免图标消失的问题
             }
             catch (Exception ex)
             {
@@ -1722,11 +1716,8 @@ namespace CacheMax.GUI
             try
             {
                 this.Hide();
-                if (_notifyIcon != null)
-                {
-                    _notifyIcon.Visible = true;
-                    _notifyIcon.ShowBalloonTip(2000, "CacheMax", "程序已最小化到系统托盘", WinForms.ToolTipIcon.Info);
-                }
+                // 托盘图标已经在启动时显示，无需再次设置Visible
+                // 移除烦人的气球提示，用户已经知道程序最小化到托盘了
             }
             catch (Exception ex)
             {

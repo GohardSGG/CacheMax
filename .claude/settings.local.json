@@ -35,7 +35,8 @@
       "Bash(cmd /c:*)",
       "Bash(cat:*)",
       "Bash(python:*)",
-      "WebFetch(domain:blog.csdn.net)"
+      "WebFetch(domain:blog.csdn.net)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "ask": []
