@@ -36,7 +36,9 @@
       "Bash(cat:*)",
       "Bash(python:*)",
       "WebFetch(domain:blog.csdn.net)",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "WebFetch(domain:ss64.com)",
+      "Read(//c/Temp/**)"
     ],
     "deny": [],
     "ask": []

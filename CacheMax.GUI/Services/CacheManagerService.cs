@@ -210,10 +210,10 @@ namespace CacheMax.GUI.Services
                 var driveLetter = Path.GetPathRoot(sourcePath)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
                 var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
 
-                // 获取不包含盘符的完整路径，并将路径分隔符替换为安全字符
+                // 获取不包含盘符的完整路径，保持正常的目录结构
                 var pathWithoutDrive = sourcePath.Substring(Path.GetPathRoot(sourcePath)?.Length ?? 0);
-                var safePath = pathWithoutDrive.Replace(Path.DirectorySeparatorChar, '_').Replace(Path.AltDirectorySeparatorChar, '_');
-                var cachePath = Path.Combine(driveSpecificCacheRoot, safePath);
+                // 直接使用路径结构，不进行任何替换
+                var cachePath = Path.Combine(driveSpecificCacheRoot, pathWithoutDrive);
 
                 bool useSyncMode = false;
                 if (Directory.Exists(cachePath))
@@ -999,7 +999,12 @@ namespace CacheMax.GUI.Services
 
                 var arguments = string.Join(" ", argumentsList);
 
-                progress?.Report($"执行Robocopy: robocopy {arguments}");
+                // 输出完整的命令行，便于手动测试验证
+                var fullCommandLine = $"robocopy {arguments}";
+                progress?.Report($"执行Robocopy命令: {fullCommandLine}");
+                progress?.Report($"工作目录: {Environment.CurrentDirectory}");
+                progress?.Report($"当前用户: {Environment.UserName}");
+                progress?.Report($"============ 请复制上面的命令到PowerShell手动测试 ============");
 
                 var processStartInfo = new ProcessStartInfo
                 {
@@ -1008,7 +1013,8 @@ namespace CacheMax.GUI.Services
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
+                    WorkingDirectory = Environment.CurrentDirectory
                 };
 
                 using var process = new Process { StartInfo = processStartInfo };
@@ -1045,25 +1051,69 @@ namespace CacheMax.GUI.Services
                     }
                 };
 
-                process.Start();
+                if (!process.Start())
+                {
+                    progress?.Report("Robocopy进程启动失败");
+                    return false;
+                }
+
+                progress?.Report($"Robocopy进程已启动，PID: {process.Id}");
+
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
                 await process.WaitForExitAsync();
 
-                // Robocopy退出码：0-3表示成功，4+表示错误
-                bool success = process.ExitCode <= 3;
+                progress?.Report($"Robocopy进程已退出，PID: {process.Id}");
 
-                if (success)
+                // Robocopy退出码详细分析：
+                // 0: 没有文件被复制 (成功)
+                // 1: 所有文件被成功复制 (成功)
+                // 2: 有额外文件/目录被检测到 (成功)
+                // 3: 文件被复制且有额外文件/目录 (成功)
+                // 4: 有不匹配文件/目录 (警告但可接受)
+                // 8: 有文件无法复制 (部分失败但主体成功)
+                // 16+: 严重错误
+
+                // 判断是否为可接受的结果 (0-15，排除严重错误)
+                bool isAcceptable = process.ExitCode < 16;
+                bool hasPartialFailure = (process.ExitCode & 8) != 0; // 检查是否有部分失败
+                bool hasSuccessfulCopy = (process.ExitCode & 1) != 0; // 检查是否有成功复制
+
+                // 智能成功判断：对比总数和复制列是否完全一致
+                bool isCompletelySuccessful = IsRobocopyCompletelySuccessful(outputBuilder);
+                bool hasSignificantDataTransfer = CheckForSignificantDataTransfer(outputBuilder);
+                bool isOfficialSuccess = process.ExitCode < 8;
+
+                // 调试输出
+                progress?.Report($"🔍 调试信息: 退出码={process.ExitCode}, 官方成功={isOfficialSuccess}, 完全成功={isCompletelySuccessful}, 数据传输={hasSignificantDataTransfer}");
+
+                // 判断最终成功状态
+                bool success;
+                if (isOfficialSuccess)
                 {
-                    progress?.Report($"Robocopy完成，退出码: {process.ExitCode}");
+                    // 退出码 < 8，官方认为成功
+                    success = true;
+                    progress?.Report($"✅ Robocopy成功完成，退出码: {process.ExitCode}");
+                }
+                else if (isCompletelySuccessful && hasSignificantDataTransfer)
+                {
+                    // 虽然退出码 >= 8，但总数和复制列完全一致，视为成功
+                    success = true;
+                    progress?.Report($"✅ Robocopy实质成功，退出码: {process.ExitCode} (所有项目完全复制成功)");
                 }
                 else
                 {
-                    progress?.Report($"Robocopy失败，退出码: {process.ExitCode}");
+                    // 真正的失败
+                    success = false;
+                    progress?.Report($"❌ Robocopy失败，退出码: {process.ExitCode}");
                     if (errorBuilder.Count > 0)
                     {
-                        progress?.Report($"错误信息: {string.Join("; ", errorBuilder.Take(3))}");
+                        progress?.Report($"错误信息: {string.Join("; ", errorBuilder.Take(5))}");
+                    }
+                    if (outputBuilder.Count > 0)
+                    {
+                        progress?.Report($"输出信息: {string.Join("; ", outputBuilder.TakeLast(5))}");
                     }
                 }
 
@@ -1298,6 +1348,88 @@ namespace CacheMax.GUI.Services
                 ShowProgress = true,
                 ShowETA = true
             };
+        }
+
+        /// <summary>
+        /// 检查Robocopy是否完全成功：对比总数和复制列是否完全一致
+        /// </summary>
+        private bool IsRobocopyCompletelySuccessful(List<string> outputLines)
+        {
+            bool allRowsMatch = true;
+            int checkedRows = 0;
+
+            foreach (var line in outputLines)
+            {
+                // 匹配目录、文件、字节这三行的统计
+                if (line.Contains("目录:") || line.Contains("文件:") || line.Contains("字节:"))
+                {
+                    var numbers = System.Text.RegularExpressions.Regex.Matches(line, @"\d+");
+                    if (numbers.Count >= 2)
+                    {
+                        // 对比第1列（总数）和第2列（复制）是否相等
+                        if (long.TryParse(numbers[0].Value, out long totalCount) &&
+                            long.TryParse(numbers[1].Value, out long copiedCount))
+                        {
+                            checkedRows++;
+                            bool rowMatches = (totalCount == copiedCount);
+
+                            string rowType = line.Contains("目录:") ? "目录" :
+                                           line.Contains("文件:") ? "文件" : "字节";
+
+                            if (!rowMatches)
+                            {
+                                allRowsMatch = false;
+                                LogMessage?.Invoke(this, $"❌ {rowType}行不匹配: 总数={totalCount}, 复制={copiedCount}");
+                            }
+                            else
+                            {
+                                LogMessage?.Invoke(this, $"✅ {rowType}行完全匹配: 总数={totalCount}, 复制={copiedCount}");
+                            }
+                        }
+                    }
+                }
+            }
+
+            LogMessage?.Invoke(this, $"🔍 检查结果: 检查了{checkedRows}行, 全部匹配={allRowsMatch}");
+            return allRowsMatch && checkedRows >= 2; // 至少检查到2行（文件和字节）
+        }
+
+        /// <summary>
+        /// 检查是否有显著的数据传输
+        /// </summary>
+        private bool CheckForSignificantDataTransfer(List<string> outputLines)
+        {
+            foreach (var line in outputLines)
+            {
+                // 检查字节传输统计：字节: 2970355320 2970355320 0 0 0 0
+                if (line.Contains("字节:"))
+                {
+                    var numbers = System.Text.RegularExpressions.Regex.Matches(line, @"\d+");
+                    if (numbers.Count >= 2)
+                    {
+                        // 第二个数字是实际复制的字节数
+                        if (long.TryParse(numbers[1].Value, out long copiedBytes))
+                        {
+                            return copiedBytes > 0;
+                        }
+                    }
+                }
+
+                // 检查文件复制统计：文件: 289 289 0 0 0 0
+                if (line.Contains("文件:"))
+                {
+                    var numbers = System.Text.RegularExpressions.Regex.Matches(line, @"\d+");
+                    if (numbers.Count >= 2)
+                    {
+                        // 第二个数字是复制的文件数
+                        if (int.TryParse(numbers[1].Value, out int copiedFiles))
+                        {
+                            return copiedFiles > 0;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>

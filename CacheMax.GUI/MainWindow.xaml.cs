@@ -36,6 +36,11 @@ namespace CacheMax.GUI
         {
             InitializeComponent();
 
+#if DEBUG
+            // Debug版本在标题栏添加"调试"标识
+            this.Title = "CacheMax - File System Accelerator [调试]";
+#endif
+
             _fastCopy = FastCopyService.Instance;
             _cacheManager = new CacheManagerService();
             _config = new ConfigService();
@@ -176,11 +181,11 @@ namespace CacheMax.GUI
                             folder.Status = "已加速";
                             folder.ProgressPercentage = 100;
 
-                            // 正确计算缓存路径（与CacheManagerService逻辑一致）
-                            var folderName = Path.GetFileName(folder.MountPoint);
+                            // 正确计算缓存路径（与CacheManagerService逻辑完全一致）
                             var driveLetter = Path.GetPathRoot(folder.MountPoint)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
                             var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
-                            var cachePath = Path.Combine(driveSpecificCacheRoot, folderName);
+                            var pathWithoutDrive = folder.MountPoint.Substring(Path.GetPathRoot(folder.MountPoint)?.Length ?? 0);
+                            var cachePath = Path.Combine(driveSpecificCacheRoot, pathWithoutDrive);
 
                             // 正确设置所有路径
                             folder.CachePath = cachePath;
@@ -189,16 +194,23 @@ namespace CacheMax.GUI
 
                             // 现在保存完整正确的配置到文件
                             _config.AddAcceleratedFolder(folder);
+                            _config.SaveConfig(); // 立即保存配置
 
                             AddLog($"✅ 加速完成：{folder.MountPoint}");
                             AddLog($"原始备份：{folder.OriginalPath}");
                             AddLog($"缓存路径：{cachePath}");
+
+                            // 立即更新界面显示
+                            UpdateUI();
                         }
                         else
                         {
                             folder.Status = "失败";
                             folder.ProgressPercentage = 0;
                             AddLog($"❌ 加速失败：{folder.OriginalPath}");
+
+                            // 立即更新界面显示失败状态
+                            UpdateUI();
                         }
                     }
                     catch (Exception ex)
@@ -206,6 +218,9 @@ namespace CacheMax.GUI
                         folder.Status = "失败";
                         folder.ProgressPercentage = 0;
                         AddLog($"❌ 加速异常：{folder.OriginalPath} - {ex.Message}");
+
+                        // 立即更新界面显示异常状态
+                        UpdateUI();
                     }
                 }
 
@@ -1335,55 +1350,49 @@ namespace CacheMax.GUI
 
         private async Task<bool> CheckSingleItemIntegrityAsync(string cachePath, string originalPath, IProgress<string>? progress)
         {
-            return await Task.Run(() =>
+            try
             {
-                try
+                // 使用统一的进程执行器，/L参数表示List-only模式检查差异
+                var result = await ProcessExecutor.ExecuteAsync(
+                    "robocopy",
+                    $"\"{cachePath}\" \"{originalPath}\" /L /S /E",
+                    timeoutSeconds: 300);
+
+                // 统一的进程启动失败处理
+                if (!result.ProcessStarted)
                 {
-                    // 使用RoboCopy的/L参数检查差异
-                    var startInfo = new ProcessStartInfo
-                    {
-                        FileName = "robocopy",
-                        Arguments = $"\"{cachePath}\" \"{originalPath}\" /L /S /E",
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true
-                    };
-
-                    using var process = Process.Start(startInfo);
-                    if (process == null)
-                    {
-                        progress?.Report("无法启动RoboCopy进程");
-                        // 记录到后台日志
-                        AsyncLogger.Instance.LogInfo($"缓存完整性检查失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
-                        return false;
-                    }
-
-                    var output = process.StandardOutput.ReadToEnd();
-                    var error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    // 记录完整输出到后台日志（不显示在前台）
-                    AsyncLogger.Instance.LogInfo($"缓存完整性检查 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {process.ExitCode}", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({output.Length} 字符):", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo(output, "RoboCopy");
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        AsyncLogger.Instance.LogInfo($"RoboCopy错误输出: {error}", "RoboCopy");
-                    }
-
-                    // 解析RoboCopy输出判断是否有差异
-                    return ParseRoboCopyOutput(output, progress);
-                }
-                catch (Exception ex)
-                {
-                    progress?.Report($"检查差异时出错: {ex.Message}");
-                    AsyncLogger.Instance.LogInfo($"缓存完整性检查异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                    progress?.Report("无法启动RoboCopy进程");
+                    AsyncLogger.Instance.LogInfo($"缓存完整性检查失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
                     return false;
                 }
-            });
+
+                // 记录完整输出到后台日志（不显示在前台）
+                AsyncLogger.Instance.LogInfo($"缓存完整性检查 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {result.ExitCode}", "RoboCopy");
+                AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({result.StandardOutput.Count} 行):", "RoboCopy");
+                foreach (var line in result.StandardOutput)
+                {
+                    AsyncLogger.Instance.LogInfo(line, "RoboCopy");
+                }
+
+                if (result.ErrorOutput.Count > 0)
+                {
+                    AsyncLogger.Instance.LogInfo($"RoboCopy错误输出:", "RoboCopy");
+                    foreach (var line in result.ErrorOutput)
+                    {
+                        AsyncLogger.Instance.LogInfo(line, "RoboCopy");
+                    }
+                }
+
+                // 使用RobocopyHelper的HasChanges方法 - 保持原有的ParseRoboCopyOutput逻辑
+                return RobocopyHelper.HasChanges(result.StandardOutput);
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"检查差异时出错: {ex.Message}");
+                AsyncLogger.Instance.LogInfo($"缓存完整性检查异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                return false;
+            }
         }
 
         private bool ParseRoboCopyOutput(string output, IProgress<string>? progress)
@@ -1511,61 +1520,57 @@ namespace CacheMax.GUI
 
         private async Task<bool> SyncSingleItemAsync(string cachePath, string originalPath, IProgress<string>? progress)
         {
-            return await Task.Run(() =>
+            try
             {
-                try
+                // 使用统一的进程执行器
+                var result = await ProcessExecutor.ExecuteAsync(
+                    "robocopy",
+                    $"\"{cachePath}\" \"{originalPath}\" /S /E /PURGE",
+                    timeoutSeconds: 600); // 同步操作可能需要更长时间
+
+                // 统一的进程启动失败处理
+                if (!result.ProcessStarted)
                 {
-                    // 使用RoboCopy进行实际同步
-                    var startInfo = new ProcessStartInfo
-                    {
-                        FileName = "robocopy",
-                        Arguments = $"\"{cachePath}\" \"{originalPath}\" /S /E /PURGE",
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        CreateNoWindow = true
-                    };
-
-                    using var process = Process.Start(startInfo);
-                    if (process == null)
-                    {
-                        progress?.Report("无法启动RoboCopy进程");
-                        AsyncLogger.Instance.LogInfo($"同步失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
-                        return false;
-                    }
-
-                    var output = process.StandardOutput.ReadToEnd();
-                    var error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    // 记录完整输出到后台日志（不显示在前台）
-                    AsyncLogger.Instance.LogInfo($"同步操作 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {process.ExitCode}", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({output.Length} 字符):", "RoboCopy");
-                    AsyncLogger.Instance.LogInfo(output, "RoboCopy");
-
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        AsyncLogger.Instance.LogInfo($"RoboCopy错误输出: {error}", "RoboCopy");
-                    }
-
-                    // RoboCopy的退出代码: 0-3 表示成功，>=4 表示错误
-                    bool success = process.ExitCode <= 3;
-
-                    if (!success)
-                    {
-                        progress?.Report($"RoboCopy同步失败，退出代码: {process.ExitCode}");
-                    }
-
-                    return success;
-                }
-                catch (Exception ex)
-                {
-                    progress?.Report($"同步时出错: {ex.Message}");
-                    AsyncLogger.Instance.LogInfo($"同步异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                    progress?.Report("无法启动RoboCopy进程");
+                    AsyncLogger.Instance.LogInfo($"同步失败 - 无法启动RoboCopy进程。源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
                     return false;
                 }
-            });
+
+                // 记录完整输出到后台日志（不显示在前台）
+                AsyncLogger.Instance.LogInfo($"同步操作 - 源路径: {originalPath}, 缓存路径: {cachePath}", "RoboCopy");
+                AsyncLogger.Instance.LogInfo($"RoboCopy退出代码: {result.ExitCode}", "RoboCopy");
+                AsyncLogger.Instance.LogInfo($"RoboCopy完整输出 ({result.StandardOutput.Count} 行):", "RoboCopy");
+                foreach (var line in result.StandardOutput)
+                {
+                    AsyncLogger.Instance.LogInfo(line, "RoboCopy");
+                }
+
+                if (result.ErrorOutput.Count > 0)
+                {
+                    AsyncLogger.Instance.LogInfo($"RoboCopy错误输出:", "RoboCopy");
+                    foreach (var line in result.ErrorOutput)
+                    {
+                        AsyncLogger.Instance.LogInfo(line, "RoboCopy");
+                    }
+                }
+
+                // 使用RobocopyHelper进行成功判断 - 保持原有逻辑
+                bool success = RobocopyHelper.IsSuccessForSync(result.ExitCode);
+
+                if (!success)
+                {
+                    var description = RobocopyHelper.GetResultDescription(result.ExitCode);
+                    progress?.Report($"RoboCopy同步失败: {description}");
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"同步时出错: {ex.Message}");
+                AsyncLogger.Instance.LogInfo($"同步异常 - 源路径: {originalPath}, 缓存路径: {cachePath}, 错误: {ex.Message}", "RoboCopy");
+                return false;
+            }
         }
 
         private List<string> LoadForbiddenDirectories()
@@ -1631,7 +1636,11 @@ namespace CacheMax.GUI
             {
                 _notifyIcon = new WinForms.NotifyIcon
                 {
+#if DEBUG
+                    Text = "CacheMax - 缓存加速工具 [调试]",
+#else
                     Text = "CacheMax - 缓存加速工具",
+#endif
                     Visible = true,  // 程序启动时就显示托盘图标
                     Icon = LoadIconFromResource()  // 使用自定义图标
                 };
