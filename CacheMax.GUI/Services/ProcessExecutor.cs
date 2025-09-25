@@ -139,35 +139,10 @@ namespace CacheMax.GUI.Services
                 {
                     output.Add(line);
 
-                    // 实时进度报告
+                    // 实时进度报告 - 简单可靠的方式
                     if (progress != null && outputFilter != null && outputFilter(line))
                     {
-                        // 对于Robocopy，使用专门的进度分析器
-                        if (line.Contains("robocopy") || line.Contains("Files :") || line.Contains("%"))
-                        {
-                            var progressInfo = RobocopyProgressAnalyzer.AnalyzeOutputLine(line);
-                            if (progressInfo.IsValid)
-                            {
-                                var progressText = $"进度: {progressInfo.PercentComplete:F1}%";
-                                if (progressInfo.FilesCompleted > 0)
-                                {
-                                    progressText += $" ({progressInfo.FilesCompleted}/{progressInfo.TotalFiles} 文件)";
-                                }
-                                if (!string.IsNullOrEmpty(progressInfo.TransferSpeed))
-                                {
-                                    progressText += $" - {progressInfo.TransferSpeed}";
-                                }
-                                progress.Report(progressText);
-                            }
-                            else
-                            {
-                                progress.Report(line.Trim());
-                            }
-                        }
-                        else
-                        {
-                            progress.Report(line.Trim());
-                        }
+                        progress.Report(line.Trim());
                     }
 
                     // 防止输出过多占用内存

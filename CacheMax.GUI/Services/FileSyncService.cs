@@ -526,7 +526,7 @@ namespace CacheMax.GUI.Services
         {
             // 事件去抖动：500ms内的重复事件视为同一操作
             var now = DateTime.Now;
-            var fileKey = filePath.ToLowerInvariant(); // 同一文件的不同事件类型应该合并
+            var fileKey = $"{filePath.ToLowerInvariant()}_{changeType}"; // 区分不同事件类型，避免删除和创建冲突
 
             if (_lastEventTime.TryGetValue(fileKey, out var lastTime))
             {
@@ -757,8 +757,9 @@ namespace CacheMax.GUI.Services
 
                 // 处理删除操作，传递队列项用于状态更新
                 var itemKey = $"{operation.FilePath}_{DateTime.Now.Ticks}";
+                var fileKey = $"{operation.FilePath.ToLowerInvariant()}_{changeType}";
                 var tcs = new TaskCompletionSource<bool>();
-                _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, operation.FilePath, tcs));
+                _ = Task.Run(() => ProcessSyncOperationWithTracking(operation, queueItem, itemKey, fileKey, tcs));
             }
             catch (Exception ex)
             {
@@ -1120,21 +1121,7 @@ namespace CacheMax.GUI.Services
                     var progress = new Progress<string>(msg =>
                     {
                         SafeLog(msg);
-
-                        // 解析进度信息并更新队列项目
-                        if (msg.Contains("正在复制") && msg.Contains("%"))
-                        {
-                            var percentIndex = msg.LastIndexOf("%");
-                            if (percentIndex > 0)
-                            {
-                                var spaceIndex = msg.LastIndexOf(" ", percentIndex - 1);
-                                if (spaceIndex >= 0 && double.TryParse(msg.Substring(spaceIndex + 1, percentIndex - spaceIndex - 1), out var percent))
-                                {
-                                    queueItem.Progress = percent;
-                                    InvokeEventAsync(QueueItemUpdated, new SyncQueueEventArgs(queueItem, "Progress"), "QueueItemUpdated");
-                                }
-                            }
-                        }
+                        // 删除了不可靠的百分比解析，只保留日志记录
                     });
 
                     // 使用SemaphoreSlim限制FastCopy并发数量

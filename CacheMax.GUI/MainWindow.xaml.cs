@@ -150,7 +150,7 @@ namespace CacheMax.GUI
                         {
                             AddLog(msg);
 
-                            // 解析进度信息并更新
+                            // 只解析可靠的步骤进度信息
                             if (msg.Contains("步骤"))
                             {
                                 if (msg.Contains("1/4")) folder.ProgressPercentage = 25;
@@ -158,15 +158,7 @@ namespace CacheMax.GUI
                                 else if (msg.Contains("3/4")) folder.ProgressPercentage = 75;
                                 else if (msg.Contains("4/4")) folder.ProgressPercentage = 100;
                             }
-                            else if (msg.Contains("Robocopy") && msg.Contains("%"))
-                            {
-                                // 尝试解析Robocopy进度
-                                var match = Regex.Match(msg, @"(\d+)%");
-                                if (match.Success && int.TryParse(match.Groups[1].Value, out int percent))
-                                {
-                                    folder.ProgressPercentage = Math.Max(folder.ProgressPercentage, percent * 0.6); // Robocopy占60%
-                                }
-                            }
+                            // 删除了不可靠的Robocopy百分比解析
                         });
 
                         // 使用默认同步设置

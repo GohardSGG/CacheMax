@@ -38,7 +38,8 @@
       "WebFetch(domain:blog.csdn.net)",
       "Bash(move:*)",
       "WebFetch(domain:ss64.com)",
-      "Read(//c/Temp/**)"
+      "Read(//c/Temp/**)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
