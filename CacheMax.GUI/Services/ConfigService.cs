@@ -9,8 +9,28 @@ namespace CacheMax.GUI.Services
 {
     public class AcceleratedFolder : INotifyPropertyChanged
     {
-        public string OriginalPath { get; set; } = string.Empty;
-        public string CachePath { get; set; } = string.Empty;
+        private string _originalPath = string.Empty;
+        public string OriginalPath
+        {
+            get => _originalPath;
+            set
+            {
+                _originalPath = value;
+                OnPropertyChanged(nameof(OriginalPath));
+            }
+        }
+
+        private string _cachePath = string.Empty;
+        public string CachePath
+        {
+            get => _cachePath;
+            set
+            {
+                _cachePath = value;
+                OnPropertyChanged(nameof(CachePath));
+            }
+        }
+
         public string MountPoint { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
 

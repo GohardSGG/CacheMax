@@ -1,85 +1,39 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace CacheMax.GUI
 {
     public partial class ModernMessageBox : Window
     {
-        public string Title { get; set; } = "";
-        public string Message { get; set; } = "";
-        public string Detail { get; set; } = "";
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.None;
 
         private ModernMessageBox()
         {
             InitializeComponent();
-            DataContext = this;
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            Result = MessageBoxResult.Cancel;
-            Close();
         }
 
         /// <summary>
-        /// 显示现代化消息框
+        /// 显示简洁风格消息框
         /// </summary>
         public static MessageBoxResult Show(string message, string title = "提示",
             MessageBoxButton button = MessageBoxButton.OK,
-            MessageBoxImage icon = MessageBoxImage.Information,
-            string detail = "")
+            MessageBoxImage icon = MessageBoxImage.Information)
         {
             var dialog = new ModernMessageBox
             {
                 Title = title,
-                Message = message,
-                Detail = detail,
                 Owner = Application.Current.MainWindow
             };
 
-            // 设置图标
-            dialog.SetIcon(icon);
+            // 设置标题和消息
+            dialog.TitleTextBlock.Text = title;
+            dialog.MessageTextBlock.Text = message;
 
             // 设置按钮
             dialog.SetButtons(button);
 
-            // 显示详细信息（如果有）
-            if (!string.IsNullOrEmpty(detail))
-            {
-                dialog.DetailText.Visibility = Visibility.Visible;
-            }
-
             dialog.ShowDialog();
             return dialog.Result;
-        }
-
-        private void SetIcon(MessageBoxImage icon)
-        {
-            switch (icon)
-            {
-                case MessageBoxImage.Information:
-                    IconBrush.Color = Color.FromRgb(0, 120, 212); // 蓝色
-                    IconText.Text = "i";
-                    break;
-                case MessageBoxImage.Warning:
-                    IconBrush.Color = Color.FromRgb(255, 185, 0); // 橙色
-                    IconText.Text = "!";
-                    break;
-                case MessageBoxImage.Error:
-                    IconBrush.Color = Color.FromRgb(232, 17, 35); // 红色
-                    IconText.Text = "✕";
-                    break;
-                case MessageBoxImage.Question:
-                    IconBrush.Color = Color.FromRgb(0, 120, 212); // 蓝色
-                    IconText.Text = "?";
-                    break;
-                default:
-                    IconBrush.Color = Color.FromRgb(0, 120, 212);
-                    IconText.Text = "i";
-                    break;
-            }
         }
 
         private void SetButtons(MessageBoxButton button)
@@ -93,19 +47,19 @@ namespace CacheMax.GUI
                     break;
 
                 case MessageBoxButton.OKCancel:
-                    AddButton("取消", MessageBoxResult.Cancel, false);
                     AddButton("确定", MessageBoxResult.OK, true);
+                    AddButton("取消", MessageBoxResult.Cancel, false);
                     break;
 
                 case MessageBoxButton.YesNo:
-                    AddButton("否", MessageBoxResult.No, false);
                     AddButton("是", MessageBoxResult.Yes, true);
+                    AddButton("否", MessageBoxResult.No, false);
                     break;
 
                 case MessageBoxButton.YesNoCancel:
-                    AddButton("取消", MessageBoxResult.Cancel, false);
-                    AddButton("否", MessageBoxResult.No, false);
                     AddButton("是", MessageBoxResult.Yes, true);
+                    AddButton("否", MessageBoxResult.No, false);
+                    AddButton("取消", MessageBoxResult.Cancel, false);
                     break;
             }
         }
@@ -115,11 +69,9 @@ namespace CacheMax.GUI
             var button = new Button
             {
                 Content = content,
-                MinWidth = 80,
-                Margin = new Thickness(10, 0, 0, 0),
-                Style = isPrimary ?
-                    (Style)FindResource("PrimaryButton") :
-                    (Style)FindResource("ModernButton")
+                Width = 80,
+                Height = 30,
+                Margin = new Thickness(0, 0, 10, 0)
             };
 
             button.Click += (s, e) =>
