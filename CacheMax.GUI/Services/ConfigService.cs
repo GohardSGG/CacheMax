@@ -13,7 +13,18 @@ namespace CacheMax.GUI.Services
         public string CachePath { get; set; } = string.Empty;
         public string MountPoint { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public long CacheSize { get; set; }
+
+        private long _cacheSize = 0;
+        public long CacheSize
+        {
+            get => _cacheSize;
+            set
+            {
+                _cacheSize = value;
+                OnPropertyChanged(nameof(CacheSize));
+                OnPropertyChanged(nameof(CacheSizeFormatted));
+            }
+        }
 
         private string _status = "未加速";
         public string Status

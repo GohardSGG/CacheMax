@@ -17,6 +17,11 @@ namespace CacheMax.GUI.Services
         private readonly FastCopyService _fastCopyService;
 
         /// <summary>
+        /// 缓存大小更新器字典（key为cachePath）
+        /// </summary>
+        private readonly Dictionary<string, CacheSizeUpdater> _sizeUpdaters = new Dictionary<string, CacheSizeUpdater>();
+
+        /// <summary>
         /// 公开FileSyncService以便UI订阅队列事件
         /// </summary>
         public FileSyncService FileSyncService => _fileSyncService;
@@ -31,6 +36,7 @@ namespace CacheMax.GUI.Services
             // 订阅同步事件
             _fileSyncService.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
             _fileSyncService.SyncFailed += OnSyncFailed;
+            _fileSyncService.SyncCompleted += OnSyncCompleted;
 
             // 订阅错误恢复事件
             _errorRecovery.LogMessage += (sender, message) => LogMessage?.Invoke(this, message);
@@ -83,6 +89,9 @@ namespace CacheMax.GUI.Services
                             LogMessage?.Invoke(this, $"✓ 成功恢复文件同步监控：{folder.CachePath} -> {folder.OriginalPath}");
                             folder.Status = "已加速";
                             restoreSuccess = true;
+
+                            // 启动缓存大小更新器
+                            StartCacheSizeUpdater(folder.CachePath);
                         }
                         else
                         {
@@ -138,6 +147,20 @@ namespace CacheMax.GUI.Services
             }
         }
 
+        private void OnSyncCompleted(object? sender, FileSyncService.SyncEventArgs e)
+        {
+            // 文件同步完成后，通知缓存大小更新器
+            // 找到文件所属的cachePath
+            foreach (var cachePath in _sizeUpdaters.Keys.ToList())
+            {
+                // 检查文件是否在这个缓存路径下
+                if (e.FilePath.StartsWith(cachePath, StringComparison.OrdinalIgnoreCase))
+                {
+                    NotifyCacheFileChange(cachePath);
+                    break; // 只需要通知一个即可
+                }
+            }
+        }
 
         private string FindMountPointForPath(string filePath)
         {
@@ -304,8 +327,8 @@ namespace CacheMax.GUI.Services
                 // 记录成功的加速状态
                 _errorRecovery.RecordAccelerationState(sourcePath, originalPath, cachePath, true);
 
-                // 触发初始统计更新
-                _ = Task.Run(() => UpdateCacheStats(cachePath));
+                // 启动智能缓存大小更新器
+                StartCacheSizeUpdater(cachePath);
 
                 return true;
             }
@@ -394,6 +417,9 @@ namespace CacheMax.GUI.Services
             try
             {
                 progress?.Report("开始停止缓存加速...");
+
+                // 停止缓存大小更新器
+                StopCacheSizeUpdater(cachePath);
 
                 // 步骤1：停止文件同步监控
                 progress?.Report("停止文件同步监控...");
@@ -1698,8 +1724,113 @@ namespace CacheMax.GUI.Services
             }
         }
 
+        /// <summary>
+        /// 启动缓存大小更新器
+        /// </summary>
+        private void StartCacheSizeUpdater(string cachePath)
+        {
+            try
+            {
+                // 如果已经存在，先停止旧的
+                if (_sizeUpdaters.ContainsKey(cachePath))
+                {
+                    StopCacheSizeUpdater(cachePath);
+                }
+
+                // 创建新的更新器
+                var updater = new CacheSizeUpdater(
+                    cachePath,
+                    (newSize) =>
+                    {
+                        // 回调：更新大小时触发完整的统计事件（异步执行）
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                var stats = await GetCacheStats(cachePath);
+                                stats.TotalCacheSize = newSize; // 使用更新器计算的大小
+                                StatsUpdated?.Invoke(this, stats);
+                                LogMessage?.Invoke(this, $"[更新器] 缓存大小已更新: {Path.GetFileName(cachePath)} = {newSize / 1024.0 / 1024.0:F2} MB");
+                            }
+                            catch (Exception ex)
+                            {
+                                LogMessage?.Invoke(this, $"[更新器] 触发统计事件失败: {ex.Message}");
+                            }
+                        });
+                    });
+
+                _sizeUpdaters[cachePath] = updater;
+
+                // 延迟2秒后触发首次更新（等待UI加载完成）
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(2000);
+                    updater.UpdateNow("延迟初始更新");
+                });
+
+                LogMessage?.Invoke(this, $"缓存大小更新器已启动：{cachePath}");
+            }
+            catch (Exception ex)
+            {
+                LogMessage?.Invoke(this, $"启动缓存大小更新器失败：{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 停止缓存大小更新器
+        /// </summary>
+        private void StopCacheSizeUpdater(string cachePath)
+        {
+            try
+            {
+                if (_sizeUpdaters.TryGetValue(cachePath, out var updater))
+                {
+                    updater.Dispose();
+                    _sizeUpdaters.Remove(cachePath);
+                    LogMessage?.Invoke(this, $"缓存大小更新器已停止：{cachePath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogMessage?.Invoke(this, $"停止缓存大小更新器失败：{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 通知缓存文件发生变化（供FileSyncService调用）
+        /// </summary>
+        public void NotifyCacheFileChange(string cachePath)
+        {
+            try
+            {
+                if (_sizeUpdaters.TryGetValue(cachePath, out var updater))
+                {
+                    updater.NotifyFileChange();
+                }
+            }
+            catch (Exception ex)
+            {
+                // 忽略通知失败，不影响主流程
+                LogMessage?.Invoke(this, $"通知缓存文件变化失败：{ex.Message}");
+            }
+        }
+
         public void Dispose()
         {
+            // 释放所有缓存大小更新器
+            foreach (var updater in _sizeUpdaters.Values)
+            {
+                try
+                {
+                    updater.Dispose();
+                }
+                catch
+                {
+                    // 忽略释放错误
+                }
+            }
+            _sizeUpdaters.Clear();
+
             _fileSyncService?.Dispose();
             _errorRecovery?.Dispose();
             // FastCopyService 无需手动释放

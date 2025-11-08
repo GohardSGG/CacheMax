@@ -102,7 +102,7 @@ namespace CacheMax.GUI
 
             if (string.IsNullOrEmpty(cacheRoot))
             {
-                MessageBox.Show("请指定缓存根目录", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                ModernMessageBox.Show("请指定缓存根目录", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -117,7 +117,7 @@ namespace CacheMax.GUI
                 var message = selectedItems.Any()
                     ? "选中的项目中没有需要加速的文件夹。"
                     : "没有需要加速的文件夹。请先添加路径。";
-                MessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                ModernMessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -125,7 +125,7 @@ namespace CacheMax.GUI
                 ? $"将对选中的 {targetFolders.Count} 个文件夹进行加速。\n\n是否开始加速？"
                 : $"检测到 {targetFolders.Count} 个未加速的文件夹。\n\n是否开始批量加速？";
 
-            var result = MessageBox.Show(confirmMessage, "确认加速", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = ModernMessageBox.Show(confirmMessage, "确认加速", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -182,7 +182,7 @@ namespace CacheMax.GUI
                             // 正确设置所有路径
                             folder.CachePath = cachePath;
                             folder.OriginalPath = folder.MountPoint + ".original"; // 这是关键修复！
-                            folder.CacheSize = GetDirectorySize(cachePath);
+                            // folder.CacheSize将由更新器自动设置，无需手动计算
 
                             // 现在保存完整正确的配置到文件
                             _config.AddAcceleratedFolder(folder);
@@ -224,7 +224,7 @@ namespace CacheMax.GUI
 
                 UpdateStatus($"批量加速完成：成功 {successCount} 个，失败 {failedCount} 个");
 
-                MessageBox.Show(
+                ModernMessageBox.Show(
                     $"批量加速完成！\n\n" +
                     $"✅ 成功：{successCount} 个文件夹\n" +
                     $"❌ 失败：{failedCount} 个文件夹\n\n" +
@@ -235,7 +235,7 @@ namespace CacheMax.GUI
             {
                 AddLog($"批量加速错误：{ex.Message}");
                 UpdateStatus($"批量加速失败：{ex.Message}");
-                MessageBox.Show($"批量加速失败：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"批量加速失败：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -257,7 +257,7 @@ namespace CacheMax.GUI
                 var message = selectedItems.Any()
                     ? "选中的项目中没有可以暂停的加速项目。"
                     : "没有可以暂停的加速项目。";
-                MessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                ModernMessageBox.Show(message, "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -280,7 +280,7 @@ namespace CacheMax.GUI
                   "请确保没有程序正在访问这些目录。\n\n" +
                   "确定要继续吗？";
 
-            var result = MessageBox.Show(warningMessage, "暂停确认", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = ModernMessageBox.Show(warningMessage, "暂停确认", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result != MessageBoxResult.Yes)
                 return;
@@ -336,13 +336,13 @@ namespace CacheMax.GUI
                     ? $"暂停完成！\n\n成功暂停 {successCount} 个项目。\n这些项目已恢复为普通文件夹，可以重新加速。"
                     : $"暂停完成！\n\n成功：{successCount} 个\n失败：{failCount} 个\n\n暂停成功的项目已恢复为普通文件夹，可以重新加速。";
 
-                MessageBox.Show(message, "暂停完成", MessageBoxButton.OK, MessageBoxImage.Information);
+                ModernMessageBox.Show(message, "暂停完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 AddLog($"错误：{ex.Message}");
                 UpdateStatus($"停止加速失败：{ex.Message}");
-                MessageBox.Show($"停止加速失败：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"停止加速失败：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -367,14 +367,14 @@ namespace CacheMax.GUI
                 var cacheRoot = CacheRootTextBox.Text?.Trim();
                 if (string.IsNullOrEmpty(cacheRoot))
                 {
-                    MessageBox.Show("请指定缓存根目录", "输入必填",
+                    ModernMessageBox.Show("请指定缓存根目录", "输入必填",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (!Directory.Exists(cacheRoot))
                 {
-                    var create = MessageBox.Show($"缓存目录 '{cacheRoot}' 不存在，是否创建？",
+                    var create = ModernMessageBox.Show($"缓存目录 '{cacheRoot}' 不存在，是否创建？",
                         "创建目录", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (create == MessageBoxResult.Yes)
                     {
@@ -440,14 +440,14 @@ namespace CacheMax.GUI
                 });
 
                 UpdateStatus("缓存目录测试完成");
-                MessageBox.Show($"缓存目录可用性测试完成！\n\n目录：{cacheRoot}\n\n请查看日志了解详细性能信息。",
+                ModernMessageBox.Show($"缓存目录可用性测试完成！\n\n目录：{cacheRoot}\n\n请查看日志了解详细性能信息。",
                     "测试完成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
                 AddLog($"测试缓存目录时出错：{ex.Message}");
                 UpdateStatus($"缓存目录测试错误：{ex.Message}");
-                MessageBox.Show($"测试缓存目录时出错：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"测试缓存目录时出错：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -483,7 +483,7 @@ namespace CacheMax.GUI
             var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
-                MessageBox.Show("请选择要清理缓存的文件夹", "信息",
+                ModernMessageBox.Show("请选择要清理缓存的文件夹", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -496,7 +496,7 @@ namespace CacheMax.GUI
 
             if (!int.TryParse(inputDialog.InputText, out var targetMB) || targetMB <= 0)
             {
-                MessageBox.Show("请输入有效的数字", "输入错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("请输入有效的数字", "输入错误", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -515,14 +515,14 @@ namespace CacheMax.GUI
                     // 更新缓存大小显示
                     selected.CacheSize = GetDirectorySize(selected.CachePath);
 
-                    MessageBox.Show($"缓存清理完成！\n已释放约 {targetMB} MB 空间", "成功",
+                    ModernMessageBox.Show($"缓存清理完成！\n已释放约 {targetMB} MB 空间", "成功",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     AddLog($"缓存清理失败：{selected.CachePath}");
                     UpdateStatus("缓存清理失败");
-                    MessageBox.Show("缓存清理失败，请查看日志了解详情", "错误",
+                    ModernMessageBox.Show("缓存清理失败，请查看日志了解详情", "错误",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -530,7 +530,7 @@ namespace CacheMax.GUI
             {
                 AddLog($"清理缓存异常：{ex.Message}");
                 UpdateStatus($"清理缓存异常：{ex.Message}");
-                MessageBox.Show($"清理缓存时发生异常：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"清理缓存时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -544,7 +544,7 @@ namespace CacheMax.GUI
             var selected = AcceleratedFoldersGrid.SelectedItem as AcceleratedFolder;
             if (selected == null)
             {
-                MessageBox.Show("请选择要检查链接状态的文件夹", "信息",
+                ModernMessageBox.Show("请选择要检查链接状态的文件夹", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -560,14 +560,14 @@ namespace CacheMax.GUI
                 {
                     AddLog($"链接状态检查成功：{selected.MountPoint}");
                     UpdateStatus("链接状态正常");
-                    MessageBox.Show("链接状态检查成功！所有目录和Junction配置正常。", "检查成功",
+                    ModernMessageBox.Show("链接状态检查成功！所有目录和Junction配置正常。", "检查成功",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     AddLog($"链接状态检查失败：{selected.MountPoint}");
                     UpdateStatus("链接状态异常");
-                    MessageBox.Show("链接状态检查发现问题，请查看日志了解详情", "检查失败",
+                    ModernMessageBox.Show("链接状态检查发现问题，请查看日志了解详情", "检查失败",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
@@ -575,7 +575,7 @@ namespace CacheMax.GUI
             {
                 AddLog($"链接状态检查异常：{ex.Message}");
                 UpdateStatus($"检查异常：{ex.Message}");
-                MessageBox.Show($"检查链接状态时发生异常：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"检查链接状态时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -602,7 +602,7 @@ namespace CacheMax.GUI
             {
                 AddLog($"检查缓存完整性异常：{ex.Message}");
                 UpdateStatus($"检查异常：{ex.Message}");
-                MessageBox.Show($"检查缓存完整性时发生异常：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"检查缓存完整性时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -616,12 +616,12 @@ namespace CacheMax.GUI
             var unsyncedItems = _acceleratedFolders.Where(f => f.Status == "未同步").ToList();
             if (!unsyncedItems.Any())
             {
-                MessageBox.Show("没有未同步的项目", "信息",
+                ModernMessageBox.Show("没有未同步的项目", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show($"发现 {unsyncedItems.Count} 个未同步项目，确定要全部同步吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
+            var result = ModernMessageBox.Show($"发现 {unsyncedItems.Count} 个未同步项目，确定要全部同步吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes)
@@ -642,7 +642,7 @@ namespace CacheMax.GUI
             {
                 AddLog($"批量同步异常：{ex.Message}");
                 UpdateStatus($"同步异常：{ex.Message}");
-                MessageBox.Show($"批量同步时发生异常：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"批量同步时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -740,11 +740,18 @@ namespace CacheMax.GUI
             {
                 try
                 {
-                    // 更新选中项的缓存大小
-                    var existingItem = _acceleratedFolders.FirstOrDefault(f => f.CachePath == e.CachePath);
+                    // 更新选中项的缓存大小（使用不区分大小写的路径比较）
+                    var existingItem = _acceleratedFolders.FirstOrDefault(f =>
+                        string.Equals(f.CachePath, e.CachePath, StringComparison.OrdinalIgnoreCase));
+
                     if (existingItem != null)
                     {
                         existingItem.CacheSize = e.TotalCacheSize;
+                        AddLog($"[UI] 缓存大小已更新: {existingItem.MountPoint} = {e.TotalCacheSize / 1024.0 / 1024.0:F2} MB");
+                    }
+                    else
+                    {
+                        AddLog($"[UI] 警告：未找到匹配的folder，CachePath={e.CachePath}");
                     }
 
                     // 如果有UI控件用于显示缓存统计，可以在这里更新
@@ -790,7 +797,7 @@ namespace CacheMax.GUI
 
             if (targetItems.Count == 0)
             {
-                MessageBox.Show("没有可以删除的项目。", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                ModernMessageBox.Show("没有可以删除的项目。", "信息", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -896,13 +903,13 @@ namespace CacheMax.GUI
                         ? $"移除完成！\n\n成功移除 {successCount} 个项目。"
                         : $"移除完成！\n\n成功：{successCount} 个\n失败：{failCount} 个";
 
-                    MessageBox.Show(resultMessage, "移除完成", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ModernMessageBox.Show(resultMessage, "移除完成", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
                     AddLog($"删除路径时出错：{ex.Message}");
                     UpdateStatus($"删除失败：{ex.Message}");
-                    MessageBox.Show($"删除路径时出错：\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ModernMessageBox.Show($"删除路径时出错：\n{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 finally
                 {
@@ -999,7 +1006,7 @@ namespace CacheMax.GUI
 
         private void ClearCompletedButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("确定要清理所有已完成的文件记录吗？", "确认清理",
+            var result = ModernMessageBox.Show("确定要清理所有已完成的文件记录吗？", "确认清理",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
@@ -1016,12 +1023,12 @@ namespace CacheMax.GUI
 
             if (failedItems.Count == 0)
             {
-                MessageBox.Show("没有失败的文件需要清理", "信息",
+                ModernMessageBox.Show("没有失败的文件需要清理", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show($"确定要清理 {failedItems.Count} 个失败的文件记录吗？", "确认清理",
+            var result = ModernMessageBox.Show($"确定要清理 {failedItems.Count} 个失败的文件记录吗？", "确认清理",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
@@ -1042,12 +1049,12 @@ namespace CacheMax.GUI
 
             if (failedItems.Count == 0)
             {
-                MessageBox.Show("没有失败的文件需要重试", "信息",
+                ModernMessageBox.Show("没有失败的文件需要重试", "信息",
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show($"确定要重试 {failedItems.Count} 个失败的文件吗？", "确认重试",
+            var result = ModernMessageBox.Show($"确定要重试 {failedItems.Count} 个失败的文件吗？", "确认重试",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
@@ -1124,14 +1131,14 @@ namespace CacheMax.GUI
             // 路径格式验证
             if (!ValidatePath(pathText, out string errorMessage))
             {
-                MessageBox.Show(errorMessage, "路径验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show(errorMessage, "路径验证失败", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             // 重复检查
             if (_acceleratedFolders.Any(f => f.OriginalPath.Equals(pathText, StringComparison.OrdinalIgnoreCase)))
             {
-                MessageBox.Show("此路径已存在于列表中", "重复路径", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ModernMessageBox.Show("此路径已存在于列表中", "重复路径", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -1237,7 +1244,7 @@ namespace CacheMax.GUI
             if (button == null || item == null || item.Status != "未同步")
                 return;
 
-            var result = MessageBox.Show($"确定要同步项目 '{item.MountPoint}' 吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
+            var result = ModernMessageBox.Show($"确定要同步项目 '{item.MountPoint}' 吗？\n\n这将用缓存覆盖原始目录中的差异文件。", "确认同步",
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes)
@@ -1273,7 +1280,7 @@ namespace CacheMax.GUI
                 item.Status = "同步失败";
                 AddLog($"同步 {item.MountPoint} 时出错: {ex.Message}");
                 UpdateStatus($"同步异常: {ex.Message}");
-                MessageBox.Show($"同步时发生异常：\n{ex.Message}", "错误",
+                ModernMessageBox.Show($"同步时发生异常：\n{ex.Message}", "错误",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
