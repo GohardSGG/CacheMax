@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 echo ======================================
 echo    CacheMax 高性能缓存加速器 v3.0
 echo           系统安装程序
@@ -8,9 +9,10 @@ echo.
 REM 检查管理员权限
 net session >nul 2>&1
 if %errorLevel% == 0 (
-    echo [✓] 已获得管理员权限
+    echo [OK] 已获得管理员权限
 ) else (
-    echo [✗] 需要管理员权限运行此脚本
+    echo [ERROR] 需要管理员权限运行此脚本
+    echo.
     echo 请右键点击此脚本，选择"以管理员身份运行"
     echo.
     pause
@@ -25,8 +27,10 @@ echo.
 
 REM 检查源文件是否存在
 if not exist "%~dp0CacheMax.GUI\bin\Release\net8.0-windows\CacheMax.exe" (
-    echo [✗] 错误：找不到Release版本的可执行文件
-    echo 请先编译Release版本：dotnet build --configuration Release
+    echo [ERROR] 错误：找不到Release版本的可执行文件
+    echo.
+    echo 请先编译Release版本：
+    echo dotnet build --configuration Release
     echo.
     pause
     exit /b 1
@@ -54,7 +58,7 @@ REM 复制主要可执行文件和DLL
 echo     正在复制 CacheMax.exe...
 copy "%~dp0CacheMax.GUI\bin\Release\net8.0-windows\CacheMax.exe" "C:\Program Files\CacheMax\"
 if %errorlevel% neq 0 (
-    echo [✗] 错误：CacheMax.exe 复制失败
+    echo [ERROR] 错误：CacheMax.exe 复制失败
     pause
     exit /b 1
 )
@@ -62,7 +66,7 @@ if %errorlevel% neq 0 (
 echo     正在复制 CacheMax.dll...
 copy "%~dp0CacheMax.GUI\bin\Release\net8.0-windows\CacheMax.dll" "C:\Program Files\CacheMax\"
 if %errorlevel% neq 0 (
-    echo [✗] 错误：CacheMax.dll 复制失败
+    echo [ERROR] 错误：CacheMax.dll 复制失败
     pause
     exit /b 1
 )
@@ -89,12 +93,12 @@ if exist "%~dp0CacheMax.GUI\bin\Release\net8.0-windows\Newtonsoft.Json.dll" (
 
 REM 检查关键文件是否复制成功
 if not exist "C:\Program Files\CacheMax\CacheMax.exe" (
-    echo [✗] 错误：主程序文件复制失败
+    echo [ERROR] 错误：主程序文件复制失败
     pause
     exit /b 1
 )
 
-echo [✓] 程序文件复制完成
+echo [OK] 程序文件复制完成
 
 REM 创建开始菜单快捷方式
 echo [*] 创建开始菜单快捷方式...

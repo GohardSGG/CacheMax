@@ -62,7 +62,7 @@ namespace CacheMax.GUI.Services
 
                         if (process.ExitCode == 0)
                         {
-                            progress?.Report("Junction创建成功");
+                            progress?.Report("[步骤3/5] ✅ Junction创建成功");
                             return true;
                         }
                         else
@@ -357,7 +357,7 @@ namespace CacheMax.GUI.Services
                 }
 
                 Directory.Move(sourcePath, targetPath);
-                progress?.Report($"目录重命名成功：{sourcePath} -> {targetPath}");
+                progress?.Report($"[步骤2/5] ✅ 目录重命名成功：{sourcePath} -> {targetPath}");
                 return true;
             }
             catch (Exception ex)

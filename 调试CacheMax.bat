@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 echo ======================================
 echo    CacheMax 高性能缓存加速器 v3.0
 echo         DEBUG 调试版本

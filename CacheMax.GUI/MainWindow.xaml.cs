@@ -831,10 +831,14 @@ namespace CacheMax.GUI
                 message += "\n\n确定要继续吗？";
             }
 
-            var result = MessageBox.Show(message, "确认移除", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            // 使用自定义对话框询问是否删除缓存文件
+            var dialog = new RemoveAccelerationDialog(message, targetItems.Count);
+            var result = dialog.ShowDialog();
 
-            if (result == MessageBoxResult.Yes)
+            if (result == true)
             {
+                bool deleteCacheFiles = dialog.DeleteCacheFiles;
+
                 try
                 {
                     DeleteButton.IsEnabled = false;
@@ -861,7 +865,7 @@ namespace CacheMax.GUI
                                     item.MountPoint,
                                     item.OriginalPath,
                                     item.CachePath,
-                                    true, // 删除缓存文件
+                                    deleteCacheFiles, // 根据用户选择决定是否删除缓存文件
                                     progress);
 
                                 if (!stopSuccess)

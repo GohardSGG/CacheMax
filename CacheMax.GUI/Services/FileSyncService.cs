@@ -293,11 +293,12 @@ namespace CacheMax.GUI.Services
         {
             try
             {
-                SafeLog($"StartMonitoring调用：{cachePath} -> {originalPath}, 模式:{mode}");
+                // 降级为DEBUG日志，不输出到主界面
+                SafeLog($"[DEBUG] StartMonitoring调用：{cachePath} -> {originalPath}, 模式:{mode}");
 
                 if (!Directory.Exists(cachePath))
                 {
-                    var msg = $"缓存目录不存在：{cachePath}";
+                    var msg = $"[步骤4/5] 缓存目录不存在：{cachePath}";
                     progress?.Report(msg);
                     SafeLog(msg);
                     return false;
@@ -305,7 +306,7 @@ namespace CacheMax.GUI.Services
 
                 if (!Directory.Exists(originalPath))
                 {
-                    var msg = $"原始目录不存在：{originalPath}";
+                    var msg = $"[步骤4/5] 原始目录不存在：{originalPath}";
                     progress?.Report(msg);
                     SafeLog(msg);
                     return false;
@@ -320,9 +321,8 @@ namespace CacheMax.GUI.Services
                         StopMonitoring(cachePath, progress);
                     }
 
-                    var msg = $"开始监控：{cachePath} -> {originalPath}";
-                    progress?.Report(msg);
-                    SafeLog(msg);
+                    progress?.Report($"[步骤4/5] 文件监控已启动：{cachePath} -> {originalPath}");
+                    SafeLog($"开始监控：{cachePath} -> {originalPath}");
 
                     // 创建配置
                     _syncConfigs[cachePath] = new SyncConfiguration
@@ -354,8 +354,9 @@ namespace CacheMax.GUI.Services
 
                     _watchers[cachePath] = watcher;
 
-                    SafeLog($"开始监控：{cachePath} (模式：{mode}，延迟：{delaySeconds}秒)");
-                    progress?.Report("文件监控启动成功");
+                    progress?.Report($"[步骤4/5] 监控配置：模式={mode}, 延迟={delaySeconds}秒");
+                    SafeLog($"监控配置：{cachePath} (模式：{mode}，延迟：{delaySeconds}秒)");
+                    progress?.Report("[步骤4/5] ✅ 文件监控启动成功");
                     return true;
                 }
             }

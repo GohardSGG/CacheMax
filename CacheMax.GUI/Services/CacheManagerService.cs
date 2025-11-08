@@ -248,34 +248,34 @@ namespace CacheMax.GUI.Services
 
                 var originalPath = $"{sourcePath}.original";
 
-                // 步骤4：复制到缓存（使用Robocopy+FastCopy组合）
-                progress?.Report($"复制数据到缓存：{sourcePath} -> {cachePath}");
+                // 步骤1：复制到缓存（使用Robocopy+FastCopy组合）
+                progress?.Report($"[步骤1/5] 复制数据到缓存：{sourcePath} -> {cachePath}");
                 if (!await CopyDirectoryUsingRobocopyWithFastCopyVerify(sourcePath, cachePath, useSyncMode, progress))
                 {
-                    progress?.Report("复制到缓存失败");
+                    progress?.Report("[步骤1/5] 复制到缓存失败");
                     _errorRecovery.RecordError(sourcePath, "CopyFailure", "复制到缓存失败", null, ErrorRecoveryService.ErrorSeverity.High);
                     return false;
                 }
 
-                // 步骤3：重命名原始目录
-                progress?.Report($"备份原始目录：{sourcePath} -> {originalPath}");
+                // 步骤2：重命名原始目录
+                progress?.Report($"[步骤2/5] 备份原始目录：{sourcePath} -> {originalPath}");
                 if (!_junctionService.SafeRenameDirectory(sourcePath, originalPath, progress))
                 {
-                    progress?.Report("重命名原始目录失败");
+                    progress?.Report("[步骤2/5] 重命名原始目录失败");
                     // 清理已复制的缓存
                     try { Directory.Delete(cachePath, true); } catch { }
                     return false;
                 }
 
-                // 步骤3.5：设置原始目录隐藏属性
-                progress?.Report("设置原始目录隐藏属性...");
+                // 步骤2.5：设置原始目录隐藏属性
+                progress?.Report("[步骤2/5] 设置原始目录隐藏属性...");
                 SetDirectoryHidden(originalPath, progress);
 
-                // 步骤4：创建Junction
-                progress?.Report($"创建Junction：{sourcePath} -> {cachePath}");
+                // 步骤3：创建Junction
+                progress?.Report($"[步骤3/5] 创建Junction：{sourcePath} -> {cachePath}");
                 if (!_junctionService.CreateDirectoryJunction(sourcePath, cachePath, progress))
                 {
-                    progress?.Report("创建Junction失败");
+                    progress?.Report("[步骤3/5] 创建Junction失败");
                     // 回滚：恢复原始目录
                     try
                     {
@@ -284,21 +284,21 @@ namespace CacheMax.GUI.Services
                     }
                     catch (Exception ex)
                     {
-                        progress?.Report($"回滚失败：{ex.Message}");
+                        progress?.Report($"[步骤3/5] 回滚失败：{ex.Message}");
                     }
                     return false;
                 }
 
-                // 步骤5：启动文件同步监控
-                progress?.Report("启动文件同步监控...");
+                // 步骤4：启动文件同步监控
+                progress?.Report("[步骤4/5] 启动文件同步监控...");
                 if (!_fileSyncService.StartMonitoring(cachePath, originalPath, syncMode, syncDelaySeconds, progress))
                 {
-                    progress?.Report("启动文件同步监控失败");
+                    progress?.Report("[步骤4/5] 启动文件同步监控失败");
                     // 可以继续，因为符号链接已经工作了
                 }
 
 
-                progress?.Report("缓存加速初始化完成！");
+                progress?.Report("[步骤5/5] ✅ 缓存加速初始化完成！");
                 LogMessage?.Invoke(this, $"缓存加速已启用：{sourcePath}");
 
                 // 记录成功的加速状态
@@ -453,6 +453,9 @@ namespace CacheMax.GUI.Services
                         progress?.Report("恢复原始目录失败");
                         return false;
                     }
+
+                    // 移除恢复后目录的隐藏属性
+                    RemoveDirectoryHidden(mountPoint, progress);
                 }
                 else
                 {
@@ -463,14 +466,14 @@ namespace CacheMax.GUI.Services
                 if (deleteCacheFiles && Directory.Exists(cachePath))
                 {
                     progress?.Report($"删除缓存文件：{cachePath}");
-                    try
+                    bool deleteSuccess = await SafeDeleteCacheDirectory(cachePath, progress);
+                    if (deleteSuccess)
                     {
-                        Directory.Delete(cachePath, true);
-                        progress?.Report("缓存文件删除成功");
+                        progress?.Report("✅ 缓存文件删除成功");
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        progress?.Report($"删除缓存文件失败：{ex.Message}");
+                        progress?.Report("⚠️ 部分缓存文件删除失败（可能被占用），请稍后手动删除");
                     }
                 }
 
@@ -909,31 +912,31 @@ namespace CacheMax.GUI.Services
                 else
                 {
                     // 新目录：使用Robocopy高速复制 + FastCopy校验
-                    progress?.Report("使用Robocopy高速多线程复制 + FastCopy完整性校验");
+                    progress?.Report("[步骤1/5] 使用Robocopy高速多线程复制 + FastCopy完整性校验");
 
                     // 阶段1：Robocopy 高速多线程复制
-                    progress?.Report("阶段1/2：Robocopy多线程复制中...");
+                    progress?.Report("[步骤1/5] Robocopy多线程复制中...");
                     bool copySuccess = await ExecuteRobocopyAsync(sourcePath, targetPath, progress);
 
                     if (!copySuccess)
                     {
-                        progress?.Report("Robocopy复制失败");
+                        progress?.Report("[步骤1/5] Robocopy复制失败");
                         return false;
                     }
 
-                    progress?.Report("阶段1/2：Robocopy复制完成");
+                    progress?.Report("[步骤1/5] ✅ Robocopy复制完成");
 
                     // 阶段2：FastCopy 完整性校验
-                    progress?.Report("阶段2/2：FastCopy完整性校验中...");
+                    progress?.Report("[步骤1/5] FastCopy完整性校验中...");
                     bool verifySuccess = await ExecuteFastCopyVerifyAsync(sourcePath, targetPath, progress);
 
                     if (!verifySuccess)
                     {
-                        progress?.Report("FastCopy校验失败，数据可能不完整");
+                        progress?.Report("[步骤1/5] FastCopy校验失败，数据可能不完整");
                         return false;
                     }
 
-                    progress?.Report("✅ Robocopy+FastCopy组合复制和校验完成");
+                    progress?.Report("[步骤1/5] ✅ Robocopy+FastCopy组合复制和校验完成");
                     return true;
                 }
             }
@@ -1001,10 +1004,10 @@ namespace CacheMax.GUI.Services
 
                 // 输出完整的命令行，便于手动测试验证
                 var fullCommandLine = $"robocopy {arguments}";
-                progress?.Report($"执行Robocopy命令: {fullCommandLine}");
-                progress?.Report($"工作目录: {Environment.CurrentDirectory}");
-                progress?.Report($"当前用户: {Environment.UserName}");
-                progress?.Report($"============ 请复制上面的命令到PowerShell手动测试 ============");
+                LogMessage?.Invoke(this, $"执行Robocopy命令: {fullCommandLine}");
+                LogMessage?.Invoke(this, $"工作目录: {Environment.CurrentDirectory}");
+                LogMessage?.Invoke(this, $"当前用户: {Environment.UserName}");
+                LogMessage?.Invoke(this, $"============ 请复制上面的命令到PowerShell手动测试 ============");
 
                 var processStartInfo = new ProcessStartInfo
                 {
@@ -1028,18 +1031,9 @@ namespace CacheMax.GUI.Services
                     {
                         outputBuilder.Add(e.Data);
 
-                        // 捕捉所有有用的进度信息
-                        if (e.Data.Contains("Files :") ||
-                            e.Data.Contains("Dirs :") ||
-                            e.Data.Contains("Bytes :") ||
-                            e.Data.Contains("Times :") ||
-                            e.Data.Contains("Speed :") ||
-                            e.Data.Contains("ETA:") ||
-                            e.Data.Contains("%") ||
-                            (e.Data.Contains("New File") && robocopyConfig.ShowProgress))
-                        {
-                            progress?.Report($"Robocopy: {e.Data.Trim()}");
-                        }
+                        // 只捕捉关键统计信息，不输出无效进度
+                        // 注意：由于使用了 /NFL /NDL，大部分进度信息不可用
+                        // 只在最后输出统计结果即可
                     }
                 };
 
@@ -1053,18 +1047,18 @@ namespace CacheMax.GUI.Services
 
                 if (!process.Start())
                 {
-                    progress?.Report("Robocopy进程启动失败");
+                    progress?.Report("[步骤1/5] Robocopy进程启动失败");
                     return false;
                 }
 
-                progress?.Report($"Robocopy进程已启动，PID: {process.Id}");
+                LogMessage?.Invoke(this, $"Robocopy进程已启动，PID: {process.Id}");
 
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
                 await process.WaitForExitAsync();
 
-                progress?.Report($"Robocopy进程已退出，PID: {process.Id}");
+                LogMessage?.Invoke(this, $"Robocopy进程已退出，PID: {process.Id}");
 
                 // Robocopy退出码详细分析：
                 // 0: 没有文件被复制 (成功)
@@ -1081,12 +1075,12 @@ namespace CacheMax.GUI.Services
                 bool hasSuccessfulCopy = (process.ExitCode & 1) != 0; // 检查是否有成功复制
 
                 // 智能成功判断：对比总数和复制列是否完全一致
-                bool isCompletelySuccessful = IsRobocopyCompletelySuccessful(outputBuilder);
+                bool isCompletelySuccessful = IsRobocopyCompletelySuccessful(outputBuilder, progress);
                 bool hasSignificantDataTransfer = CheckForSignificantDataTransfer(outputBuilder);
                 bool isOfficialSuccess = process.ExitCode < 8;
 
-                // 调试输出
-                progress?.Report($"🔍 调试信息: 退出码={process.ExitCode}, 官方成功={isOfficialSuccess}, 完全成功={isCompletelySuccessful}, 数据传输={hasSignificantDataTransfer}");
+                // 调试输出到日志文件，不显示在前台
+                LogMessage?.Invoke(this, $"🔍 调试信息: 退出码={process.ExitCode}, 官方成功={isOfficialSuccess}, 完全成功={isCompletelySuccessful}, 数据传输={hasSignificantDataTransfer}");
 
                 // 判断最终成功状态
                 bool success;
@@ -1094,26 +1088,26 @@ namespace CacheMax.GUI.Services
                 {
                     // 退出码 < 8，官方认为成功
                     success = true;
-                    progress?.Report($"✅ Robocopy成功完成，退出码: {process.ExitCode}");
+                    LogMessage?.Invoke(this, $"✅ Robocopy成功完成，退出码: {process.ExitCode}");
                 }
                 else if (isCompletelySuccessful && hasSignificantDataTransfer)
                 {
                     // 虽然退出码 >= 8，但总数和复制列完全一致，视为成功
                     success = true;
-                    progress?.Report($"✅ Robocopy实质成功，退出码: {process.ExitCode} (所有项目完全复制成功)");
+                    progress?.Report($"[步骤1/5] ✅ Robocopy实质成功，退出码: {process.ExitCode} (所有项目完全复制成功)");
                 }
                 else
                 {
                     // 真正的失败
                     success = false;
-                    progress?.Report($"❌ Robocopy失败，退出码: {process.ExitCode}");
+                    progress?.Report($"[步骤1/5] ❌ Robocopy失败，退出码: {process.ExitCode}");
                     if (errorBuilder.Count > 0)
                     {
-                        progress?.Report($"错误信息: {string.Join("; ", errorBuilder.Take(5))}");
+                        progress?.Report($"[步骤1/5] 错误信息: {string.Join("; ", errorBuilder.Take(5))}");
                     }
                     if (outputBuilder.Count > 0)
                     {
-                        progress?.Report($"输出信息: {string.Join("; ", outputBuilder.TakeLast(5))}");
+                        progress?.Report($"[步骤1/5] 输出信息: {string.Join("; ", outputBuilder.TakeLast(5))}");
                     }
                 }
 
@@ -1142,16 +1136,16 @@ namespace CacheMax.GUI.Services
                     "/log"             // 输出日志
                 };
 
-                progress?.Report("FastCopy校验：检查复制完整性...");
-                bool verifyResult = await _fastCopyService.CopyDirectoryAsync(sourcePath, targetPath, verifyOptions.ToArray());
+                progress?.Report("[步骤1/5] FastCopy校验：检查复制完整性...");
+                bool verifyResult = await _fastCopyService.CopyDirectoryAsync(sourcePath, targetPath, verifyOptions.ToArray(), progress);
 
                 if (verifyResult)
                 {
-                    progress?.Report("✅ FastCopy校验通过：文件完整性确认");
+                    progress?.Report("[步骤1/5] ✅ FastCopy校验通过：文件完整性确认");
                 }
                 else
                 {
-                    progress?.Report("❌ FastCopy校验失败：发现文件差异或损坏");
+                    progress?.Report("[步骤1/5] ❌ FastCopy校验失败：发现文件差异或损坏");
                 }
 
                 return verifyResult;
@@ -1353,7 +1347,7 @@ namespace CacheMax.GUI.Services
         /// <summary>
         /// 检查Robocopy是否完全成功：对比总数和复制列是否完全一致
         /// </summary>
-        private bool IsRobocopyCompletelySuccessful(List<string> outputLines)
+        private bool IsRobocopyCompletelySuccessful(List<string> outputLines, IProgress<string>? progress = null)
         {
             bool allRowsMatch = true;
             int checkedRows = 0;
@@ -1379,10 +1373,12 @@ namespace CacheMax.GUI.Services
                             if (!rowMatches)
                             {
                                 allRowsMatch = false;
+                                progress?.Report($"[步骤1/5] ❌ {rowType}行不匹配: 总数={totalCount}, 复制={copiedCount}");
                                 LogMessage?.Invoke(this, $"❌ {rowType}行不匹配: 总数={totalCount}, 复制={copiedCount}");
                             }
                             else
                             {
+                                progress?.Report($"[步骤1/5] ✅ {rowType}行完全匹配: 总数={totalCount}, 复制={copiedCount}");
                                 LogMessage?.Invoke(this, $"✅ {rowType}行完全匹配: 总数={totalCount}, 复制={copiedCount}");
                             }
                         }
@@ -1456,7 +1452,7 @@ namespace CacheMax.GUI.Services
 
                 // 添加隐藏属性
                 directoryInfo.Attributes |= FileAttributes.Hidden;
-                progress?.Report($"已设置目录隐藏属性：{directoryPath}");
+                progress?.Report($"[步骤2/5] ✅ 已设置目录隐藏属性：{directoryPath}");
                 return true;
             }
             catch (Exception ex)
@@ -1464,6 +1460,221 @@ namespace CacheMax.GUI.Services
                 progress?.Report($"设置目录隐藏属性失败：{directoryPath}, 错误：{ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 移除目录隐藏属性
+        /// </summary>
+        private bool RemoveDirectoryHidden(string directoryPath, IProgress<string>? progress = null)
+        {
+            try
+            {
+                if (!Directory.Exists(directoryPath))
+                {
+                    progress?.Report($"目录不存在，无法移除隐藏属性：{directoryPath}");
+                    return false;
+                }
+
+                var directoryInfo = new DirectoryInfo(directoryPath);
+
+                // 检查是否有隐藏属性
+                if ((directoryInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                {
+                    progress?.Report($"目录未设置隐藏属性：{directoryPath}");
+                    return true;
+                }
+
+                // 移除隐藏属性
+                directoryInfo.Attributes &= ~FileAttributes.Hidden;
+                progress?.Report($"✅ 已移除目录隐藏属性：{directoryPath}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"移除目录隐藏属性失败：{directoryPath}, 错误：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 安全删除缓存目录，处理文件占用等错误
+        /// </summary>
+        private async Task<bool> SafeDeleteCacheDirectory(string cachePath, IProgress<string>? progress = null)
+        {
+            try
+            {
+                if (!Directory.Exists(cachePath))
+                {
+                    progress?.Report($"缓存目录不存在：{cachePath}");
+                    return true; // 目录不存在视为删除成功
+                }
+
+                int retryCount = 0;
+                const int maxRetries = 3;
+                List<string> failedFiles = new List<string>();
+
+                while (retryCount < maxRetries)
+                {
+                    try
+                    {
+                        // 尝试直接删除整个目录
+                        Directory.Delete(cachePath, true);
+                        return true; // 删除成功
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // 可能有只读文件，尝试移除只读属性后重试
+                        progress?.Report($"检测到权限问题，正在移除只读属性... (尝试 {retryCount + 1}/{maxRetries})");
+                        RemoveReadOnlyAttributes(cachePath);
+                        retryCount++;
+                        await Task.Delay(500); // 等待500ms后重试
+                    }
+                    catch (IOException)
+                    {
+                        // 文件被占用，尝试逐个删除
+                        progress?.Report($"检测到文件占用，尝试逐个删除... (尝试 {retryCount + 1}/{maxRetries})");
+                        failedFiles = TryDeleteFilesIndividually(cachePath, progress);
+
+                        if (failedFiles.Count == 0)
+                        {
+                            // 文件都删除了，再试一次删除目录
+                            try
+                            {
+                                Directory.Delete(cachePath, true);
+                                return true;
+                            }
+                            catch
+                            {
+                                retryCount++;
+                                await Task.Delay(500);
+                            }
+                        }
+                        else
+                        {
+                            retryCount++;
+                            await Task.Delay(1000); // 等待更长时间
+                        }
+                    }
+                }
+
+                // 重试失败，报告失败的文件
+                if (failedFiles.Count > 0)
+                {
+                    progress?.Report($"以下文件无法删除（可能被占用）：");
+                    foreach (var file in failedFiles.Take(5)) // 只显示前5个
+                    {
+                        progress?.Report($"  - {Path.GetFileName(file)}");
+                    }
+                    if (failedFiles.Count > 5)
+                    {
+                        progress?.Report($"  ... 还有 {failedFiles.Count - 5} 个文件");
+                    }
+                }
+
+                return false; // 删除失败
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"删除缓存目录异常：{ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 移除目录及其子目录下所有文件的只读属性
+        /// </summary>
+        private void RemoveReadOnlyAttributes(string directoryPath)
+        {
+            try
+            {
+                var dirInfo = new DirectoryInfo(directoryPath);
+
+                // 移除目录本身的只读属性
+                if ((dirInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    dirInfo.Attributes &= ~FileAttributes.ReadOnly;
+                }
+
+                // 递归处理所有文件
+                foreach (var file in dirInfo.GetFiles("*", SearchOption.AllDirectories))
+                {
+                    if ((file.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        file.Attributes &= ~FileAttributes.ReadOnly;
+                    }
+                }
+
+                // 递归处理所有子目录
+                foreach (var subDir in dirInfo.GetDirectories("*", SearchOption.AllDirectories))
+                {
+                    if ((subDir.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        subDir.Attributes &= ~FileAttributes.ReadOnly;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 忽略错误，继续尝试删除
+                LogMessage?.Invoke(this, $"移除只读属性时出错：{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 逐个尝试删除文件，返回删除失败的文件列表
+        /// </summary>
+        private List<string> TryDeleteFilesIndividually(string directoryPath, IProgress<string>? progress = null)
+        {
+            var failedFiles = new List<string>();
+
+            try
+            {
+                var dirInfo = new DirectoryInfo(directoryPath);
+                var allFiles = dirInfo.GetFiles("*", SearchOption.AllDirectories);
+
+                foreach (var file in allFiles)
+                {
+                    try
+                    {
+                        // 移除只读属性
+                        if ((file.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            file.Attributes &= ~FileAttributes.ReadOnly;
+                        }
+
+                        file.Delete();
+                    }
+                    catch
+                    {
+                        failedFiles.Add(file.FullName);
+                    }
+                }
+
+                // 尝试删除空目录
+                var allDirs = dirInfo.GetDirectories("*", SearchOption.AllDirectories)
+                    .OrderByDescending(d => d.FullName.Length); // 从最深的目录开始删除
+
+                foreach (var dir in allDirs)
+                {
+                    try
+                    {
+                        if (dir.GetFiles().Length == 0 && dir.GetDirectories().Length == 0)
+                        {
+                            dir.Delete();
+                        }
+                    }
+                    catch
+                    {
+                        // 忽略目录删除失败
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"逐个删除文件时出错：{ex.Message}");
+            }
+
+            return failedFiles;
         }
 
         /// <summary>

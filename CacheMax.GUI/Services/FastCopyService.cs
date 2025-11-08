@@ -269,6 +269,7 @@ namespace CacheMax.GUI.Services
                 {
                     standardOutput.Add(e.Data);
                     _logger.LogDebug($"FastCopy输出: {e.Data}", "FastCopyService");
+                    progress?.Report($"[步骤1/5] FastCopy输出: {e.Data}");
                 }
             };
 
@@ -289,6 +290,7 @@ namespace CacheMax.GUI.Services
 
                 var processId = process.Id;
                 _logger.LogInfo($"启动FastCopy进程 (PID: {processId}): {Path.GetFileName(source)}", "FastCopyService");
+                progress?.Report($"[步骤1/5] FastCopy进程启动 (PID: {processId}): {Path.GetFileName(source)}");
 
                 // 添加到监控列表
                 var monitorInfo = new ProcessMonitorInfo
@@ -385,6 +387,7 @@ namespace CacheMax.GUI.Services
                 {
                     standardOutput.Add(e.Data);
                     _logger.LogDebug($"FastCopy输出: {e.Data}", "FastCopyService");
+                    progress?.Report($"[步骤1/5] FastCopy输出: {e.Data}");
                 }
             };
 
@@ -405,6 +408,7 @@ namespace CacheMax.GUI.Services
 
                 var processId = process.Id;
                 _logger.LogInfo($"启动FastCopy进程 (PID: {processId}): {Path.GetFileName(source)}", "FastCopyService");
+                progress?.Report($"[步骤1/5] FastCopy进程启动 (PID: {processId}): {Path.GetFileName(source)}");
 
                 // 添加到监控列表
                 var monitorInfo = new ProcessMonitorInfo
@@ -639,7 +643,7 @@ namespace CacheMax.GUI.Services
 
                 _logger.LogInfo($"开始FastCopy目录复制: {sourceDir} -> {destinationDir}", "FastCopyService");
                 _logger.LogDebug($"FastCopy参数: {arguments}", "FastCopyService");
-                progress?.Report($"正在复制目录: {Path.GetFileName(sourceDir)}");
+                progress?.Report($"[步骤1/5] FastCopy命令：{arguments}");
 
                 var processStartInfo = new ProcessStartInfo
                 {
@@ -656,12 +660,12 @@ namespace CacheMax.GUI.Services
                 if (success)
                 {
                     _logger.LogInfo($"FastCopy目录复制成功: {sourceDir} -> {destinationDir}", "FastCopyService");
-                    progress?.Report($"目录复制完成: {Path.GetFileName(sourceDir)}");
+                    progress?.Report($"[步骤1/5] FastCopy目录复制成功: {sourceDir} -> {destinationDir}");
                 }
                 else
                 {
                     _logger.LogError($"FastCopy目录复制失败: {sourceDir} -> {destinationDir}", null, "FastCopyService");
-                    progress?.Report($"目录复制失败: {Path.GetFileName(sourceDir)}");
+                    progress?.Report($"[步骤1/5] FastCopy目录复制失败: {sourceDir} -> {destinationDir}");
                 }
 
                 return success;
