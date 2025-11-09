@@ -178,7 +178,11 @@ namespace CacheMax.GUI.Services
                     directory = Path.GetDirectoryName(directory);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // 查找Junction目标失败不阻塞流程
+                LogMessage?.Invoke(this, $"查找挂载点失败：{ex.Message}");
+            }
             return string.Empty;
         }
 
@@ -221,6 +225,40 @@ namespace CacheMax.GUI.Services
 
                 progress?.Report("开始缓存加速初始化...");
 
+                // 生成缓存路径（提前生成以便检查磁盘空间）
+                var driveLetter = Path.GetPathRoot(sourcePath)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
+                var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
+                var pathWithoutDrive = sourcePath.Substring(Path.GetPathRoot(sourcePath)?.Length ?? 0);
+                var cachePath = Path.Combine(driveSpecificCacheRoot, pathWithoutDrive);
+
+                // 检查磁盘空间
+                if (!HasEnoughDiskSpace(sourcePath, cachePath, progress))
+                {
+                    return false;
+                }
+
+                // 检查循环引用
+                var normalizedSource = Path.GetFullPath(sourcePath).TrimEnd('\\');
+                var normalizedCache = Path.GetFullPath(cachePath).TrimEnd('\\');
+
+                if (normalizedCache.StartsWith(normalizedSource + "\\", StringComparison.OrdinalIgnoreCase))
+                {
+                    progress?.Report($"❌ 错误：缓存路径不能在源路径内部");
+                    progress?.Report($"   源路径：{normalizedSource}");
+                    progress?.Report($"   缓存路径：{normalizedCache}");
+                    return false;
+                }
+
+                if (normalizedSource.StartsWith(normalizedCache + "\\", StringComparison.OrdinalIgnoreCase))
+                {
+                    progress?.Report($"❌ 错误：源路径不能在缓存路径内部");
+                    progress?.Report($"   源路径：{normalizedSource}");
+                    progress?.Report($"   缓存路径：{normalizedCache}");
+                    return false;
+                }
+
+                progress?.Report("✓ 路径检查通过：无循环引用");
+
                 // 步骤1：检查是否已经加速
                 if (_junctionService.IsJunction(sourcePath))
                 {
@@ -228,15 +266,7 @@ namespace CacheMax.GUI.Services
                     return false;
                 }
 
-                // 步骤2：生成路径并检查缓存冲突
-                // 使用完整路径结构避免同名文件夹冲突
-                var driveLetter = Path.GetPathRoot(sourcePath)?.Replace(":", "").Replace("\\", "") ?? "Unknown";
-                var driveSpecificCacheRoot = Path.Combine(cacheRoot, driveLetter);
-
-                // 获取不包含盘符的完整路径，保持正常的目录结构
-                var pathWithoutDrive = sourcePath.Substring(Path.GetPathRoot(sourcePath)?.Length ?? 0);
-                // 直接使用路径结构，不进行任何替换
-                var cachePath = Path.Combine(driveSpecificCacheRoot, pathWithoutDrive);
+                // 步骤2：检查缓存冲突
 
                 bool useSyncMode = false;
                 if (Directory.Exists(cachePath))
@@ -276,6 +306,23 @@ namespace CacheMax.GUI.Services
                 if (!await CopyDirectoryUsingRobocopyWithFastCopyVerify(sourcePath, cachePath, useSyncMode, progress))
                 {
                     progress?.Report("[步骤1/5] 复制到缓存失败");
+
+                    // 清理不完整的缓存目录
+                    if (Directory.Exists(cachePath))
+                    {
+                        try
+                        {
+                            progress?.Report($"清理不完整缓存：{cachePath}");
+                            Directory.Delete(cachePath, true);
+                            progress?.Report("✅ 不完整缓存已清理");
+                        }
+                        catch (Exception cleanEx)
+                        {
+                            progress?.Report($"⚠️ 清理缓存失败：{cleanEx.Message}");
+                            LogMessage?.Invoke(this, $"清理不完整缓存失败：{cachePath}, {cleanEx.Message}");
+                        }
+                    }
+
                     _errorRecovery.RecordError(sourcePath, "CopyFailure", "复制到缓存失败", null, ErrorRecoveryService.ErrorSeverity.High);
                     return false;
                 }
@@ -286,7 +333,15 @@ namespace CacheMax.GUI.Services
                 {
                     progress?.Report("[步骤2/5] 重命名原始目录失败");
                     // 清理已复制的缓存
-                    try { Directory.Delete(cachePath, true); } catch { }
+                    try
+                    {
+                        Directory.Delete(cachePath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        progress?.Report($"清理缓存目录失败：{ex.Message}");
+                        LogMessage?.Invoke(this, $"清理缓存失败：{cachePath}, {ex.Message}");
+                    }
                     return false;
                 }
 
@@ -304,10 +359,18 @@ namespace CacheMax.GUI.Services
                     {
                         _junctionService.SafeRenameDirectory(originalPath, sourcePath, progress);
                         Directory.Delete(cachePath, true);
+                        progress?.Report("[步骤3/5] ✅ 已自动回滚，原始目录已恢复");
                     }
                     catch (Exception ex)
                     {
-                        progress?.Report($"[步骤3/5] 回滚失败：{ex.Message}");
+                        progress?.Report($"[步骤3/5] ❌ 回滚失败：{ex.Message}");
+                        progress?.Report($"🔴 严重错误：自动回滚失败！");
+                        progress?.Report($"请手动恢复：");
+                        progress?.Report($"  1. 将 '{originalPath}' 重命名为 '{sourcePath}'");
+                        progress?.Report($"  2. 删除缓存目录 '{cachePath}'（如果存在）");
+
+                        LogMessage?.Invoke(this, $"❌ Junction创建失败且回滚失败：{ex.Message}");
+                        LogMessage?.Invoke(this, $"   originalPath={originalPath}, sourcePath={sourcePath}");
                     }
                     return false;
                 }
@@ -421,14 +484,13 @@ namespace CacheMax.GUI.Services
                 // 停止缓存大小更新器
                 StopCacheSizeUpdater(cachePath);
 
-                // 步骤1：停止文件同步监控
-                progress?.Report("停止文件同步监控...");
-                _fileSyncService.StopMonitoring(cachePath, progress);
-
-
-                // 步骤2：执行最后一次同步
+                // 步骤1：执行最后一次同步（必须在停止监控之前，避免数据丢失窗口）
                 progress?.Report("执行最后一次同步...");
                 await _fileSyncService.ForceSync(cachePath, progress);
+
+                // 步骤2：停止文件同步监控
+                progress?.Report("停止文件同步监控...");
+                _fileSyncService.StopMonitoring(cachePath, progress);
 
                 // 步骤3：删除Junction
                 progress?.Report($"删除Junction：{mountPoint}");
@@ -1721,6 +1783,54 @@ namespace CacheMax.GUI.Services
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// 检查目标磁盘是否有足够空间
+        /// </summary>
+        private bool HasEnoughDiskSpace(string sourcePath, string destPath, IProgress<string>? progress)
+        {
+            try
+            {
+                // 计算源目录大小
+                long sourceSize = 0;
+                var dirInfo = new DirectoryInfo(sourcePath);
+
+                foreach (var file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+                {
+                    try
+                    {
+                        sourceSize += file.Length;
+                    }
+                    catch
+                    {
+                        // 跳过无法访问的文件
+                    }
+                }
+
+                // 获取目标驱动器信息
+                var destDrive = new DriveInfo(Path.GetPathRoot(destPath));
+                var needed = (long)(sourceSize * 1.1); // 预留10%空间
+
+                if (destDrive.AvailableFreeSpace < needed)
+                {
+                    progress?.Report($"❌ 磁盘空间不足");
+                    progress?.Report($"   需要：{needed / 1024.0 / 1024 / 1024:F1} GB");
+                    progress?.Report($"   可用：{destDrive.AvailableFreeSpace / 1024.0 / 1024 / 1024:F1} GB");
+                    progress?.Report($"   请清理 {destDrive.Name} 驱动器后重试");
+                    return false;
+                }
+
+                progress?.Report($"✓ 磁盘空间充足：需要 {needed / 1024.0 / 1024 / 1024:F1} GB，可用 {destDrive.AvailableFreeSpace / 1024.0 / 1024 / 1024:F1} GB");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // 检查失败不阻止流程，记录警告
+                progress?.Report($"⚠️ 空间检查失败（继续执行）：{ex.Message}");
+                LogMessage?.Invoke(this, $"磁盘空间检查失败：{ex.Message}");
+                return true; // 检查失败时继续执行
             }
         }
 
